@@ -63,7 +63,7 @@ Organizamos el código siguiendo una estructura estándar de React modularizada:
 ```text
 src/
 ├─ assets/                # Imágenes, fuentes y archivos estáticos
-├─ components/            # Componentes reutilizables (UI "tonta")
+├─ components/            # Componentes reutilizables 
 │  └─ Button.tsx
 ├─ pages/                 # Vistas principales (Rutas de la app)
 │  └─ AuctionDetail.tsx
