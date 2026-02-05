@@ -13,7 +13,7 @@ Para mantener la consistencia y calidad en el equipo, utilizamos las siguientes 
 
 * **Runtime:** Node.js (versión 22).
 * **Build Tool:** **Vite** (v5++).
-* **Framework/Librería:** **React** (v18.3).
+* **Framework/Librería:** **React** (v19.1).
 * **Lenguaje:** **TypeScript** (Tipado estático para evitar errores en tiempo de ejecución).
 * **Linting & Formatting:**
 * **ESLint:** Configurado para React + TypeScript.
