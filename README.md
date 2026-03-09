@@ -208,3 +208,34 @@ cp .env.example .env
 npm run dev
 
 ```
+
+---
+
+## 7. CI y despliegue en GitHub
+
+Este repositorio ya incluye dos workflows de GitHub Actions:
+
+* **CI:** `.github/workflows/ci.yml`
+  * Se ejecuta en `push` y `pull_request` a `main`.
+  * Instala dependencias con `npm ci` y compila con `npm run build`.
+
+* **Deploy Pages:** `.github/workflows/deploy-pages.yml`
+  * Se ejecuta en cada `push` a `main`.
+  * Compila y publica `dist/` en GitHub Pages.
+
+### Activar despliegue en GitHub Pages
+
+1. Sube el repo a GitHub (si aun no esta publicado).
+2. En GitHub, ve a `Settings > Pages`.
+3. En `Build and deployment`, selecciona `Source: GitHub Actions`.
+4. Haz push a `main` y el workflow `Deploy To GitHub Pages` publicara la web.
+
+### Comandos utiles
+
+```bash
+# desarrollo
+npm run dev
+
+# build local (igual que CI)
+npm run build
+```
