@@ -1,15 +1,139 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 
 :root {
-  color-scheme: dark;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
-* {
-  box-sizing: border-box;
+  /* BidFinder Design System */
+  --primary-yellow: #FFDE21;
+  --ultra-black: #121212;
+  --text-dark: #1A1A1A;
+  --text-grey: #757575;
+  --background-white: #FFFFFF;
+  --surface-light: #F5F5F5;
+  
+  /* Risk Traffic Light */
+  --risk-low: #00C853;
+  --risk-medium: #FF6D00;
+  --risk-high: #D50000;
+  
+  --font-inter: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
 body {
   margin: 0;
-  min-height: 100vh;
+  font-family: var(--font-inter);
+  background-color: var(--ultra-black);
+  color: var(--background-white);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Base Headings */
+h1 {
+  font-family: var(--font-inter);
+  font-weight: 700; /* Bold */
+}
+
+h2 {
+  font-family: var(--font-inter);
+  font-weight: 600; /* SemiBold */
+}
+
+/* Utility classes for text colors */
+.text-primary-yellow {
+  color: var(--primary-yellow);
+}
+
+.text-ultra-black {
+  color: var(--ultra-black);
+}
+
+.text-dark {
+  color: var(--text-dark);
+}
+
+.text-grey {
+  color: var(--text-grey);
+}
+
+/* Background utilities */
+.bg-ultra-black {
+  background-color: var(--ultra-black);
+}
+
+.bg-primary-yellow {
+  background-color: var(--primary-yellow);
+}
+
+.bg-surface-light {
+  background-color: var(--surface-light);
+}
+
+/* BidFinder Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px; /* Border Radius 12px requirement */
+  font-family: var(--font-inter);
+  font-weight: 700;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  border: none;
+}
+
+.btn-primary {
+  background-color: var(--primary-yellow);
+  color: var(--ultra-black);
+}
+
+.btn-primary:hover {
+  filter: brightness(0.95);
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background-color: transparent;
+  color: var(--background-white);
+  border: 1px solid var(--background-white);
+}
+
+.btn-secondary.dark-theme {
+    color: var(--ultra-black);
+    border: 1px solid var(--ultra-black);
+}
+
+.btn-secondary:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.btn-danger {
+  color: var(--risk-high);
+  background-color: transparent;
+  border: none;
+}
+
+/* BidFinder Cards */
+.card {
+  background-color: var(--background-white);
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  color: var(--text-dark);
+}
+
+/* Dark variant cards (for the landing features) */
+.card-dark {
+    background-color: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 1.5rem;
+    color: var(--background-white);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card-dark:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    border-color: rgba(255, 222, 33, 0.3); /* Slight yellow glow on hover */
 }
