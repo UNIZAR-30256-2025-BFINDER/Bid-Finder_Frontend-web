@@ -1,3 +1,9 @@
+/* Ensure Leaflet map always has height and width */
+.leaflet-container {
+  height: 100vh;
+  width: 100%;
+  min-height: 600px;
+}
 @import "tailwindcss";
 
 :root {
@@ -8,36 +14,12 @@
   --text-grey: #757575;
   --background-white: #FFFFFF;
   --surface-light: #F5F5F5;
-  
   /* Risk Traffic Light */
   --risk-low: #00C853;
   --risk-medium: #FF6D00;
   --risk-high: #D50000;
-  
   --font-inter: 'Inter', system-ui, -apple-system, sans-serif;
 }
-
-body {
-  margin: 0;
-  font-family: var(--font-inter);
-  background-color: var(--ultra-black);
-  color: var(--background-white);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-/* Base Headings */
-h1 {
-  font-family: var(--font-inter);
-  font-weight: 700; /* Bold */
-}
-
-h2 {
-  font-family: var(--font-inter);
-  font-weight: 600; /* SemiBold */
-}
-
-/* Utility classes for text colors */
 .text-primary-yellow {
   color: var(--primary-yellow);
 }

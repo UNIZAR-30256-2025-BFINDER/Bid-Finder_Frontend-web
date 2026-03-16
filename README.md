@@ -58,37 +58,35 @@ Es fundamental seguir estas reglas para que el código sea uniforme entre todos 
 
 ## 3. Estructura del Proyecto
 
-Organizamos el código siguiendo una estructura estándar de React modularizada:
+
+Organización por features (feature-sliced):
 
 ```text
 src/
-├─ assets/                # Imágenes, fuentes y archivos estáticos
-├─ components/            # Componentes reutilizables 
-│  └─ Button.tsx
-├─ pages/                 # Vistas principales (Rutas de la app)
-│  └─ AuctionDetail.tsx
-├─ hooks/                 # Custom Hooks (Lógica reutilizable)
-│  └─ useAuctions.ts
-├─ services/              # Comunicación con el Backend (Axios/Fetch)
-│  └─ api_service.ts
-├─ context/               # Estado global (Context API o Zustand)
-│  └─ AuthContext.tsx
-├─ types/                 # Definiciones de Interfaces TypeScript
-│  └─ Auction.ts
-├─ utils/                 # Funciones auxiliares y formateadores
-│  └─ date_formatter.ts
-├─ App.tsx                # Componente raíz y configuración de Rutas
+├─ assets/                # Imágenes, fuentes y archivos estáticos globales
+├─ components/            # Componentes UI globales y layouts reutilizables
+│  └─ layout/             # Navbar, Footer, Sidebar, etc. (globales)
+│  └─ ui/                 # Botones, tarjetas, paginadores, etc. (globales)
+├─ features/              # Cada feature tiene su propia carpeta con todo lo necesario
+│  ├─ landing/            # Lógica, componentes y páginas de la landing
+│  ├─ dashboard/          # Lógica y páginas del dashboard
+│  ├─ map/                # Módulos de mapa, hooks, servicios, componentes
+│  └─ subastas/           # Todo lo relacionado con subastas
+├─ types/                 # Tipos globales de TypeScript
+├─ utils/                 # Funciones auxiliares y formateadores globales
+├─ App.tsx                # Componente raíz y configuración de rutas
 └─ main.tsx               # Punto de entrada de Vite
-
 ```
 
-### Descripción de carpetas:
+### Descripción de carpetas principales:
 
-* **`components/`**: Piezas pequeñas de la UI (Botones, Tarjetas, Inputs). Reciben datos por `props`.
-* **`pages/`**: Componentes que representan una página completa (Home, Perfil, Detalle). Aquí se suelen hacer las llamadas a los hooks de datos.
-* **`services/`**: Aquí encapsulamos las llamadas `fetch` o `axios` al Backend. El componente no debe saber la URL exacta, solo llamar a `service.getAuctions()`.
-* **`hooks/`**: Extraemos la lógica de estado compleja aquí para no ensuciar los componentes visuales.
-* **`types/`**: Archivos `.ts` que solo exportan `interface` o `type` para compartir modelos de datos entre componentes.
+* **`features/`**: Cada feature (ej: subastas, mapa, landing) contiene sus propios componentes, hooks, servicios y páginas. Así se reduce el acoplamiento y se mejora la escalabilidad.
+* **`components/`**: Componentes UI y layouts globales, reutilizables en varias features (ej: Navbar, Footer, Button, Paginador).
+* **`assets/`**: Imágenes, fuentes y archivos estáticos globales.
+* **`types/`**: Tipos globales de TypeScript.
+* **`utils/`**: Funciones auxiliares y formateadores globales.
+
+> Para lógica, servicios o componentes exclusivos de una feature, siempre van dentro de la carpeta de esa feature.
 
 ---
 
