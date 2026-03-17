@@ -9,7 +9,6 @@ export interface Subasta {
   lng: number;
   viabilidad: Viabilidad;
 
-  // NUEVOS CAMPOS PARA EL POPUP
   precioActual: number;
   valorSubasta: number;
   imagen?: string;
@@ -84,6 +83,19 @@ export const SUBASTAS_MOCKS: Subasta[] = [
     lat: 41.6893,
     lng: -1.8867,
     viabilidad: 'green',
+    precioActual: 45000,
+    valorSubasta: 90000,
+    imagen:
+      'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=300',
+  },
+
+  {
+    id: '7',
+    name: 'Bar Beraton Embrujado',
+    type: 'car',
+    lat: 41.9893,
+    lng: -1.8877,
+    viabilidad: 'red',
     precioActual: 45000,
     valorSubasta: 90000,
     imagen:

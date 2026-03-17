@@ -8,9 +8,9 @@ import houseRed from '../../../assets/BFINDER_HOUSE_RED.png';
 import { SubastaType, Viabilidad } from './subastasMocks';
 
 export function getSubastaIcon(type: SubastaType, viabilidad: Viabilidad): L.Icon {
-  const size: [number, number] = [22, 22];
-  const anchor: [number, number] = [11, 22];
-  const popup: [number, number] = [0, -22];
+  const size: [number, number] = [52, 52];
+  const anchor: [number, number] = [16, 32];
+  const popup: [number, number] = [0, -32];
   if (type === 'car') {
     if (viabilidad === 'green')
       return L.icon({ iconUrl: carGreen, iconSize: size, iconAnchor: anchor, popupAnchor: popup });
