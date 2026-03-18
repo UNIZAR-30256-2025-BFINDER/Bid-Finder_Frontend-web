@@ -10,7 +10,6 @@ export const MapWidget: React.FC<MapWidgetProps> = ({ children, className = '' }
     <div
       className={`relative rounded-2xl bg-black/40 border border-white/10 p-6 md:p-8 overflow-hidden shadow-xl w-full h-full min-h-[300px] ${className}`}
     >
-      {/* Grid Pattern que simula el plano */}
       <div
         className="absolute inset-0 z-0 opacity-20"
         style={{
