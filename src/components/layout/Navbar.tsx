@@ -24,6 +24,7 @@ export const Navbar: React.FC<NavbarProps> = ({ logo, links, actions }) => {
 
         {/* 3. Derecha: Acciones (Buscador) y Botón Menú Móvil */}
         <div className="flex items-center gap-4">
+          {/* En PC se ven las acciones aquí. En móvil se oculta esta caja */}
           <div className="hidden md:flex items-center gap-4">{actions}</div>
 
           {/* Botón Movil */}
@@ -38,12 +39,12 @@ export const Navbar: React.FC<NavbarProps> = ({ logo, links, actions }) => {
 
       {/* MENÚ  MÓVIL */}
       {isMobileMenuOpen && (
-        <div className="md:hidden bg-[#0b0f19] border-t border-white/10 px-6 py-4 flex flex-col gap-6">
+        <div className="md:hidden bg-[#0b0f19] border-t border-white/10 px-6 py-4 flex flex-col gap-6 absolute w-full shadow-2xl">
           {/* Enlaces en formato vertical para móvil */}
           <nav className="flex flex-col gap-4 text-base font-medium text-gray-300">{links}</nav>
 
           {/* Acciones en formato vertical */}
-          <div className="flex flex-col gap-4">{actions}</div>
+          <div className="flex flex-col gap-4 pb-4">{actions}</div>
         </div>
       )}
     </header>

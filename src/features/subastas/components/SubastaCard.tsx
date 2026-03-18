@@ -21,27 +21,37 @@ export const SubastaCard: React.FC<SubastaCardProps> = ({
   selected = false,
 }) => (
   <div
-    className={`rounded-xl shadow-md bg-[#0b0f19] text-white cursor-pointer border-2 transition-all duration-150 ${selected ? 'border-yellow-400' : 'border-transparent'} hover:border-yellow-400`}
+    className={`group min-w-0 rounded-xl shadow-md bg-[#111827] text-white cursor-pointer border-2 transition-all duration-300 overflow-hidden ${
+      selected ? 'border-yellow-400 bg-white/10' : 'border-transparent hover:border-yellow-400 hover:bg-white/10'
+    }`}
     onClick={onClick}
-    style={{ minWidth: 0 }}
   >
-    <div className="h-32 w-full relative rounded-t-xl overflow-hidden">
+    <div className="aspect-video w-full relative overflow-hidden bg-black/50">
       <img
         src={image || fallbackImg}
         alt={title}
-        className="w-full h-full object-cover"
+        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
         loading="lazy"
         onError={(e) => {
           (e.target as HTMLImageElement).src = fallbackImg;
         }}
       />
+      
+      {location && (
+        <span className="absolute bottom-2 left-2 bg-black/60 backdrop-blur-sm text-white text-xs px-2 py-1 rounded-md font-medium">
+          {location}
+        </span>
+      )}
     </div>
+
+    {/* Contenido de texto */}
     <div className="flex flex-col gap-1 p-4">
       <span className="font-bold text-base truncate" title={title}>
         {title}
       </span>
-      <span className="text-yellow-400 font-bold text-lg">{price.toLocaleString('es-ES')} €</span>
-      {location && <span className="text-xs text-gray-400">{location}</span>}
+      <span className="text-yellow-400 font-bold text-xl tracking-tight">
+        {price.toLocaleString('es-ES')} €
+      </span>
     </div>
   </div>
 );

@@ -1,5 +1,5 @@
 import React from 'react';
-import { AuctionCard, Auction } from '../../subastas/components/AuctionCard';
+import { AuctionCard, Auction } from './AuctionCard';
 
 interface ProblemSolutionProps {
   title: React.ReactNode;

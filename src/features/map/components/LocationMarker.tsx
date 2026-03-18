@@ -29,17 +29,17 @@ export const LocationMarker = () => {
 
   return (
     <>
-      <div className="leaflet-bottom leaflet-right mb-24 mr-6 z-[1000]">
+      <div className="leaflet-bottom leaflet-right mb-32 md:mb-24 mr-4 md:mr-6 z-[1000]">
         <div className="leaflet-control leaflet-bar border-none shadow-none">
           <button
             onClick={(e) => {
               e.preventDefault();
               handleLocate();
             }}
-            className="flex items-center justify-center w-14 h-14 bg-white hover:bg-gray-100 text-slate-800 rounded-full shadow-xl transition-colors border border-slate-200 text-2xl"
+            className="flex items-center justify-center w-12 h-12 md:w-14 md:h-14 bg-white/90 hover:bg-gray-100 text-slate-800 rounded-full shadow-xl transition-colors border border-slate-200 text-2xl md:text-2xl"
             title={LOCATION_BUTTON_TITLE}
           >
-            <LocateFixed size={32} />
+            <LocateFixed size={24} className="md:size-8" />
           </button>
         </div>
       </div>
@@ -47,7 +47,9 @@ export const LocationMarker = () => {
       {position && (
         <Marker position={position} icon={hereIcon}>
           <Popup>
-            <div className="font-bold text-blue-600 text-center">{LOCATION_POPUP_TEXT}</div>
+            <div className="font-bold text-blue-600 text-center text-base md:text-lg p-2 md:p-3 min-w-[100px] max-w-[200px] md:max-w-xs">
+              {LOCATION_POPUP_TEXT}
+            </div>
           </Popup>
         </Marker>
       )}
