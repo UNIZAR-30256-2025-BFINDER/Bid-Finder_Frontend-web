@@ -1,6 +1,5 @@
 import React from 'react';
 import { MapWidget } from '../../map/components/MapWidget';
-import { MAP_DEFAULT_CENTER } from '../../map/components/mapConstants';
 interface MapSectionProps {
   title: React.ReactNode;
   description: React.ReactNode;
