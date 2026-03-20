@@ -33,7 +33,10 @@ export const SubastasMarkers = () => {
           position={[subasta.lat, subasta.lng]}
           icon={getSubastaIcon(subasta.type, subasta.viabilidad)}
         >
-          <Popup className="leaflet-popup-transparent !p-2 md:!p-4 !min-w-[180px] !max-w-[90vw] md:!max-w-xs" closeButton={false}>
+          <Popup
+            className="leaflet-popup-transparent !p-2 md:!p-4 !min-w-[180px] !max-w-[90vw] md:!max-w-xs"
+            closeButton={false}
+          >
             <div
               style={{ background: 'transparent', boxShadow: 'none', padding: 0, border: 'none' }}
             >
@@ -41,7 +44,7 @@ export const SubastasMarkers = () => {
                 title={subasta.name}
                 currentPrice={subasta.precioActual || 0}
                 originalPrice={subasta.valorSubasta || 0}
-                onViewClick={() => navigate(`/auction/${subasta.id}`)}
+                onViewClick={() => navigate(`/subastas/${subasta.id}`)}
               />
             </div>
           </Popup>

@@ -18,7 +18,7 @@ const router = createBrowserRouter(
         { path: 'admin', element: <Admin /> },
         { path: 'dashboard', element: <DashBoard /> },
         { path: 'favorites', element: <Favorites /> },
-        { path: 'subasta/:id', element: <SubastaDetail /> },
+        { path: 'subastas/:id', element: <SubastaDetail /> },
       ],
     },
   ],

@@ -13,10 +13,7 @@ export const LandingPage: React.FC = () => {
 
   const handleLogin = () => navigate('/login');
   const handleRegister = () => navigate('/register');
-  const viewMockDetails = () =>
-    console.log(
-      "Aquí podríamos abrir un estado modal genérico o navegar: navigate('/auction/123')",
-    );
+  const viewMockDetails = () => navigate('/subastas/123');
 
   const appFeatures: Feature[] = [
     {
@@ -53,7 +50,6 @@ export const LandingPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-ultra-black text-white font-sans selection:bg-primary-yellow selection:text-black">
-      {/* NAVBAR */}
       <Navbar
         logo={<Logo />}
         actions={
