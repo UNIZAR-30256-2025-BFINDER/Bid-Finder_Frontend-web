@@ -9,24 +9,31 @@ export const SubastaDetail: React.FC = () => {
     null,
   );
   const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState<string | null>(null);
 
   React.useEffect(() => {
     const loadSubasta = async () => {
-      if (!id) {
-        setLoading(false);
-        return;
-      }
+      try {
+        if (!id) {
+          setLoading(false);
+          return;
+        }
 
-      const data = await fetchSubastaById(id);
-      setSubasta(data ?? null);
-      setLoading(false);
+        const data = await fetchSubastaById(id);
+        setSubasta(data);
+      } catch (err) {
+        console.error(err);
+        setError('No se pudo recuperar la subasta desde el backend.');
+      } finally {
+        setLoading(false);
+      }
     };
 
     loadSubasta();
   }, [id]);
 
-  const formatPrice = (value?: number) => {
-    if (!value) return 'No disponible';
+  const formatPrice = (value?: number | null) => {
+    if (value === null || value === undefined) return 'No disponible';
     return `${value.toLocaleString('es-ES')} €`;
   };
 
@@ -44,6 +51,20 @@ export const SubastaDetail: React.FC = () => {
               </div>
               <div className="h-64 bg-white/10 rounded-2xl" />
             </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-[#050816] text-white flex flex-col">
+        <DashboardNavbar mobileView="map" onToggleMobileView={() => {}} />
+        <div className="px-6 py-10">
+          <div className="max-w-5xl mx-auto bg-white rounded-2xl text-black p-8 shadow-2xl">
+            <h1 className="text-3xl font-bold mb-4">Error al cargar la subasta</h1>
+            <p className="text-gray-700">{error}</p>
           </div>
         </div>
       </div>
@@ -77,11 +98,8 @@ export const SubastaDetail: React.FC = () => {
               <div className="xl:col-span-2 space-y-8">
                 <div className="overflow-hidden rounded-2xl bg-gray-100 border border-gray-200">
                   <img
-                    src={
-                      subasta.imagen ||
-                      'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80&w=1200'
-                    }
-                    alt={subasta.name}
+                    src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80&w=1200"
+                    alt={subasta.titulo}
                     className="w-full h-[260px] md:h-[380px] object-cover"
                   />
                 </div>
@@ -109,15 +127,14 @@ export const SubastaDetail: React.FC = () => {
                   <div className="rounded-2xl border border-gray-200 bg-gray-50 p-5">
                     <p className="text-sm uppercase tracking-wide text-gray-500 mb-2">Resumen IA</p>
                     <p className="text-sm text-gray-700 leading-6">
-                      Placeholder para el resumen automático generado por IA a partir del texto legal
-                      del BOE.
+                      Placeholder para el resumen automático generado por IA.
                     </p>
                   </div>
 
                   <div className="rounded-2xl border border-gray-200 bg-gray-50 p-5">
                     <p className="text-sm uppercase tracking-wide text-gray-500 mb-2">Riesgos IA</p>
                     <p className="text-sm text-gray-700 leading-6">
-                      Placeholder para advertencias jurídicas, cargas o incidencias detectadas por IA.
+                      Placeholder para advertencias jurídicas detectadas por IA.
                     </p>
                   </div>
 
@@ -126,47 +143,51 @@ export const SubastaDetail: React.FC = () => {
                       Recomendación IA
                     </p>
                     <p className="text-sm text-gray-700 leading-6">
-                      Placeholder para la valoración de oportunidad y viabilidad de inversión.
+                      Placeholder para la valoración automática de oportunidad.
                     </p>
                   </div>
+                </section>
+
+                <section className="rounded-2xl border border-gray-200 bg-gray-50 p-5">
+                  <h2 className="text-lg font-semibold mb-3">Texto bruto recuperado</h2>
+                  <pre className="whitespace-pre-wrap break-words text-sm text-gray-800 leading-6 font-sans">
+                    {subasta.descripcion}
+                  </pre>
                 </section>
               </div>
 
               <aside className="xl:col-span-1 space-y-6">
                 <div>
-                  <h1 className="text-3xl md:text-4xl font-bold leading-tight mb-3">{subasta.name}</h1>
+                  <h1 className="text-3xl md:text-4xl font-bold leading-tight mb-3">
+                    {subasta.titulo}
+                  </h1>
                   <p className="text-gray-600 text-sm md:text-base">
-                    Calle Placeholder, Madrid · BOE pendiente de integración
+                    Datos recuperados desde backend · Subasta ID {subasta.id}
                   </p>
                 </div>
 
                 <div className="flex items-end gap-4 flex-wrap">
                   <div>
-                    <p className="text-sm text-gray-500 line-through">
-                      {formatPrice(subasta.valorSubasta)}
-                    </p>
+                    <p className="text-sm text-gray-500">Precio actual</p>
                     <p className="text-2xl md:text-3xl font-bold text-black">
-                      {formatPrice(subasta.precioActual)}
+                      {formatPrice(subasta.precio)}
                     </p>
-                  </div>
-
-                  <div className="text-sm text-gray-700 flex gap-4">
-                    <span>20m²</span>
-                    <span>|</span>
-                    <span>Trastero incluido</span>
                   </div>
                 </div>
 
-                <button className="inline-flex items-center justify-center rounded-lg bg-[#0a1020] text-white px-4 py-3 text-sm font-semibold hover:bg-[#111a33] transition-colors">
-                  Guardar como favorito
-                </button>
+                <a
+                  href={subasta.urlOriginal}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center rounded-lg bg-[#0a1020] text-white px-4 py-3 text-sm font-semibold hover:bg-[#111a33] transition-colors"
+                >
+                  Ver anuncio original
+                </a>
 
                 <section>
                   <h2 className="text-lg font-semibold mb-3">Descripción de la oferta</h2>
                   <p className="text-gray-700 leading-7 text-sm md:text-base">
-                    Aquí irá la descripción completa de la subasta. Mientras el backend y la IA se
-                    conectan, este bloque actúa como placeholder para el texto legal transformado en
-                    información clara, legible y útil para el usuario final.
+                    {subasta.descripcion}
                   </p>
                 </section>
 
@@ -177,36 +198,8 @@ export const SubastaDetail: React.FC = () => {
                     <li>• Estado jurídico: pendiente de extracción</li>
                     <li>• Cargas detectadas: pendiente de extracción</li>
                     <li>• Fecha de cierre: pendiente de extracción</li>
-                    <li>• Enlace BOE: pendiente de conexión</li>
+                    <li>• Enlace BOE: ya disponible desde backend</li>
                   </ul>
-                </section>
-
-                <section>
-                  <h2 className="text-lg font-semibold mb-4">Ofertas similares</h2>
-                  <div className="grid grid-cols-2 gap-4">
-                    {[1, 2].map((item) => (
-                      <div
-                        key={item}
-                        className="rounded-xl border border-gray-200 overflow-hidden bg-white shadow-sm"
-                      >
-                        <img
-                          src={subasta.imagen}
-                          alt={`Oferta similar ${item}`}
-                          className="w-full h-24 object-cover"
-                        />
-                        <div className="p-3">
-                          <p className="text-xs font-semibold mb-1 line-clamp-2">{subasta.name}</p>
-                          <p className="text-sm font-bold">{formatPrice(subasta.precioActual)}</p>
-                          <p className="text-xs text-gray-500 line-through">
-                            {formatPrice(subasta.valorSubasta)}
-                          </p>
-                          <button className="mt-2 text-xs bg-[#0a1020] text-white px-2 py-1 rounded-md">
-                            Ver
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
                 </section>
               </aside>
             </div>
