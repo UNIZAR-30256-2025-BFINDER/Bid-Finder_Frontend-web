@@ -1,39 +1,48 @@
-import { Subasta, SUBASTAS_MOCKS } from '../components/subastasMocks';
+import type { Subasta } from '../components/subastasMocks';
 
-// Tipo específico para el detalle que devuelve el backend
 export interface BackendSubastaDetail {
-  id: number;
+  id: string; 
   titulo: string;
   precio: number | null;
-  descripcion: string;
-  urlOriginal: string;
+  texto: string;     
+  urlPdf: string;
 }
 
-// Simula una llamada a la API para obtener subastas (se mantiene mock para el mapa/listado)
 export async function fetchSubastas(): Promise<Subasta[]> {
-  await new Promise((res) => setTimeout(res, 300));
-  return SUBASTAS_MOCKS;
+  const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+  
+  try {
+    const response = await fetch(`${baseUrl}/subastas`);
+    if (!response.ok) throw new Error('Error en la red');
+    
+    const result = await response.json();
+    
+    return result.data.map((item: BackendSubastaDetail) => ({
+      id: item.id,
+      name: item.titulo, 
+      lat: 40.4168 + (Math.random() - 0.5) * 5,
+      lng: -3.7038 + (Math.random() - 0.5) * 5,
+      type: 'house',       
+      viabilidad: 'green', 
+      precioActual: item.precio || 0,
+      valorSubasta: 0,
+      imagen: 'https://via.placeholder.com/300x200?text=Sin+Imagen'
+    }));
+
+  } catch (error) {
+    console.error("Error al obtener subastas reales:", error);
+    return [];
+  }
 }
 
-// Obtiene una subasta real desde el backend por ID
 export async function fetchSubastaById(id: string): Promise<BackendSubastaDetail | null> {
   const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
 
-  console.log('BASE URL:', baseUrl);
-
   const response = await fetch(`${baseUrl}/subastas/${id}`);
 
-  if (response.status === 404) {
-    return null;
-  }
-
-  if (!response.ok) {
-    throw new Error(`Error al recuperar la subasta (${response.status})`);
-  }
+  if (response.status === 404) return null;
+  if (!response.ok) throw new Error(`Error al recuperar la subasta (${response.status})`);
 
   const result = await response.json();
-
-  console.log('Detalle recuperado del backend:', result);
-
   return result.data as BackendSubastaDetail;
 }
