@@ -1,4 +1,3 @@
-import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
@@ -12,9 +11,7 @@ vi.mock('../services/subastasService', () => ({
   fetchSubastaById: (...args: unknown[]) => mocks.fetchSubastaById(...args),
 }));
 
-vi.mock('../../map/components/DashboardNavbar', () => ({
-  DashboardNavbar: () => <div>DashboardNavbar mock</div>,
-}));
+
 
 describe('SubastaDetail', () => {
   beforeEach(() => {
@@ -32,7 +29,15 @@ describe('SubastaDetail', () => {
       </MemoryRouter>,
     );
 
-    expect(screen.getByText('DashboardNavbar mock')).toBeInTheDocument();
+    expect(screen.getByText((_content, node) => {
+      const hasText = (node: Element | null) =>
+        !!node && node.textContent?.replace(/\s/g, '') === 'B-FINDER';
+      const nodeHasText = hasText(node as Element);
+      const childrenDontHaveText = Array.from(node?.children || []).every(
+        (child) => !hasText(child as Element)
+      );
+      return nodeHasText && childrenDontHaveText;
+    })).toBeInTheDocument();
     expect(document.querySelector('.animate-pulse')).toBeInTheDocument();
   });
 

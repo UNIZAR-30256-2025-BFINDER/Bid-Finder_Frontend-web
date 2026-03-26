@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
-import { MapWidget } from './MapWidget';
+import { MapWidget } from '../MapWidget';
 
 describe('MapWidget', () => {
   it('renderiza los children', () => {
