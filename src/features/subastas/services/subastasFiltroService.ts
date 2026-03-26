@@ -1,5 +1,5 @@
 import L from 'leaflet';
-import type { Subasta } from '../components/map/subasta/subastasMocks';
+import type { Subasta } from '../../../models/Subasta';
 
 /**
  * Filtra subastas que están dentro de los bounds del mapa.
