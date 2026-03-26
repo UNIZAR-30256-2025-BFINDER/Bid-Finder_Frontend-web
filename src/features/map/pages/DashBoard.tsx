@@ -3,10 +3,10 @@ import { SubastaMap } from '../components/SubastaMap';
 import L from 'leaflet';
 import { filtrarSubastasPorBounds } from '../../subastas/services/subastasFiltroService';
 import { SplitView } from '../../../components/layout/SplitView';
-import { SubastaList } from '../../subastas/components/SubastaList';
+import { SubastaList } from '../components/subastas/SubastaList';
 import { fetchSubastas } from '../../subastas/services/subastasService';
-import type { Subasta } from '../../subastas/components/subastasMocks';
-import { DashboardNavbar } from '../../map/components/DashboardNavbar';
+import type { Subasta } from '../../../models/Subasta';
+import { DashboardNavbar } from '../layout/DashboardNavbar';
 import { MobileViewToggle } from '../components/MobileViewToggle';
 import { useIsMobile } from '../../../hooks/useIsMobile';
 

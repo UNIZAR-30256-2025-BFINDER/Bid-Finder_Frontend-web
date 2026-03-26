@@ -1,5 +1,6 @@
 import React from 'react';
-import { AuctionCard, Auction } from './AuctionCard';
+import { Subasta } from '../../../models/Subasta';
+import { SubastaCard } from '../../map/components/subastas/SubastaCard';
 
 interface ProblemSolutionProps {
   title: React.ReactNode;
@@ -12,24 +13,33 @@ export const ProblemSolutionSection: React.FC<ProblemSolutionProps> = ({
   description,
   onViewDetails,
 }) => {
-  const heroAuction: Auction = {
-    title: 'Piso 3 Habs Madrid',
-    price: 87500,
-    appraisal: 150000,
-    surfaceArea: 90,
-    closingDate: '12 Feb 2026',
-    status: 'Libre',
-    riskLevel: 'low',
+  const heroSubasta: Subasta = {
+    id: 'mock-1',
+    titulo: 'Piso 3 Habs Madrid',
+    precio: 87500,
+    descripcion: 'Piso céntrico con 3 habitaciones y 2 baños. Ideal para inversión.',
+    urlPdf: '',
+    lat: 40.4168,
+    lng: -3.7038,
+    type: 'house',
+    viabilidad: 'green',
+    precioActual: 87500,
+    valorSubasta: 150000,
+    imagen: 'https://via.placeholder.com/300x200?text=Vivienda',
+    urlOriginal: '',
   };
 
   return (
     <section className="py-32 px-8 md:px-16">
       <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-16 items-center">
         <div className="order-2 md:order-1 flex justify-center">
-          <AuctionCard
-            auction={heroAuction}
-            onActionClick={onViewDetails}
-            actionLabel="Ver Detalles"
+          <SubastaCard
+            key={heroSubasta.id}
+            title={heroSubasta.titulo}
+            price={heroSubasta.precioActual}
+            image={heroSubasta.imagen}
+            location={heroSubasta.type}
+            onClick={onViewDetails}
           />
         </div>
 

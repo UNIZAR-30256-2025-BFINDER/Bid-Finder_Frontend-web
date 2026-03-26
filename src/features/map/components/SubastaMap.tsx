@@ -5,7 +5,7 @@ import { useGeolocation } from '../hooks/useGeolocation';
 import { useMapAutoResize } from '../hooks/useMapAutoResize';
 import { MapContainer, TileLayer, useMapEvent } from 'react-leaflet';
 import { LocationMarker } from './LocationMarker';
-import { SubastasMarkers } from '../../subastas/components/SubastasMarkers';
+import { SubastasMarkers } from '../components/subastas/SubastasMarkers';
 import L from 'leaflet';
 
 interface SubastaMapProps {

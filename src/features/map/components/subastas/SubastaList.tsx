@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { SubastaCard } from './SubastaCard';
-import type { Subasta } from './subastasMocks';
-import { Paginador } from '../../../components/ui/Paginador';
+import type { Subasta } from '../../../../models/Subasta';
+import { Paginador } from '../../../../components/ui/Paginador';
+import { useNavigate } from 'react-router-dom';
 
 interface SubastaListProps {
   subastas: Subasta[];
@@ -13,6 +14,7 @@ export const SubastaList: React.FC<SubastaListProps> = ({ subastas }) => {
   const start = (page - 1) * perPage;
   const end = start + perPage;
   const paged = subastas.slice(start, end);
+  const navigate = useNavigate();
 
   if (!subastas || subastas.length === 0) {
     return (
@@ -30,7 +32,7 @@ export const SubastaList: React.FC<SubastaListProps> = ({ subastas }) => {
           {paged.map((subasta) => (
             <SubastaCard
               key={subasta.id}
-              title={subasta.name}
+              title={subasta.titulo}
               price={subasta.precioActual}
               image={subasta.imagen}
               location={
@@ -40,6 +42,7 @@ export const SubastaList: React.FC<SubastaListProps> = ({ subastas }) => {
                     ? 'Vehículo'
                     : subasta.type
               }
+              onClick={() => navigate(`/subastas/${subasta.id}`)}
             />
           ))}
         </div>

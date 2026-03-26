@@ -1,13 +1,13 @@
 import L from 'leaflet';
-import carGreen from '../../../assets/BFINDER_COCHE_GREEN.png';
-import carYellow from '../../../assets/BFINDER_COCHE_YELLOW.png';
-import carRed from '../../../assets/BFINDER_COCHE_RED.png';
-import houseGreen from '../../../assets/BFINDER_HOUSE_GREEN.png';
-import houseYellow from '../../../assets/BFINDER_HOUSE_YELLOW.png';
-import houseRed from '../../../assets/BFINDER_HOUSE_RED.png';
-import { SubastaType, Viabilidad } from './subastasMocks';
+import carGreen from '../../../../assets/BFINDER_COCHE_GREEN.png';
+import carYellow from '../../../../assets/BFINDER_COCHE_YELLOW.png';
+import carRed from '../../../../assets/BFINDER_COCHE_RED.png';
+import houseGreen from '../../../../assets/BFINDER_HOUSE_GREEN.png';
+import houseYellow from '../../../../assets/BFINDER_HOUSE_YELLOW.png';
+import houseRed from '../../../../assets/BFINDER_HOUSE_RED.png';
+import type { Subasta } from '../../../../models/Subasta';
 
-export function getSubastaIcon(type: SubastaType, viabilidad: Viabilidad): L.Icon {
+export function getSubastaIcon(type: Subasta['type'], viabilidad: Subasta['viabilidad']): L.Icon {
   const size: [number, number] = [52, 52];
   const anchor: [number, number] = [16, 32];
   const popup: [number, number] = [0, -32];
