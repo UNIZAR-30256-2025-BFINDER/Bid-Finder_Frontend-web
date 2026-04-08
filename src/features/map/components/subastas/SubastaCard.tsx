@@ -2,6 +2,7 @@ import React from 'react';
 
 interface SubastaCardProps {
   title: string;
+  subtitle: string;
   price: number;
   location?: string;
   image?: string;
@@ -14,6 +15,7 @@ const fallbackImg =
 
 export const SubastaCard: React.FC<SubastaCardProps> = ({
   title,
+  subtitle,
   price,
   location,
   image,
@@ -22,21 +24,23 @@ export const SubastaCard: React.FC<SubastaCardProps> = ({
 }) => (
   <div
     className={`group min-w-0 rounded-xl shadow-md bg-[#111827] text-white cursor-pointer border-2 transition-all duration-300 overflow-hidden ${
-      selected ? 'border-yellow-400 bg-white/10' : 'border-transparent hover:border-yellow-400 hover:bg-white/10'
+      selected
+        ? 'border-yellow-400 bg-white/10'
+        : 'border-transparent hover:border-yellow-400 hover:bg-white/10'
     }`}
     onClick={onClick}
   >
     <div className="aspect-video w-full relative overflow-hidden bg-black/50">
       <img
         src={image || fallbackImg}
-        alt={title}
+        alt={subtitle}
         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
         loading="lazy"
         onError={(e) => {
           (e.target as HTMLImageElement).src = fallbackImg;
         }}
       />
-      
+
       {location && (
         <span className="absolute bottom-2 left-2 bg-black/60 backdrop-blur-sm text-white text-xs px-2 py-1 rounded-md font-medium">
           {location}

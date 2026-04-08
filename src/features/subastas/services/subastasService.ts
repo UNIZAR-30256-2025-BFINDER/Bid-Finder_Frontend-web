@@ -1,9 +1,9 @@
 import type { Subasta } from '../../../models/Subasta';
 
-
 export interface BackendSubastaDetail {
   id: string;
   titulo: string;
+  titulo_resumido: string;
   precio: number | null;
   texto: string;
   urlPdf: string;
@@ -14,6 +14,9 @@ export interface BackendSubastaDetail {
   valorSubasta?: number;
   imagen?: string;
   urlOriginal?: string;
+  riesgo_legal?: string;
+  ocupantes?: string;
+  cargas_previas?: string;
 }
 
 export async function fetchSubastas(): Promise<Subasta[]> {
@@ -25,6 +28,7 @@ export async function fetchSubastas(): Promise<Subasta[]> {
     return result.data.map((item: BackendSubastaDetail) => ({
       id: item.id,
       titulo: item.titulo,
+      titulo_resumido: item.titulo_resumido,
       precio: item.precio ?? null,
       descripcion: item.texto ?? '',
       urlPdf: item.urlPdf,
@@ -36,6 +40,9 @@ export async function fetchSubastas(): Promise<Subasta[]> {
       valorSubasta: item.valorSubasta ?? 0,
       imagen: item.imagen ?? 'https://via.placeholder.com/300x200?text=Sin+Imagen',
       urlOriginal: item.urlOriginal ?? '',
+      riesgo_legal: item.riesgo_legal ?? '',
+      ocupantes: item.ocupantes ?? '',
+      cargas_previas: item.cargas_previas ?? '',
     }));
   } catch (error) {
     console.error('Error al obtener subastas reales:', error);
@@ -53,6 +60,7 @@ export async function fetchSubastaById(id: string): Promise<Subasta | null> {
   return {
     id: item.id,
     titulo: item.titulo,
+    titulo_resumido: item.titulo_resumido,
     precio: item.precio ?? null,
     descripcion: item.texto ?? '',
     urlPdf: item.urlPdf,
@@ -64,5 +72,8 @@ export async function fetchSubastaById(id: string): Promise<Subasta | null> {
     valorSubasta: item.valorSubasta ?? 0,
     imagen: item.imagen ?? 'https://via.placeholder.com/300x200?text=Sin+Imagen',
     urlOriginal: item.urlOriginal ?? '',
+    riesgo_legal: item.riesgo_legal ?? '',
+    ocupantes: item.ocupantes ?? '',
+    cargas_previas: item.cargas_previas ?? '',
   };
 }

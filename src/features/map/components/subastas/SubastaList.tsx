@@ -26,13 +26,13 @@ export const SubastaList: React.FC<SubastaListProps> = ({ subastas }) => {
 
   return (
     <div className="flex-1 flex flex-col min-h-0">
-      
       <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar pb-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 2xl:grid-cols-2 gap-4 max-w-2xl mx-auto w-full">
           {paged.map((subasta) => (
             <SubastaCard
               key={subasta.id}
-              title={subasta.titulo}
+              title={subasta.titulo_resumido}
+              subtitle={subasta.titulo}
               price={subasta.precioActual}
               image={subasta.imagen}
               location={
@@ -50,14 +50,8 @@ export const SubastaList: React.FC<SubastaListProps> = ({ subastas }) => {
 
       {/* PAGINADOR FIJO AL FONDO */}
       <div className="pt-4 mt-auto border-t border-white/10 shrink-0">
-        <Paginador 
-          total={subastas.length} 
-          page={page} 
-          perPage={perPage} 
-          onPageChange={setPage} 
-        />
+        <Paginador total={subastas.length} page={page} perPage={perPage} onPageChange={setPage} />
       </div>
-      
     </div>
   );
 };

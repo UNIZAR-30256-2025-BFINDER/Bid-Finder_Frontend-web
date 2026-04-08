@@ -70,7 +70,12 @@ export const SubastaDetail: React.FC = () => {
           <div className="bg-white text-black rounded-2xl shadow-2xl overflow-hidden p-4 md:p-6 lg:p-8">
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
               <div className="xl:col-span-2 space-y-8">
-                <SubastaImage src={"https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80&w=1200"} alt={subasta.titulo} />
+                <SubastaImage
+                  src={
+                    'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80&w=1200'
+                  }
+                  alt={subasta.titulo}
+                />
                 <SubastaLocationPlaceholder />
                 <SubastaIAInfo
                   blocks={[
@@ -92,31 +97,23 @@ export const SubastaDetail: React.FC = () => {
               </div>
               <aside className="xl:col-span-1 space-y-6">
                 <SubastaMainInfo
-                  titulo={subasta.titulo}
+                  titulo={subasta.titulo_resumido}
+                  subtitulo={subasta.titulo}
                   id={subasta.id}
                   descripcion={`Datos recuperados desde backend · Subasta ID ${subasta.id}`}
                 />
-                <SubastaPrice
-                  price={formatPrice(subasta.precio)}
-                  label="Precio actual"
-                />
-                <SubastaOriginalLink
-                  url={subasta.urlPdf|| ''}
-                  text="Ver anuncio original"
-                />
+                <SubastaPrice price={formatPrice(subasta.precio)} label="Precio actual" />
+                <SubastaOriginalLink url={subasta.urlPdf || ''} text="Ver anuncio original" />
                 <SubastaDescription
                   descripcion={subasta.descripcion}
                   title="Descripción de la oferta"
                 />
                 <SubastaStructuredFields
                   title="Campos estructurados IA"
-                  fields={[
-                    '• Tipo de activo: pendiente de extracción',
-                    '• Estado jurídico: pendiente de extracción',
-                    '• Cargas detectadas: pendiente de extracción',
-                    '• Fecha de cierre: pendiente de extracción',
-                    '• Enlace BOE: ya disponible desde backend',
-                  ]}
+                  type={subasta.type}
+                  cargas_previas={subasta.cargas_previas}
+                  ocupantes={subasta.ocupantes}
+                  riesgo_legal={subasta.riesgo_legal}
                 />
               </aside>
             </div>
