@@ -12,7 +12,7 @@ import SubastaDescription from '../components/SubastaDetail/SubastaDescription';
 import SubastaStructuredFields from '../components/SubastaDetail/SubastaStructuredFields';
 import SubastaIAInfo from '../components/SubastaDetail/SubastaIAInfo';
 import SubastaImage from '../components/SubastaDetail/SubastaImage';
-import SubastaLocationPlaceholder from '../components/SubastaDetail/SubastaLocationPlaceholder';
+import SubastaLocationMap from '../components/SubastaDetail/SubastaLocationMap';
 import SubastaRawText from '../components/SubastaDetail/SubastaRawText';
 import { DashboardNavbar } from '../../map/layout/DashboardNavbar';
 
@@ -66,7 +66,12 @@ export const SubastaDetail: React.FC = () => {
                   src={'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80&w=1200'}
                   alt={subasta.titulo}
                 />
-                <SubastaLocationPlaceholder />
+                <SubastaLocationMap 
+                  lat={subasta.lat} 
+                  lng={subasta.lng} 
+                  direccion={subasta.direccion} 
+                  hasLocation={subasta.hasLocation} 
+                />
                 
                 <SubastaIAInfo
                   blocks={[
