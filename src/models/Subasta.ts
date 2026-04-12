@@ -21,4 +21,5 @@ export interface Subasta {
   riesgo_legal?: string | null;
   ocupantes?: string | null;
   cargas_previas?: string | null;
+  hasLocation?: boolean;
 }
