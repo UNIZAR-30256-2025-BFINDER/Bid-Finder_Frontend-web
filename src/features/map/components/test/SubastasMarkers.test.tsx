@@ -8,7 +8,7 @@ const mocks = vi.hoisted(() => ({
   fetchSubastas: vi.fn(),
 }));
 
-vi.mock('../services/subastasService', () => ({
+vi.mock('../../../subastas/services/subastasService', () => ({
   fetchSubastas: () => mocks.fetchSubastas(),
 }));
 

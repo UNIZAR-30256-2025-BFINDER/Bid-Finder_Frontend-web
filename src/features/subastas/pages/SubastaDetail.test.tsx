@@ -11,8 +11,6 @@ vi.mock('../services/subastasService', () => ({
   fetchSubastaById: (...args: unknown[]) => mocks.fetchSubastaById(...args),
 }));
 
-
-
 describe('SubastaDetail', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -43,11 +41,21 @@ describe('SubastaDetail', () => {
 
   it('muestra los datos de la subasta cuando la petición funciona', async () => {
     mocks.fetchSubastaById.mockResolvedValue({
-      id: 1,
-      titulo: 'Subasta test',
+      id: '1',
+      titulo: 'Subasta test original',
+      titulo_resumido: 'Subasta test resumida', 
       precio: 1000,
       descripcion: 'Descripción test',
       urlOriginal: 'https://subastas.boe.es/test',
+      textoBruto: 'Texto bruto recuperado',
+      lat: 40.4168,
+      lng: -3.7038,
+      hasLocation: true,
+      type: 'house',
+      viabilidad: 'green',
+      precioActual: 1000,
+      valorSubasta: 2000,
+      imagen: '',
     });
 
     render(
@@ -59,7 +67,8 @@ describe('SubastaDetail', () => {
     );
 
     await waitFor(() => {
-        expect(screen.getByText('Subasta test')).toBeInTheDocument();
+        expect(screen.getByText('Subasta test resumida')).toBeInTheDocument();
+        expect(screen.getByText('Subasta test original')).toBeInTheDocument();
         expect(screen.getByText('Texto bruto recuperado')).toBeInTheDocument();
         expect(screen.getByText('Ver anuncio original')).toBeInTheDocument();
       });
