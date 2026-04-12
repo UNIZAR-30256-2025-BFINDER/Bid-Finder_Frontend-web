@@ -1,7 +1,7 @@
 export interface Subasta {
   id: string;
   titulo: string;
-  titulo_resumido: string;
+  titulo_resumido?: string | null;
   precio: number | null;
   descripcion: string;
   urlPdf?: string;
@@ -13,7 +13,12 @@ export interface Subasta {
   valorSubasta: number;
   imagen: string;
   urlOriginal?: string;
-  riesgo_legal?: string;
-  ocupantes?: string;
-  cargas_previas?: string;
+  direccion?: string | null;
+  referenciaCatastral?: string | null;
+  precioSalida?: number | null;
+  valorTasacion?: number | null;
+  textoBruto?: string;
+  riesgo_legal?: string | null;
+  ocupantes?: string | null;
+  cargas_previas?: string | null;
 }

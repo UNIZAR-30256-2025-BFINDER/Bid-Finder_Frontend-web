@@ -18,9 +18,7 @@ import { DashboardNavbar } from '../../map/layout/DashboardNavbar';
 
 export const SubastaDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const [subasta, setSubasta] = React.useState<Awaited<ReturnType<typeof fetchSubastaById>> | null>(
-    null,
-  );
+  const [subasta, setSubasta] = React.useState<Awaited<ReturnType<typeof fetchSubastaById>> | null>(null);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
 
@@ -31,7 +29,6 @@ export const SubastaDetail: React.FC = () => {
           setLoading(false);
           return;
         }
-
         const data = await fetchSubastaById(id);
         setSubasta(data);
       } catch (err) {
@@ -41,7 +38,6 @@ export const SubastaDetail: React.FC = () => {
         setLoading(false);
       }
     };
-
     loadSubasta();
   }, [id]);
 
@@ -50,17 +46,13 @@ export const SubastaDetail: React.FC = () => {
     return `${value.toLocaleString('es-ES')} €`;
   };
 
-  if (loading) {
-    return <SubastaLoading />;
-  }
+  if (loading) return <SubastaLoading />;
+  if (error) return <SubastaError error={error} />;
+  if (!subasta) return <SubastaNotFound id={id!} />;
 
-  if (error) {
-    return <SubastaError error={error} />;
-  }
-
-  if (!subasta) {
-    return <SubastaNotFound id={id} />;
-  }
+  const riesgoContent = subasta.riesgo_legal 
+    ? `Nivel: ${subasta.riesgo_legal}\nOcupantes: ${subasta.ocupantes || 'Desconocido'}\nCargas Previas: ${subasta.cargas_previas || 'Ninguna'}`
+    : 'No hay datos de riesgo extraídos para esta subasta.';
 
   return (
     <div className="min-h-screen bg-[#050816] text-white flex flex-col">
@@ -71,49 +63,49 @@ export const SubastaDetail: React.FC = () => {
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
               <div className="xl:col-span-2 space-y-8">
                 <SubastaImage
-                  src={
-                    'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80&w=1200'
-                  }
+                  src={'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80&w=1200'}
                   alt={subasta.titulo}
                 />
                 <SubastaLocationPlaceholder />
+                
                 <SubastaIAInfo
                   blocks={[
-                    {
-                      title: 'Resumen IA',
-                      content: 'Placeholder para el resumen automático generado por IA.',
-                    },
-                    {
-                      title: 'Riesgos IA',
-                      content: 'Placeholder para advertencias jurídicas detectadas por IA.',
-                    },
-                    {
-                      title: 'Recomendación IA',
-                      content: 'Placeholder para la valoración automática de oportunidad.',
-                    },
+                    { title: 'Advertencias Jurídicas (IA)', content: riesgoContent },
+                    { title: 'Resumen IA', content: subasta.descripcion }
                   ]}
                 />
-                <SubastaRawText descripcion={subasta.descripcion} />
+                <SubastaRawText descripcion={subasta.textoBruto || ''} />
               </div>
               <aside className="xl:col-span-1 space-y-6">
                 <SubastaMainInfo
-                  titulo={subasta.titulo_resumido}
+                  titulo={subasta.titulo_resumido || subasta.titulo}
                   subtitulo={subasta.titulo}
                   id={subasta.id}
-                  descripcion={`Datos recuperados desde backend · Subasta ID ${subasta.id}`}
+                  descripcion={`Subasta ID ${subasta.id}`}
                 />
-                <SubastaPrice price={formatPrice(subasta.precio)} label="Precio actual" />
-                <SubastaOriginalLink url={subasta.urlPdf || ''} text="Ver anuncio original" />
+                <SubastaPrice
+                  price={formatPrice(subasta.precioSalida)}
+                  label="Precio de salida"
+                />
+                <SubastaOriginalLink
+                  url={subasta.urlPdf || ''}
+                  text="Ver anuncio original"
+                />
                 <SubastaDescription
                   descripcion={subasta.descripcion}
                   title="Descripción de la oferta"
                 />
                 <SubastaStructuredFields
-                  title="Campos estructurados IA"
+                  title="Datos extraídos por IA"
                   type={subasta.type}
                   cargas_previas={subasta.cargas_previas}
                   ocupantes={subasta.ocupantes}
                   riesgo_legal={subasta.riesgo_legal}
+                  fields={[
+                    `• Dirección: ${subasta.direccion || 'No especificada'}`,
+                    `• Ref. Catastral: ${subasta.referenciaCatastral || 'No especificada'}`,
+                    `• Valor Tasación: ${formatPrice(subasta.valorTasacion)}`
+                  ]}
                 />
               </aside>
             </div>
