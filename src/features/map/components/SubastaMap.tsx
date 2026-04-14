@@ -7,12 +7,14 @@ import { MapContainer, TileLayer, useMapEvent } from 'react-leaflet';
 import { LocationMarker } from './LocationMarker';
 import { SubastasMarkers } from '../components/subastas/SubastasMarkers';
 import L from 'leaflet';
+import type { Subasta } from '../../../models/Subasta';
 
 interface SubastaMapProps {
+  subastas: Subasta[]; // <-- Nuevo
   onBoundsChange?: (bounds: L.LatLngBounds) => void;
 }
 
-export const SubastaMap: React.FC<SubastaMapProps> = ({ onBoundsChange }) => {
+export const SubastaMap: React.FC<SubastaMapProps> = ({ subastas, onBoundsChange }) => {
   useEffect(() => {
     setDefaultMarkerIcon();
   }, []);
@@ -64,7 +66,7 @@ export const SubastaMap: React.FC<SubastaMapProps> = ({ onBoundsChange }) => {
           updateInterval={100}
         />
 
-        <SubastasMarkers />
+        <SubastasMarkers subastas={subastas} />
         <LocationMarker />
       </MapContainer>
     </div>

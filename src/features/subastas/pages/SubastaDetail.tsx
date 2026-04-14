@@ -56,7 +56,11 @@ export const SubastaDetail: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#050816] text-white flex flex-col">
-      <DashboardNavbar mobileView="map" onToggleMobileView={() => {}} />
+      <DashboardNavbar 
+        mobileView="map" 
+        onToggleMobileView={() => {}} 
+        showSearchAndFilters={false} 
+      />
       <div className="flex-1 px-4 md:px-8 py-8 md:py-12">
         <div className="max-w-7xl mx-auto">
           <div className="bg-white text-black rounded-2xl shadow-2xl overflow-hidden p-4 md:p-6 lg:p-8">
