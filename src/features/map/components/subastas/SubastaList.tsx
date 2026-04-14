@@ -31,16 +31,15 @@ export const SubastaList: React.FC<SubastaListProps> = ({ subastas }) => {
           {paged.map((subasta) => (
             <SubastaCard
               key={subasta.id}
-              title={subasta.titulo_resumido}
+              title={subasta.titulo_resumido ?? subasta.titulo} 
               subtitle={subasta.titulo}
               price={subasta.precioActual}
               image={subasta.imagen}
               location={
-                subasta.type === 'house'
-                  ? 'Vivienda'
-                  : subasta.type === 'car'
-                    ? 'Vehículo'
-                    : subasta.type
+                subasta.type === 'house' ? 'Vivienda' : 
+                subasta.type === 'car' ? 'Vehículo' : 
+                subasta.type === 'other' ? 'Otros' : 
+                subasta.type
               }
               onClick={() => navigate(`/subastas/${subasta.id}`)}
             />
@@ -48,7 +47,6 @@ export const SubastaList: React.FC<SubastaListProps> = ({ subastas }) => {
         </div>
       </div>
 
-      {/* PAGINADOR FIJO AL FONDO */}
       <div className="pt-4 mt-auto border-t border-white/10 shrink-0">
         <Paginador total={subastas.length} page={page} perPage={perPage} onPageChange={setPage} />
       </div>
