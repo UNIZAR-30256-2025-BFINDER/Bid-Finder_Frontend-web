@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { SubastaCard } from './SubastaCard';
 import type { Subasta } from '../../../../models/Subasta';
 import { Paginador } from '../../../../components/ui/Paginador';
@@ -10,6 +10,11 @@ interface SubastaListProps {
 
 export const SubastaList: React.FC<SubastaListProps> = ({ subastas }) => {
   const [page, setPage] = useState(1);
+
+  // Resetear a página 1 cuando cambian los resultados (nuevo filtro/búsqueda)
+  useEffect(() => {
+    setPage(1);
+  }, [subastas]);
   const perPage = 6;
   const start = (page - 1) * perPage;
   const end = start + perPage;
