@@ -11,12 +11,12 @@ export interface BackendSubastaDetail {
   valor_tasacion?: number | null;
   direccion?: string | null;
   referencia_catastral?: string | null;
-  
+
   location?: {
     type: string;
     coordinates: number[];
   } | null;
-  
+
   lat?: number;
   lng?: number;
   type?: string;
@@ -31,19 +31,23 @@ export interface BackendSubastaDetail {
 export interface SubastaFilters {
   provincia?: string;
   categoria?: string;
+  precio_min?: number;
+  precio_max?: number;
+  nivel_oportunidad?: string;
+  q?: string;
 }
 
 const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
 
 const mapBackendToFrontend = (item: BackendSubastaDetail): Subasta => {
   const hasLocation = !!(item.location && item.location.coordinates && item.location.coordinates.length === 2);
-  
+
   const lng = hasLocation ? item.location!.coordinates[0] : -3.7038;
   const lat = hasLocation ? item.location!.coordinates[1] : 40.4168;
 
   let inferredType = 'other';
   const textToAnalyze = (item.titulo_resumido || item.titulo || '').toLowerCase();
-  
+
   if (textToAnalyze.includes('vivienda') || textToAnalyze.includes('piso') || textToAnalyze.includes('casa') || textToAnalyze.includes('chalet') || textToAnalyze.includes('local') || textToAnalyze.includes('finca') || textToAnalyze.includes('inmueble') || textToAnalyze.includes('urbana') || textToAnalyze.includes('rústica')) {
     inferredType = 'house';
   } else if (textToAnalyze.includes('vehículo') || textToAnalyze.includes('coche') || textToAnalyze.includes('furgoneta') || textToAnalyze.includes('moto')) {
@@ -57,11 +61,11 @@ const mapBackendToFrontend = (item: BackendSubastaDetail): Subasta => {
     precio: item.precio_salida ?? null,
     descripcion: (item.resumen || item.texto) ?? '',
     urlPdf: item.urlPdf.startsWith('http') ? item.urlPdf : `https://www.boe.es${item.urlPdf}`,
-    
+
     lat,
     lng,
     hasLocation,
-    
+
     type: item.type ?? inferredType,
     viabilidad: item.viabilidad ?? 'green',
     precioActual: item.precio_salida ?? 0,
@@ -82,9 +86,12 @@ const mapBackendToFrontend = (item: BackendSubastaDetail): Subasta => {
 export async function fetchSubastas(filtros?: SubastaFilters): Promise<Subasta[]> {
   try {
     const url = new URL(`${baseUrl}/subastas`);
-    
+
     if (filtros?.provincia) url.searchParams.append('provincia', filtros.provincia);
-    if (filtros?.categoria) url.searchParams.append('categoria', filtros.categoria);
+    if (filtros?.precio_min != null) url.searchParams.append('precio_min', String(filtros.precio_min));
+    if (filtros?.precio_max != null) url.searchParams.append('precio_max', String(filtros.precio_max));
+    if (filtros?.nivel_oportunidad) url.searchParams.append('nivel_oportunidad', filtros.nivel_oportunidad);
+    if (filtros?.q) url.searchParams.append('q', filtros.q);
 
     const response = await fetch(url.toString());
     if (!response.ok) throw new Error('Error en la red');
