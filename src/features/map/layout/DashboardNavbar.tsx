@@ -11,17 +11,21 @@ interface DashboardNavbarProps {
   onFiltrosChange?: (filtros: FiltrosState) => void;
   isFiltersOpen?: boolean;
   onToggleFilters?: () => void;
-  showSearchAndFilters?: boolean; 
+  showSearchAndFilters?: boolean;
+  searchQuery?: string;
+  onSearchChange?: (query: string) => void;
 }
 
 export const DashboardNavbar: React.FC<DashboardNavbarProps> = ({ 
   mobileView, 
   onToggleMobileView,
-  filtros = { provincia: '', categoria: '' }, 
+  filtros = { provincia: '', categoria: '', nivel_oportunidad: '' }, 
   onFiltrosChange,
   isFiltersOpen = false,
   onToggleFilters,
-  showSearchAndFilters = true 
+  showSearchAndFilters = true,
+  searchQuery = '',
+  onSearchChange,
 }) => {
   const navigate = useNavigate();
   const filtersRef = useRef<HTMLDivElement>(null);
@@ -87,7 +91,9 @@ export const DashboardNavbar: React.FC<DashboardNavbarProps> = ({
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
                   <input
                     type="text"
-                    placeholder="¿Qué buscas?"
+                    placeholder="Buscar: dirección, ref. catastral, zona..."
+                    value={searchQuery}
+                    onChange={(e) => onSearchChange?.(e.target.value)}
                     className="pl-10 pr-4 py-2 w-full md:w-[320px] lg:w-[400px] xl:w-[500px] rounded-md bg-white text-black outline-none focus:ring-2 focus:ring-yellow-400 text-sm font-medium transition-all"
                   />
                 </div>
@@ -98,7 +104,7 @@ export const DashboardNavbar: React.FC<DashboardNavbarProps> = ({
                     if (onToggleFilters) onToggleFilters();
                   }}
                   className={`flex p-2 rounded-md transition-colors flex-shrink-0 items-center justify-center ${
-                    isFiltersOpen || filtros.provincia || filtros.categoria 
+                    isFiltersOpen || filtros.provincia || filtros.categoria || filtros.precio_min || filtros.precio_max || filtros.nivel_oportunidad
                       ? 'bg-yellow-400 text-black hover:bg-yellow-500' 
                       : 'bg-white/10 text-white hover:bg-white/20'
                   }`}
@@ -128,7 +134,8 @@ export const DashboardNavbar: React.FC<DashboardNavbarProps> = ({
       {showSearchAndFilters && isFiltersOpen && (
         <div 
           ref={filtersRef}
-          className="absolute right-4 md:right-32 top-[110%] w-80 bg-[#161b22] border border-white/10 shadow-2xl rounded-xl p-5 z-50 animate-in fade-in slide-in-from-top-4 duration-200"
+          style={{ animation: 'slideDown 150ms ease-out' }}
+          className="absolute right-4 md:right-32 top-[110%] w-80 bg-[#161b22] border border-white/10 shadow-2xl rounded-xl p-5 z-50"
         >
           <div className="flex justify-between items-center mb-4 pb-3 border-b border-white/10">
             <h3 className="text-lg font-semibold text-white flex items-center gap-2">
@@ -150,11 +157,18 @@ export const DashboardNavbar: React.FC<DashboardNavbarProps> = ({
             }} 
           />
 
-          {(filtros.provincia || filtros.categoria) && (
+          {(filtros.provincia || filtros.categoria || filtros.precio_min || filtros.precio_max || filtros.nivel_oportunidad) && (
             <div className="mt-4 pt-4 border-t border-white/10 flex justify-end">
               <button
                 onClick={() => {
-                  if (onFiltrosChange) onFiltrosChange({ provincia: '', categoria: '' });
+                  if (onFiltrosChange) onFiltrosChange({ 
+                    provincia: '', 
+                    categoria: '', 
+                    precio_min: undefined, 
+                    precio_max: undefined, 
+                    nivel_oportunidad: '' 
+                  });
+                  if (onSearchChange) onSearchChange('');
                 }}
                 className="text-sm text-gray-400 hover:text-white transition-colors"
               >

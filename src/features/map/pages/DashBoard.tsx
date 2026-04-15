@@ -17,15 +17,24 @@ export const DashBoard: React.FC = () => {
   const [mobileView, setMobileView] = useState<'map' | 'list'>('map');
   const isMobile = useIsMobile();
   
-  const [filtros, setFiltros] = useState<FiltrosState>({ provincia: '', categoria: '' });
+  const [filtros, setFiltros] = useState<FiltrosState>({ provincia: '', categoria: '', nivel_oportunidad: '' });
+  const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedQuery, setDebouncedQuery] = useState('');
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
 
+  // Debounce de 400ms para la búsqueda
   useEffect(() => {
-    fetchSubastas(filtros).then((data) => {
+    const timer = setTimeout(() => setDebouncedQuery(searchQuery), 400);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  useEffect(() => {
+    const params = { ...filtros, q: debouncedQuery || undefined };
+    fetchSubastas(params).then((data) => {
       setSubastas(data);
       setSubastasVisibles(data);
     });
-  }, [filtros]); 
+  }, [filtros, debouncedQuery]); 
 
   const handleBoundsChange = (bounds: L.LatLngBounds) => {
     if (subastas.length === 0) return;
@@ -63,6 +72,8 @@ export const DashBoard: React.FC = () => {
         onFiltrosChange={setFiltros}
         isFiltersOpen={isFiltersOpen}
         onToggleFilters={() => setIsFiltersOpen(!isFiltersOpen)}
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
       />
 
       <main className="flex-1 w-full overflow-hidden relative">
