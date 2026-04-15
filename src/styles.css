@@ -119,3 +119,9 @@
     box-shadow: 0 8px 20px rgba(0,0,0,0.3);
     border-color: rgba(255, 222, 33, 0.3); /* Slight yellow glow on hover */
 }
+
+/* Dropdown slide animation (sin opacity para evitar flash blanco) */
+@keyframes slideDown {
+  from { transform: translateY(-8px); }
+  to   { transform: translateY(0); }
+}
