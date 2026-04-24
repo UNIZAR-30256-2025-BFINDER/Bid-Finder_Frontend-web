@@ -17,6 +17,8 @@ export interface Subasta {
   referenciaCatastral?: string | null;
   precioSalida?: number | null;
   valorTasacion?: number | null;
+  nivel_oportunidad?: 'ALTO' | 'MEDIO' | 'BAJO' | null;
+  diferencia_porcentual_oportunidad?: number | null;
   textoBruto?: string;
   riesgo_legal?: string | null;
   ocupantes?: string | null;

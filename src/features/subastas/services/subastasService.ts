@@ -9,6 +9,8 @@ export interface BackendSubastaDetail {
   urlPdf: string;
   precio_salida?: number | null;
   valor_tasacion?: number | null;
+  nivel_oportunidad?: 'ALTO' | 'MEDIO' | 'BAJO' | null;
+  diferencia_porcentual_oportunidad?: number | null;
   direccion?: string | null;
   referencia_catastral?: string | null;
 
@@ -48,9 +50,24 @@ const mapBackendToFrontend = (item: BackendSubastaDetail): Subasta => {
   let inferredType = 'other';
   const textToAnalyze = (item.titulo_resumido || item.titulo || '').toLowerCase();
 
-  if (textToAnalyze.includes('vivienda') || textToAnalyze.includes('piso') || textToAnalyze.includes('casa') || textToAnalyze.includes('chalet') || textToAnalyze.includes('local') || textToAnalyze.includes('finca') || textToAnalyze.includes('inmueble') || textToAnalyze.includes('urbana') || textToAnalyze.includes('rústica')) {
+  if (
+    textToAnalyze.includes('vivienda') ||
+    textToAnalyze.includes('piso') ||
+    textToAnalyze.includes('casa') ||
+    textToAnalyze.includes('chalet') ||
+    textToAnalyze.includes('local') ||
+    textToAnalyze.includes('finca') ||
+    textToAnalyze.includes('inmueble') ||
+    textToAnalyze.includes('urbana') ||
+    textToAnalyze.includes('rústica')
+  ) {
     inferredType = 'house';
-  } else if (textToAnalyze.includes('vehículo') || textToAnalyze.includes('coche') || textToAnalyze.includes('furgoneta') || textToAnalyze.includes('moto')) {
+  } else if (
+    textToAnalyze.includes('vehículo') ||
+    textToAnalyze.includes('coche') ||
+    textToAnalyze.includes('furgoneta') ||
+    textToAnalyze.includes('moto')
+  ) {
     inferredType = 'car';
   }
 
@@ -74,12 +91,14 @@ const mapBackendToFrontend = (item: BackendSubastaDetail): Subasta => {
     referenciaCatastral: item.referencia_catastral,
     precioSalida: item.precio_salida,
     valorTasacion: item.valor_tasacion,
+    nivel_oportunidad: item.nivel_oportunidad ?? null,
+    diferencia_porcentual_oportunidad: item.diferencia_porcentual_oportunidad ?? null,
     imagen: item.imagen ?? 'https://via.placeholder.com/300x200?text=Sin+Imagen',
     urlOriginal: item.urlOriginal ?? '',
     textoBruto: item.texto,
     riesgo_legal: item.riesgo_legal ?? null,
     ocupantes: item.ocupantes ?? null,
-    cargas_previas: item.cargas_previas ?? null
+    cargas_previas: item.cargas_previas ?? null,
   };
 };
 
@@ -95,6 +114,7 @@ export async function fetchSubastas(filtros?: SubastaFilters): Promise<Subasta[]
 
     const response = await fetch(url.toString());
     if (!response.ok) throw new Error('Error en la red');
+
     const result = await response.json();
     return result.data.map(mapBackendToFrontend);
   } catch (error) {
@@ -105,8 +125,10 @@ export async function fetchSubastas(filtros?: SubastaFilters): Promise<Subasta[]
 
 export async function fetchSubastaById(id: string): Promise<Subasta | null> {
   const response = await fetch(`${baseUrl}/subastas/${id}`);
+
   if (response.status === 404) return null;
   if (!response.ok) throw new Error(`Error al recuperar la subasta (${response.status})`);
+
   const result = await response.json();
   return mapBackendToFrontend(result.data);
 }

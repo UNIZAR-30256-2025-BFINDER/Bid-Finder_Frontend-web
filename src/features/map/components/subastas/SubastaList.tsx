@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { SubastaCard } from './SubastaCard';
 import type { Subasta } from '../../../../models/Subasta';
 import { Paginador } from '../../../../components/ui/Paginador';
@@ -10,16 +10,14 @@ interface SubastaListProps {
 
 export const SubastaList: React.FC<SubastaListProps> = ({ subastas }) => {
   const [page, setPage] = useState(1);
+  const navigate = useNavigate();
 
-  // Resetear a página 1 cuando cambian los resultados (nuevo filtro/búsqueda)
-  useEffect(() => {
-    setPage(1);
-  }, [subastas]);
   const perPage = 6;
-  const start = (page - 1) * perPage;
+  const totalPages = Math.max(1, Math.ceil(subastas.length / perPage));
+  const currentPage = Math.min(page, totalPages);
+  const start = (currentPage - 1) * perPage;
   const end = start + perPage;
   const paged = subastas.slice(start, end);
-  const navigate = useNavigate();
 
   if (!subastas || subastas.length === 0) {
     return (
@@ -36,15 +34,18 @@ export const SubastaList: React.FC<SubastaListProps> = ({ subastas }) => {
           {paged.map((subasta) => (
             <SubastaCard
               key={subasta.id}
-              title={subasta.titulo_resumido ?? subasta.titulo} 
+              title={subasta.titulo_resumido ?? subasta.titulo}
               subtitle={subasta.titulo}
               price={subasta.precioActual}
               image={subasta.imagen}
               location={
-                subasta.type === 'house' ? 'Vivienda' : 
-                subasta.type === 'car' ? 'Vehículo' : 
-                subasta.type === 'other' ? 'Otros' : 
-                subasta.type
+                subasta.type === 'house'
+                  ? 'Vivienda'
+                  : subasta.type === 'car'
+                    ? 'Vehículo'
+                    : subasta.type === 'other'
+                      ? 'Otros'
+                      : subasta.type
               }
               onClick={() => navigate(`/subastas/${subasta.id}`)}
             />
@@ -53,7 +54,12 @@ export const SubastaList: React.FC<SubastaListProps> = ({ subastas }) => {
       </div>
 
       <div className="pt-4 mt-auto border-t border-white/10 shrink-0">
-        <Paginador total={subastas.length} page={page} perPage={perPage} onPageChange={setPage} />
+        <Paginador
+          total={subastas.length}
+          page={currentPage}
+          perPage={perPage}
+          onPageChange={setPage}
+        />
       </div>
     </div>
   );
