@@ -16,6 +16,7 @@ import SubastaLocationMap from '../components/SubastaDetail/SubastaLocationMap';
 import SubastaRawText from '../components/SubastaDetail/SubastaRawText';
 import { DashboardNavbar } from '../../map/layout/DashboardNavbar';
 import { FavoriteButton } from '../components/SubastaDetail/FavoriteButton';
+import { ComentariosSection } from '../components/SubastaDetail/ComentariosSection';
 
 export const SubastaDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -141,6 +142,8 @@ export const SubastaDetail: React.FC = () => {
                 />
               </aside>
             </div>
+
+            <ComentariosSection subastaId={subasta.id} />
           </div>
         </div>
       </div>
