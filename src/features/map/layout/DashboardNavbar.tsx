@@ -32,7 +32,10 @@ export const DashboardNavbar: React.FC<DashboardNavbarProps> = ({
   const location = useLocation();
   const filtersRef = useRef<HTMLDivElement>(null);
 
-  const isActive = (path: string) => location.pathname === path;
+  const currentUser = authService.getCurrentUser();
+  const isAdmin = currentUser?.rol === 'admin';
+
+  const isActive = (path: string) => location.pathname.startsWith(path);
 
   const handleLogout = () => {
     authService.logout();
@@ -70,7 +73,7 @@ export const DashboardNavbar: React.FC<DashboardNavbarProps> = ({
           <>
             <button
               onClick={() => navigate('/dashboard')}
-              className={`transition-all px-2 lg:px-3 text-base ${
+              className={`transition-all px-2 lg:px-3 text-base text-left ${
                 isActive('/dashboard')
                   ? 'text-yellow-400 font-semibold'
                   : 'text-gray-300 hover:text-white hover:scale-105'
@@ -80,7 +83,7 @@ export const DashboardNavbar: React.FC<DashboardNavbarProps> = ({
             </button>
             <button
               onClick={() => navigate('/favorites')}
-              className={`transition-all px-2 lg:px-3 text-base ${
+              className={`transition-all px-2 lg:px-3 text-base text-left ${
                 isActive('/favorites')
                   ? 'text-yellow-400 font-semibold'
                   : 'text-gray-300 hover:text-white hover:scale-105'
@@ -88,9 +91,31 @@ export const DashboardNavbar: React.FC<DashboardNavbarProps> = ({
             >
               Favoritos
             </button>
+            
+            {isAdmin && (
+              <div className="flex flex-col md:flex-row md:items-center">
+                <button
+                  onClick={() => navigate('/admin')}
+                  className={`transition-all px-2 lg:px-3 text-base text-left ${
+                    isActive('/admin')
+                      ? 'text-yellow-400 font-semibold'
+                      : 'text-gray-300 hover:text-white hover:scale-105'
+                  }`}
+                >
+                  Admin
+                </button>
+                
+                <div className="md:hidden flex flex-col pl-4 mt-3 gap-4 border-l border-white/10 ml-4 mb-2">
+                  <button className="text-yellow-400 text-left text-sm font-semibold">Dashboard</button>
+                  <button className="text-gray-400 hover:text-white text-left text-sm transition-colors">Usuarios</button>
+                  <button className="text-gray-400 hover:text-white text-left text-sm transition-colors">Moderación</button>
+                </div>
+              </div>
+            )}
+
             <button
               onClick={() => navigate('/profile')}
-              className={`transition-all px-2 lg:px-3 text-base ${
+              className={`transition-all px-2 lg:px-3 text-base text-left ${
                 isActive('/profile')
                   ? 'text-yellow-400 font-semibold'
                   : 'text-gray-300 hover:text-white hover:scale-105'
@@ -150,7 +175,6 @@ export const DashboardNavbar: React.FC<DashboardNavbarProps> = ({
 
             <div className="md:hidden w-full h-px bg-white/10 my-2"></div>
 
-            {/* BOTÓN LOGOUT */}
             <button
               onClick={handleLogout}
               className="text-sm font-semibold text-gray-300 hover:text-red-400 transition-colors border border-white/20 hover:border-red-400 px-4 py-2 md:py-1.5 rounded-lg flex-shrink-0 text-center"
