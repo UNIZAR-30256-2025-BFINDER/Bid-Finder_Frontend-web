@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import L from 'leaflet';
 import { authService } from '../../auth/services/authService';
 import { DashboardNavbar } from '../../map/layout/DashboardNavbar';
 import { SplitView } from '../../../components/layout/SplitView';
@@ -25,7 +24,7 @@ export const FavoritosPage: React.FC = () => {
   const isAuthenticated = authService.isAuthenticated();
   const token = authService.getAccessToken();
 
-  const cargarFavoritos = async () => {
+  const cargarFavoritos = useCallback(async () => {
     if (!token) {
       setLoading(false);
       return;
@@ -45,30 +44,38 @@ export const FavoritosPage: React.FC = () => {
         throw new Error('Error al cargar favoritos');
       }
       const result = await response.json();
-      const lista: Subasta[] = result.data?.favoritos || [];
+      
+      type RawFavorito = Subasta & {
+        location?: {
+          coordinates?: number[];
+        };
+        precio_salida?: number;
+      };
+
+      const lista: RawFavorito[] = result.data?.favoritos || [];
       const transformed = lista.map((item) => ({
         ...item,
-        // Precio: usar precio_salida
-        price: item.precio_salida ?? item.precioActual ?? 0,
-        precioActual: item.precio_salida ?? 0,
-        precioSalida: item.precio_salida ?? 0,
-        // Coordenadas: extraer de location.coordinates (GeoJSON: [lng, lat])
+        price: item.precioSalida ?? item.precioActual ?? 0,
+        precioActual: item.precioSalida ?? 0,
+        precioSalida: item.precioSalida ?? 0,
         lat: item.location?.coordinates?.[1] ?? item.lat ?? null,
         lng: item.location?.coordinates?.[0] ?? item.lng ?? null,
-        // Asegurar otros campos comunes
         hasLocation: !!(item.location?.coordinates || item.lat),
         imagen: item.imagen || 'https://via.placeholder.com/300x200?text=Sin+Imagen',
         direccion: item.direccion || '',
       }));
 
       setFavoritos(transformed as Subasta[]);
-    } catch (err: any) {
-      console.error(err);
-      setError(err.message || 'No se pudieron cargar tus favoritos');
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message || 'No se pudieron cargar tus favoritos');
+      } else {
+        setError('Error desconocido al cargar favoritos');
+      }
     } finally {
       setLoading(false);
     }
-  };
+  }, [token, navigate]);
 
   const handleRemove = async (subastaId: string) => {
     if (!token) return;
@@ -76,9 +83,10 @@ export const FavoritosPage: React.FC = () => {
     try {
       await removeFavorito(subastaId);
       setFavoritos((prev) => prev.filter((s) => s.id !== subastaId));
-    } catch (err: any) {
-      console.error(err);
-      alert(`No se pudo eliminar: ${err.message}`);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        alert(`No se pudo eliminar: ${err.message}`);
+      }
     } finally {
       setRemovingIds((prev) => {
         const newSet = new Set(prev);
@@ -92,10 +100,7 @@ export const FavoritosPage: React.FC = () => {
     setMobileView((prev) => (prev === 'map' ? 'list' : 'map'));
   };
 
-  // El mapa se actualiza pero NO modifica la lista (siempre se muestran todos los favoritos)
-  const handleBoundsChange = (bounds: L.LatLngBounds) => {
-    // No hacemos nada con los bounds para mantener la lista completa
-    // (podrías agregar un console.log si quieres depurar)
+  const handleBoundsChange = () => {
   };
 
   useEffect(() => {
@@ -104,7 +109,7 @@ export const FavoritosPage: React.FC = () => {
       return;
     }
     cargarFavoritos();
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, navigate, cargarFavoritos]);
 
   if (loading) {
     return (
@@ -128,7 +133,6 @@ export const FavoritosPage: React.FC = () => {
     );
   }
 
-  // Contenido de la barra lateral (lista completa de favoritos)
   const sidebarContent = (
     <div className="h-full flex flex-col p-4 md:p-6 bg-[#0b0f19] overflow-y-auto">
       <div className="flex justify-between items-end mb-4">

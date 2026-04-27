@@ -45,9 +45,13 @@ export const FavoriteButton: React.FC<FavoriteButtonProps> = ({ subastaId, class
         await addFavorito(subastaId);
         setIsFavorite(true);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      alert(err.message || 'Error al actualizar favorito');
+      if (err instanceof Error) {
+        alert(err.message || 'Error al actualizar favorito');
+      } else {
+        alert('Error al actualizar favorito');
+      }
     } finally {
       setLoading(false);
     }

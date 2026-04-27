@@ -22,7 +22,7 @@ export const ComentariosSection: React.FC<ComentariosSectionProps> = ({ subastaI
       try {
         const data = await getComentarios(subastaId);
         setComentarios(data);
-      } catch (err) {
+      } catch {
         setError('No se pudieron cargar los comentarios.');
       } finally {
         setLoading(false);
@@ -42,8 +42,10 @@ export const ComentariosSection: React.FC<ComentariosSectionProps> = ({ subastaI
       const nuevoComentario = await postComentario(subastaId, nuevoTexto);
       setComentarios((prev) => [nuevoComentario, ...prev]);
       setNuevoTexto('');
-    } catch (err: any) {
-      setError(err.message || 'Error al publicar el comentario');
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message || 'Error al publicar el comentario');
+      }
     } finally {
       setEnviando(false);
     }

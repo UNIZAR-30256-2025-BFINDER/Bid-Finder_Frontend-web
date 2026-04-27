@@ -1,12 +1,12 @@
-// src/services/favoritosService.ts
 import { authService } from '../../auth/services/authService';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
 
-/**
- * Construye los headers necesarios para las peticiones autenticadas.
- */
-const getAuthHeaders = (): HeadersInit => {
+interface SubastaFavoritaId {
+  id: string;
+}
+
+export const getAuthHeaders = (): Record<string, string> => {
   const token = authService.getAccessToken();
   return {
     'Content-Type': 'application/json',
@@ -14,10 +14,6 @@ const getAuthHeaders = (): HeadersInit => {
   };
 };
 
-/**
- * Obtiene la lista de ObjectIds de las subastas favoritas del usuario actual.
- * @returns {Promise<string[]>} Array de _id (MongoDB)
- */
 export async function fetchFavoritos(): Promise<string[]> {
   try {
     const response = await fetch(`${API_BASE_URL}/favoritos`, {
@@ -26,26 +22,21 @@ export async function fetchFavoritos(): Promise<string[]> {
 
     if (!response.ok) {
       if (response.status === 401) {
-        authService.logout(); // Limpiar sesión
+        authService.logout();
         throw new Error('Tu sesión ha expirado. Inicia sesión nuevamente.');
       }
       throw new Error('Error al obtener favoritos');
     }
 
     const result = await response.json();
-    // Suponiendo que la respuesta tiene la estructura: { data: { favoritos: [...] } }
     const favoritos = result.data?.favoritos || [];
-    return favoritos.map((fav: any) => fav.id);
+    return favoritos.map((fav: SubastaFavoritaId) => fav.id);
   } catch (error) {
     console.error('Error en fetchFavoritos:', error);
     return [];
   }
 }
 
-/**
- * Añade una subasta a favoritos.
- * @param subastaId ObjectId de MongoDB de la subasta
- */
 export async function addFavorito(subastaId: string): Promise<void> {
   const response = await fetch(`${API_BASE_URL}/favoritos/${subastaId}`, {
     method: 'POST',
@@ -61,10 +52,6 @@ export async function addFavorito(subastaId: string): Promise<void> {
   }
 }
 
-/**
- * Elimina una subasta de favoritos.
- * @param subastaId ObjectId de MongoDB de la subasta
- */
 export async function removeFavorito(subastaId: string): Promise<void> {
   const response = await fetch(`${API_BASE_URL}/favoritos/${subastaId}`, {
     method: 'DELETE',

@@ -1,9 +1,8 @@
-// src/features/favoritos/components/FavoritosCard.tsx
 import React from 'react';
-import { XCircle } from 'lucide-react'; // o cualquier ícono
+import { XCircle } from 'lucide-react';
 
 interface FavoritosCardProps {
-  id: string;
+  id: string; 
   title: string;
   subtitle: string;
   price: number;
@@ -18,7 +17,6 @@ const fallbackImg =
   'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80&w=300';
 
 export const FavoritosCard: React.FC<FavoritosCardProps> = ({
-  id,
   title,
   subtitle,
   price,
