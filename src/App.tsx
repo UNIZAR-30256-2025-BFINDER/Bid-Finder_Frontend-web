@@ -5,10 +5,10 @@ import { MainLayout } from './components/layout/MainLayout';
 import { LandingPage } from './features/landing/pages/LandingPage';
 import Admin from './features/dashboard/pages/Admin';
 import DashBoard from './features/map/pages/DashBoard';
-import Favorites from './features/dashboard/pages/Favorites';
 import SubastaDetail from './features/subastas/pages/SubastaDetail';
 import RegisterPage from './features/auth/pages/RegisterPage';
 import LoginPage from './features/auth/pages/LoginPage';
+import { FavoritosPage } from './features/favoritos/pages/FavoritosPage';
 import { ProtectedRoute } from './features/auth/components/ProtectedRoute';
 
 const router = createBrowserRouter(
@@ -38,7 +38,7 @@ const router = createBrowserRouter(
           path: 'favorites',
           element: (
             <ProtectedRoute>
-              <Favorites />
+              <FavoritosPage />
             </ProtectedRoute>
           ),
         },

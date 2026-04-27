@@ -1,6 +1,6 @@
 import { Marker, Popup } from 'react-leaflet';
 import { useEffect, useState } from 'react';
-import { fetchSubastas } from '../../services/subastasService';
+import { fetchSubastas } from '../../features/favoritos/services/subastasService';
 import { getSubastaIcon } from '../map/subasta/subastasIcons';
 import type { Subasta } from './subastasMocks';
 import MarkerClusterGroup from 'react-leaflet-cluster';

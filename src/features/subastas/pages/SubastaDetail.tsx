@@ -15,10 +15,13 @@ import SubastaImage from '../components/SubastaDetail/SubastaImage';
 import SubastaLocationMap from '../components/SubastaDetail/SubastaLocationMap';
 import SubastaRawText from '../components/SubastaDetail/SubastaRawText';
 import { DashboardNavbar } from '../../map/layout/DashboardNavbar';
+import { FavoriteButton } from '../components/SubastaDetail/FavoriteButton';
 
 export const SubastaDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const [subasta, setSubasta] = React.useState<Awaited<ReturnType<typeof fetchSubastaById>> | null>(null);
+  const [subasta, setSubasta] = React.useState<Awaited<ReturnType<typeof fetchSubastaById>> | null>(
+    null,
+  );
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
 
@@ -61,14 +64,15 @@ export const SubastaDetail: React.FC = () => {
     ? `Nivel: ${subasta.riesgo_legal}\nOcupantes: ${subasta.ocupantes || 'Desconocido'}\nCargas Previas: ${subasta.cargas_previas || 'Ninguna'}`
     : 'No hay datos de riesgo extraídos para esta subasta.';
 
-  const oportunidadContent = `Nivel de oportunidad: ${subasta.nivel_oportunidad || 'No disponible'
-    }\nDiferencia vs tasación: ${formatPercentage(subasta.diferencia_porcentual_oportunidad)}`;
+  const oportunidadContent = `Nivel de oportunidad: ${
+    subasta.nivel_oportunidad || 'No disponible'
+  }\nDiferencia vs tasación: ${formatPercentage(subasta.diferencia_porcentual_oportunidad)}`;
 
   return (
     <div className="min-h-screen bg-[#050816] text-white flex flex-col">
       <DashboardNavbar
         mobileView="map"
-        onToggleMobileView={() => { }}
+        onToggleMobileView={() => {}}
         showSearchAndFilters={false}
       />
 
@@ -108,15 +112,11 @@ export const SubastaDetail: React.FC = () => {
                   descripcion={`Subasta ID ${subasta.id}`}
                 />
 
-                <SubastaPrice
-                  price={formatPrice(subasta.precioSalida)}
-                  label="Precio de salida"
-                />
-
-                <SubastaOriginalLink
-                  url={subasta.urlPdf || ''}
-                  text="Ver anuncio original"
-                />
+                <SubastaPrice price={formatPrice(subasta.precioSalida)} label="Precio de salida" />
+                <div className="flex gap-3 items-center">
+                  <SubastaOriginalLink url={subasta.urlPdf || ''} text="Ver anuncio original" />
+                  <FavoriteButton subastaId={subasta.id} />
+                </div>
 
                 <SubastaDescription
                   descripcion={subasta.descripcion}

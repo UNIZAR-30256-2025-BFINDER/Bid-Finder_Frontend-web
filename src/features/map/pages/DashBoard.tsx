@@ -16,8 +16,12 @@ export const DashBoard: React.FC = () => {
   const [subastasVisibles, setSubastasVisibles] = useState<Subasta[]>([]);
   const [mobileView, setMobileView] = useState<'map' | 'list'>('map');
   const isMobile = useIsMobile();
-  
-  const [filtros, setFiltros] = useState<FiltrosState>({ provincia: '', categoria: '', nivel_oportunidad: '' });
+
+  const [filtros, setFiltros] = useState<FiltrosState>({
+    provincia: '',
+    categoria: '',
+    nivel_oportunidad: '',
+  });
   const [searchQuery, setSearchQuery] = useState('');
   const [debouncedQuery, setDebouncedQuery] = useState('');
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
@@ -31,10 +35,11 @@ export const DashBoard: React.FC = () => {
   useEffect(() => {
     const params = { ...filtros, q: debouncedQuery || undefined };
     fetchSubastas(params).then((data) => {
+      console.log('Primer favorito:', data[0]);
       setSubastas(data);
       setSubastasVisibles(data);
     });
-  }, [filtros, debouncedQuery]); 
+  }, [filtros, debouncedQuery]);
 
   const handleBoundsChange = (bounds: L.LatLngBounds) => {
     if (subastas.length === 0) return;
@@ -42,7 +47,7 @@ export const DashBoard: React.FC = () => {
   };
 
   const toggleMobileView = () => {
-    setMobileView(prev => prev === 'map' ? 'list' : 'map');
+    setMobileView((prev) => (prev === 'map' ? 'list' : 'map'));
   };
 
   const sidebarContent = (
@@ -50,24 +55,22 @@ export const DashBoard: React.FC = () => {
       <div className="flex justify-between items-end mb-4">
         <div>
           <h1 className="text-2xl font-bold">Subastas Activas</h1>
-          <p className="text-gray-400 text-sm mt-1">
-            Encuentra oportunidades filtradas por IA
-          </p>
+          <p className="text-gray-400 text-sm mt-1">Encuentra oportunidades filtradas por IA</p>
         </div>
         <span className="text-xs font-semibold bg-white/10 px-2 py-1 rounded text-yellow-400 shrink-0">
           {subastasVisibles.length} Res.
         </span>
       </div>
-      
+
       <SubastaList subastas={subastasVisibles} />
     </div>
   );
 
   return (
     <div className="min-h-screen flex flex-col bg-[#0b0f19] text-white font-sans overflow-hidden">
-      <DashboardNavbar 
+      <DashboardNavbar
         mobileView={mobileView}
-        onToggleMobileView={toggleMobileView} 
+        onToggleMobileView={toggleMobileView}
         filtros={filtros}
         onFiltrosChange={setFiltros}
         isFiltersOpen={isFiltersOpen}
@@ -87,16 +90,16 @@ export const DashBoard: React.FC = () => {
               sidebarContent
             )}
             {mobileView === 'map' ? (
-              <MobileViewToggle 
-                currentView={mobileView} 
-                onToggle={toggleMobileView} 
+              <MobileViewToggle
+                currentView={mobileView}
+                onToggle={toggleMobileView}
                 className="right-6 left-auto bottom-20 absolute md:hidden"
               />
             ) : (
               <div className="flex justify-end w-full mt-4 mb-2">
-                <MobileViewToggle 
-                  currentView={mobileView} 
-                  onToggle={toggleMobileView} 
+                <MobileViewToggle
+                  currentView={mobileView}
+                  onToggle={toggleMobileView}
                   className="static md:hidden"
                 />
               </div>
