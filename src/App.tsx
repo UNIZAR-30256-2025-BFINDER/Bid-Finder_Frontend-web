@@ -10,6 +10,7 @@ import RegisterPage from './features/auth/pages/RegisterPage';
 import LoginPage from './features/auth/pages/LoginPage';
 import { FavoritosPage } from './features/favoritos/pages/FavoritosPage';
 import { ProtectedRoute } from './features/auth/components/ProtectedRoute';
+import { AdminRoute } from './features/auth/components/AdminRoute';
 
 const router = createBrowserRouter(
   [
@@ -21,9 +22,9 @@ const router = createBrowserRouter(
         {
           path: 'admin',
           element: (
-            <ProtectedRoute>
+            <AdminRoute>
               <Admin />
-            </ProtectedRoute>
+            </AdminRoute>
           ),
         },
         {
