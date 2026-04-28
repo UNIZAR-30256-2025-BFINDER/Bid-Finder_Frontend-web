@@ -2,6 +2,7 @@ import React from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
+import { getSubastaIcon } from '../../../map/components/subastas/subastasIcons';
 
 import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
 import markerIcon from 'leaflet/dist/images/marker-icon.png';
@@ -20,9 +21,11 @@ interface Props {
   lng: number;
   direccion?: string | null;
   hasLocation?: boolean;
+  type: string;
+  viabilidad: string;
 }
 
-const SubastaLocationMap: React.FC<Props> = ({ lat, lng, direccion, hasLocation }) => {
+const SubastaLocationMap: React.FC<Props> = ({ lat, lng, direccion, hasLocation, type, viabilidad }) => {
   if (!hasLocation) {
     return (
       <section>
@@ -49,7 +52,7 @@ const SubastaLocationMap: React.FC<Props> = ({ lat, lng, direccion, hasLocation 
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
-          <Marker position={[lat, lng]}>
+          <Marker position={[lat, lng]} icon={getSubastaIcon(type, viabilidad)}>
             {direccion && <Popup>{direccion}</Popup>}
           </Marker>
         </MapContainer>
