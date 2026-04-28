@@ -2,7 +2,6 @@ import React from 'react';
 import { XCircle } from 'lucide-react';
 
 interface FavoritosCardProps {
-  id: string; 
   title: string;
   subtitle: string;
   price: number;

@@ -41,7 +41,6 @@ export const FavoritosList: React.FC<FavoritosListProps> = ({
           {paged.map((subasta) => (
             <FavoritosCard
               key={subasta.id}
-              id={subasta.id}
               title={subasta.titulo_resumido ?? subasta.titulo}
               subtitle={subasta.titulo}
               price={subasta.precioActual}
