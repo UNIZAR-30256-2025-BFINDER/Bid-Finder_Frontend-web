@@ -39,7 +39,7 @@ export interface SubastaFilters {
   q?: string;
 }
 
-const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api/v1';
 
 const mapBackendToFrontend = (item: BackendSubastaDetail): Subasta => {
   const hasLocation = !!(item.location && item.location.coordinates && item.location.coordinates.length === 2);
@@ -104,7 +104,7 @@ const mapBackendToFrontend = (item: BackendSubastaDetail): Subasta => {
 
 export async function fetchSubastas(filtros?: SubastaFilters): Promise<Subasta[]> {
   try {
-    const url = new URL(`${baseUrl}/subastas`);
+    const url = new URL(`${API_BASE_URL}/subastas`);
 
     if (filtros?.provincia) url.searchParams.append('provincia', filtros.provincia);
     if (filtros?.precio_min != null) url.searchParams.append('precio_min', String(filtros.precio_min));
@@ -124,7 +124,7 @@ export async function fetchSubastas(filtros?: SubastaFilters): Promise<Subasta[]
 }
 
 export async function fetchSubastaById(id: string): Promise<Subasta | null> {
-  const response = await fetch(`${baseUrl}/subastas/${id}`);
+  const response = await fetch(`${API_BASE_URL}/subastas/${id}`);
 
   if (response.status === 404) return null;
   if (!response.ok) throw new Error(`Error al recuperar la subasta (${response.status})`);

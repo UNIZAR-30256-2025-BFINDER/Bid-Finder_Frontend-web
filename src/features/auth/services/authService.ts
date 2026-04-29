@@ -1,5 +1,4 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
-
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api/v1';
 const ACCESS_TOKEN_KEY = 'bfinder_access_token';
 const REFRESH_TOKEN_KEY = 'bfinder_refresh_token';
 const USER_KEY = 'bfinder_user';

@@ -1,12 +1,10 @@
 import { Comentario } from '../../../models/Comentario';
 import { authService } from '../../auth/services/authService';
 
-const API_URL = import.meta.env.VITE_API_BASE_URL 
-  ? import.meta.env.VITE_API_BASE_URL.replace('/api', '') 
-  : 'http://localhost:3000';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api/v1';
 
 export const getComentarios = async (subastaId: string): Promise<Comentario[]> => {
-  const response = await fetch(`${API_URL}/subastas/${subastaId}/comentarios`);
+  const response = await fetch(`${API_BASE_URL}/subastas/${subastaId}/comentarios`);
   
   if (!response.ok) {
     throw new Error('Error al cargar los comentarios');
@@ -19,7 +17,7 @@ export const getComentarios = async (subastaId: string): Promise<Comentario[]> =
 export const postComentario = async (subastaId: string, texto: string): Promise<Comentario> => {
   const token = authService.getAccessToken();
   
-  const response = await fetch(`${API_URL}/subastas/${subastaId}/comentarios`, {
+  const response = await fetch(`${API_BASE_URL}/subastas/${subastaId}/comentarios`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
