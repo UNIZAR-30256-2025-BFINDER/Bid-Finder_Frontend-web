@@ -92,6 +92,8 @@ export const SubastaDetail: React.FC = () => {
                   lng={subasta.lng}
                   direccion={subasta.direccion}
                   hasLocation={subasta.hasLocation}
+                  type={subasta.type}
+                  viabilidad={subasta.viabilidad}
                 />
 
                 <SubastaIAInfo

@@ -13,6 +13,7 @@ export interface BackendSubastaDetail {
   diferencia_porcentual_oportunidad?: number | null;
   direccion?: string | null;
   referencia_catastral?: string | null;
+  categoria?: string | null;
 
   location?: {
     type: string;
@@ -47,10 +48,24 @@ const mapBackendToFrontend = (item: BackendSubastaDetail): Subasta => {
   const lng = hasLocation ? item.location!.coordinates[0] : -3.7038;
   const lat = hasLocation ? item.location!.coordinates[1] : 40.4168;
 
-  let inferredType = 'other';
+  let inferredType = 'house'; // Default to house
+  const categoria = (item.categoria || '').toUpperCase();
   const textToAnalyze = (item.titulo_resumido || item.titulo || '').toLowerCase();
 
-  if (
+  if (categoria === 'VEHICULO' || categoria === 'MAQUINARIA') {
+    inferredType = 'car';
+  } else if (categoria === 'INMUEBLE') {
+    inferredType = 'house';
+  } else if (
+    textToAnalyze.includes('vehículo') ||
+    textToAnalyze.includes('coche') ||
+    textToAnalyze.includes('furgoneta') ||
+    textToAnalyze.includes('moto') ||
+    textToAnalyze.includes('maquinaria') ||
+    textToAnalyze.includes('tractor')
+  ) {
+    inferredType = 'car';
+  } else if (
     textToAnalyze.includes('vivienda') ||
     textToAnalyze.includes('piso') ||
     textToAnalyze.includes('casa') ||
@@ -59,16 +74,26 @@ const mapBackendToFrontend = (item: BackendSubastaDetail): Subasta => {
     textToAnalyze.includes('finca') ||
     textToAnalyze.includes('inmueble') ||
     textToAnalyze.includes('urbana') ||
-    textToAnalyze.includes('rústica')
+    textToAnalyze.includes('rústica') ||
+    textToAnalyze.includes('solar') ||
+    textToAnalyze.includes('garaje') ||
+    textToAnalyze.includes('trastero')
   ) {
     inferredType = 'house';
-  } else if (
-    textToAnalyze.includes('vehículo') ||
-    textToAnalyze.includes('coche') ||
-    textToAnalyze.includes('furgoneta') ||
-    textToAnalyze.includes('moto')
-  ) {
-    inferredType = 'car';
+  }
+
+
+  let viabilidad = 'red'; // Default
+
+  if (item.nivel_oportunidad) {
+    if (item.nivel_oportunidad === 'ALTO') viabilidad = 'green';
+    else if (item.nivel_oportunidad === 'MEDIO') viabilidad = 'yellow';
+    else if (item.nivel_oportunidad === 'BAJO') viabilidad = 'red';
+  } else if (item.riesgo_legal) {
+    const riesgo = item.riesgo_legal.toLowerCase();
+    if (riesgo === 'bajo') viabilidad = 'green';
+    else if (riesgo === 'medio') viabilidad = 'yellow';
+    else if (riesgo === 'alto') viabilidad = 'red';
   }
 
   return {
@@ -84,7 +109,7 @@ const mapBackendToFrontend = (item: BackendSubastaDetail): Subasta => {
     hasLocation,
 
     type: item.type ?? inferredType,
-    viabilidad: item.viabilidad ?? 'green',
+    viabilidad: item.viabilidad ?? viabilidad,
     precioActual: item.precio_salida ?? 0,
     valorSubasta: item.valor_tasacion ?? 0,
     direccion: item.direccion,
