@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { getSystemStatus, SystemStatus } from '../services/systemService';
 import { DashboardNavbar } from '../../map/layout/DashboardNavbar';
 import { BarChart2, Users, ShieldAlert, Plus, Activity, Clock } from 'lucide-react';
+import CategoryPieChart from '../../../components/graphs/CategoryPieChart';  // Importa el gráfico circular
 
 export const Admin: React.FC = () => {
   const [status, setStatus] = useState<SystemStatus | null>(null);
@@ -33,12 +34,12 @@ export const Admin: React.FC = () => {
     <div className="min-h-screen bg-[#050816] text-white flex flex-col">
       <DashboardNavbar
         mobileView="map"
-        onToggleMobileView={() => {}}
+        onToggleMobileView={() => { }}
         showSearchAndFilters={false}
       />
 
       <div className="flex flex-1 overflow-hidden">
-        
+
         <aside className="hidden md:flex flex-col w-32 py-10 items-center gap-10 shrink-0 border-r border-white/5 bg-[#050816]">
           <div className="flex flex-col items-center gap-3 cursor-pointer">
             <div className="bg-yellow-400/10 p-4 rounded-full text-yellow-400">
@@ -66,6 +67,7 @@ export const Admin: React.FC = () => {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 
+              {/* Tarjetas de información */}
               <div className="bg-[#0A0D14] border border-white/5 rounded-2xl p-6 flex justify-between items-center relative overflow-hidden group shadow-[0_4px_30px_rgba(0,0,0,0.5)] hover:bg-[#0d111a] transition-colors">
                 <div className="z-10">
                   <h3 className="text-white text-base font-medium mb-3">Estado del Servidor</h3>
@@ -84,7 +86,7 @@ export const Admin: React.FC = () => {
                   <Activity size={22} strokeWidth={2.5} />
                 </div>
               </div>
-              
+
               <div className="bg-[#0A0D14] border border-white/5 rounded-2xl p-6 flex justify-between items-center relative overflow-hidden group shadow-[0_4px_30px_rgba(0,0,0,0.5)] hover:bg-[#0d111a] transition-colors">
                 <div className="z-10">
                   <h3 className="text-white text-base font-medium mb-3">Subastas Procesadas</h3>
@@ -105,12 +107,17 @@ export const Admin: React.FC = () => {
                     <span className="text-gray-400 text-sm">Fecha:</span>
                     <span className="text-lg font-bold text-white">
                       {formatDate(status?.ultimaIngesta)}
-                    </span> 
+                    </span>
                   </div>
                 </div>
                 <div className="z-10 text-black bg-white border-[2.5px] border-white rounded-full p-1.5 flex items-center justify-center">
                   <Clock size={22} strokeWidth={2.5} fill="currentColor" />
                 </div>
+              </div>
+
+              {/* Agregamos el gráfico circular */}
+              <div className="col-span-1 md:col-span-2">
+                <CategoryPieChart />  {/* Aquí va el gráfico circular de distribución de categorías */}
               </div>
 
             </div>
