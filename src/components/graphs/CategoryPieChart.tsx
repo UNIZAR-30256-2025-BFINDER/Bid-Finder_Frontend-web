@@ -2,71 +2,84 @@
 
 import React, { useEffect, useState } from 'react';
 import { Pie } from 'react-chartjs-2';
-import { getStatsCategorias, StatsCategoria } from '../../features/dashboard/services/statsService';  // Importamos el tipo adecuado
-
+import { getStatsCategorias, StatsCategoria } from '../../features/dashboard/services/statsService';
 import {
-    Chart as ChartJS,
-    ArcElement,
-    Tooltip,
-    Legend,
-    Title,
+    ChartData,
+    ChartOptions,
     TooltipItem,
 } from 'chart.js';
 
-// Registrar los componentes de Chart.js
-ChartJS.register(ArcElement, Tooltip, Legend, Title);
-
 const CategoryPieChart: React.FC = () => {
-    const [categories, setCategories] = useState<StatsCategoria[]>([]);  // Cambiamos a StatsCategoria[]
-    const [loading, setLoading] = useState(true);  // Estado para el loading
+    const [categories, setCategories] = useState<StatsCategoria[]>([]);
+    const [loading, setLoading] = useState(true);
 
-    // Llamada a la API para obtener las categorías
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const data = await getStatsCategorias();  // Llamada al servicio que creamos
-                setCategories(data);  // Guardamos los datos
+                const data = await getStatsCategorias();
+                setCategories(data);
             } catch (error) {
                 console.error('Error al cargar categorías', error);
             } finally {
-                setLoading(false);  // Terminamos la carga
+                setLoading(false);
             }
         };
 
         fetchCategories();
     }, []);
 
-    if (loading) return <p className="text-gray-400 animate-pulse">Cargando gráfico...</p>;
+    if (loading) {
+        return <p className="text-gray-400 animate-pulse">Cargando gráfico...</p>;
+    }
 
-    // Datos para el gráfico circular
-    const data = {
-        labels: categories.map((item) => item.categoria),  // Etiquetas de categorías
+    if (categories.length === 0) {
+        return (
+            <div className="h-full p-5 sm:p-6 bg-[#0A0D14] border border-white/5 rounded-2xl shadow-md">
+                <h2 className="text-lg sm:text-xl font-semibold text-white mb-4">
+                    Distribución de Categorías
+                </h2>
+                <p className="text-gray-400">No hay datos de categorías disponibles.</p>
+            </div>
+        );
+    }
+
+    const data: ChartData<'pie'> = {
+        labels: categories.map((item) => item.categoria || 'Sin categoría'),
         datasets: [
             {
-                data: categories.map((item) => item.total),  // Datos de las subastas por categoría
-                backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF'],  // Colores del gráfico
+                data: categories.map((item) => item.total),
+                backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF'],
             },
         ],
     };
 
-    const options = {
+    const options: ChartOptions<'pie'> = {
         responsive: true,
+        maintainAspectRatio: false,
         plugins: {
             legend: {
-                position: 'top',
+                position: 'bottom',
+                labels: {
+                    color: '#D1D5DB',
+                    boxWidth: 12,
+                    padding: 16,
+                },
             },
             tooltip: {
                 callbacks: {
-                    label: (tooltipItem: TooltipItem<'pie'>) => `${tooltipItem.label}: ${tooltipItem.raw}`,  // Tipado adecuado para tooltipItem
+                    label: (tooltipItem: TooltipItem<'pie'>) =>
+                        `${tooltipItem.label}: ${tooltipItem.raw}`,
                 },
             },
         },
     };
 
     return (
-        <div className="p-6 bg-[#0A0D14] border border-white/5 rounded-2xl shadow-md flex flex-col items-center">
-            <h2 className="text-xl font-semibold text-white mb-4">Distribución de Categorías</h2>
-            <div className="w-full max-w-xs">
+        <div className="h-full p-5 sm:p-6 bg-[#0A0D14] border border-white/5 rounded-2xl shadow-md flex flex-col">
+            <h2 className="text-lg sm:text-xl font-semibold text-white mb-4">
+                Distribución de Categorías
+            </h2>
+            <div className="w-full h-64 sm:h-72 md:h-80">
                 <Pie data={data} options={options} />
             </div>
         </div>
