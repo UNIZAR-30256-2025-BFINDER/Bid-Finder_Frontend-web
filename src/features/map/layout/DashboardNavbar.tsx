@@ -1,8 +1,9 @@
 import React, { useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Navbar } from '../../../components/layout/Navbar';
 import { Search, Filter, Map as MapIcon, List, X } from 'lucide-react';
 import { SubastasFilters, FiltrosState } from '../components/subastas/SubastasFilters';
+import { authService } from '../../auth/services/authService';
 
 interface DashboardNavbarProps {
   mobileView: 'map' | 'list';
@@ -16,10 +17,10 @@ interface DashboardNavbarProps {
   onSearchChange?: (query: string) => void;
 }
 
-export const DashboardNavbar: React.FC<DashboardNavbarProps> = ({ 
-  mobileView, 
+export const DashboardNavbar: React.FC<DashboardNavbarProps> = ({
+  mobileView,
   onToggleMobileView,
-  filtros = { provincia: '', categoria: '', nivel_oportunidad: '' }, 
+  filtros = { provincia: '', categoria: '', nivel_oportunidad: '' },
   onFiltrosChange,
   isFiltersOpen = false,
   onToggleFilters,
@@ -28,16 +29,32 @@ export const DashboardNavbar: React.FC<DashboardNavbarProps> = ({
   onSearchChange,
 }) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const filtersRef = useRef<HTMLDivElement>(null);
+
+  const currentUser = authService.getCurrentUser();
+  const isAdmin = currentUser?.rol === 'admin';
+
+  const isActive = (path: string) => location.pathname.startsWith(path);
+
+  const handleLogout = () => {
+    authService.logout();
+    navigate('/login');
+  };
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (filtersRef.current && !filtersRef.current.contains(event.target as Node) && isFiltersOpen && onToggleFilters) {
+      if (
+        filtersRef.current &&
+        !filtersRef.current.contains(event.target as Node) &&
+        isFiltersOpen &&
+        onToggleFilters
+      ) {
         onToggleFilters();
       }
     }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [isFiltersOpen, onToggleFilters]);
 
   return (
@@ -46,7 +63,7 @@ export const DashboardNavbar: React.FC<DashboardNavbarProps> = ({
         logo={
           <div
             className="cursor-pointer select-none text-2xl font-bold tracking-widest"
-            onClick={() => navigate('/Dashboard')}
+            onClick={() => navigate('/dashboard')}
           >
             <span className="text-yellow-400">B</span>
             <span className="text-white">-FINDER</span>
@@ -55,20 +72,54 @@ export const DashboardNavbar: React.FC<DashboardNavbarProps> = ({
         links={
           <>
             <button
-              onClick={() => navigate('/Dashboard')}
-              className="text-yellow-400 font-semibold hover:scale-105 transition-all px-2 lg:px-3 text-base"
+              onClick={() => navigate('/dashboard')}
+              className={`transition-all px-2 lg:px-3 text-base text-left ${
+                isActive('/dashboard')
+                  ? 'text-yellow-400 font-semibold'
+                  : 'text-gray-300 hover:text-white hover:scale-105'
+              }`}
             >
               Explorar
             </button>
             <button
               onClick={() => navigate('/favorites')}
-              className="text-gray-300 hover:text-white hover:scale-105 transition-all px-2 lg:px-3 text-base"
+              className={`transition-all px-2 lg:px-3 text-base text-left ${
+                isActive('/favorites')
+                  ? 'text-yellow-400 font-semibold'
+                  : 'text-gray-300 hover:text-white hover:scale-105'
+              }`}
             >
               Favoritos
             </button>
+            
+            {isAdmin && (
+              <div className="flex flex-col md:flex-row md:items-center">
+                <button
+                  onClick={() => navigate('/admin')}
+                  className={`transition-all px-2 lg:px-3 text-base text-left ${
+                    isActive('/admin')
+                      ? 'text-yellow-400 font-semibold'
+                      : 'text-gray-300 hover:text-white hover:scale-105'
+                  }`}
+                >
+                  Admin
+                </button>
+                
+                <div className="md:hidden flex flex-col pl-4 mt-3 gap-4 border-l border-white/10 ml-4 mb-2">
+                  <button className="text-yellow-400 text-left text-sm font-semibold">Dashboard</button>
+                  <button className="text-gray-400 hover:text-white text-left text-sm transition-colors">Usuarios</button>
+                  <button className="text-gray-400 hover:text-white text-left text-sm transition-colors">Moderación</button>
+                </div>
+              </div>
+            )}
+
             <button
               onClick={() => navigate('/profile')}
-              className="text-gray-300 hover:text-white hover:scale-105 transition-all px-2 lg:px-3 text-base"
+              className={`transition-all px-2 lg:px-3 text-base text-left ${
+                isActive('/profile')
+                  ? 'text-yellow-400 font-semibold'
+                  : 'text-gray-300 hover:text-white hover:scale-105'
+              }`}
             >
               Perfil
             </button>
@@ -96,17 +147,21 @@ export const DashboardNavbar: React.FC<DashboardNavbarProps> = ({
                     onChange={(e) => onSearchChange?.(e.target.value)}
                     className="pl-10 pr-4 py-2 w-full md:w-[320px] lg:w-[400px] xl:w-[500px] rounded-md bg-white text-black outline-none focus:ring-2 focus:ring-yellow-400 text-sm font-medium transition-all"
                   />
-
                 </div>
 
-                <button 
+                <button
                   onClick={(e) => {
                     e.stopPropagation();
                     if (onToggleFilters) onToggleFilters();
                   }}
                   className={`flex p-2 rounded-md transition-colors flex-shrink-0 items-center justify-center ${
-                    isFiltersOpen || filtros.provincia || filtros.categoria || filtros.precio_min || filtros.precio_max || filtros.nivel_oportunidad
-                      ? 'bg-yellow-400 text-black hover:bg-yellow-500' 
+                    isFiltersOpen ||
+                    filtros.provincia ||
+                    filtros.categoria ||
+                    filtros.precio_min ||
+                    filtros.precio_max ||
+                    filtros.nivel_oportunidad
+                      ? 'bg-yellow-400 text-black hover:bg-yellow-500'
                       : 'bg-white/10 text-white hover:bg-white/20'
                   }`}
                 >
@@ -121,9 +176,7 @@ export const DashboardNavbar: React.FC<DashboardNavbarProps> = ({
             <div className="md:hidden w-full h-px bg-white/10 my-2"></div>
 
             <button
-              onClick={() => {
-                navigate('/');
-              }}
+              onClick={handleLogout}
               className="text-sm font-semibold text-gray-300 hover:text-red-400 transition-colors border border-white/20 hover:border-red-400 px-4 py-2 md:py-1.5 rounded-lg flex-shrink-0 text-center"
             >
               Cerrar Sesión
@@ -133,7 +186,7 @@ export const DashboardNavbar: React.FC<DashboardNavbarProps> = ({
       />
 
       {showSearchAndFilters && isFiltersOpen && (
-        <div 
+        <div
           ref={filtersRef}
           style={{ animation: 'slideDown 150ms ease-out' }}
           className="absolute right-4 md:right-32 top-[110%] w-80 bg-[#161b22] border border-white/10 shadow-2xl rounded-xl p-5 z-50"
@@ -143,32 +196,37 @@ export const DashboardNavbar: React.FC<DashboardNavbarProps> = ({
               <Filter className="w-4 h-4 text-yellow-400" />
               Filtros de Búsqueda
             </h3>
-            <button 
+            <button
               onClick={onToggleFilters}
               className="text-gray-400 hover:text-white transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
           </div>
-          
-          <SubastasFilters 
-            filtros={filtros} 
+
+          <SubastasFilters
+            filtros={filtros}
             onChange={(nuevosFiltros) => {
               if (onFiltrosChange) onFiltrosChange(nuevosFiltros);
-            }} 
+            }}
           />
 
-          {(filtros.provincia || filtros.categoria || filtros.precio_min || filtros.precio_max || filtros.nivel_oportunidad) && (
+          {(filtros.provincia ||
+            filtros.categoria ||
+            filtros.precio_min ||
+            filtros.precio_max ||
+            filtros.nivel_oportunidad) && (
             <div className="mt-4 pt-4 border-t border-white/10 flex justify-end">
               <button
                 onClick={() => {
-                  if (onFiltrosChange) onFiltrosChange({ 
-                    provincia: '', 
-                    categoria: '', 
-                    precio_min: undefined, 
-                    precio_max: undefined, 
-                    nivel_oportunidad: '' 
-                  });
+                  if (onFiltrosChange)
+                    onFiltrosChange({
+                      provincia: '',
+                      categoria: '',
+                      precio_min: undefined,
+                      precio_max: undefined,
+                      nivel_oportunidad: '',
+                    });
                   if (onSearchChange) onSearchChange('');
                 }}
                 className="text-sm text-gray-400 hover:text-white transition-colors"

@@ -2,6 +2,8 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { App } from './App';
 
+import './config/chartConfig';
+
 import './styles.css';
 import 'leaflet/dist/leaflet.css';
 import './leaflet-popup-overrides.css';

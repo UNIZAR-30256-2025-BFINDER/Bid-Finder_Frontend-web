@@ -13,9 +13,11 @@
   "dependencies": {
     "@phosphor-icons/react": "^2.1.10",
     "@tailwindcss/postcss": "^4.2.1",
+    "chart.js": "^4.5.1",
     "leaflet": "^1.9.4",
     "lucide-react": "^0.577.0",
     "react": "^19.0.0",
+    "react-chartjs-2": "^5.3.1",
     "react-dom": "^19.0.0",
     "react-leaflet": "^5.0.0",
     "react-leaflet-cluster": "^4.0.0"

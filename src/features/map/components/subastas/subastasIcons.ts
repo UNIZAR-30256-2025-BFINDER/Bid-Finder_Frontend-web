@@ -11,6 +11,7 @@ export function getSubastaIcon(type: Subasta['type'], viabilidad: Subasta['viabi
   const size: [number, number] = [52, 52];
   const anchor: [number, number] = [16, 32];
   const popup: [number, number] = [0, -32];
+
   if (type === 'car') {
     if (viabilidad === 'green')
       return L.icon({ iconUrl: carGreen, iconSize: size, iconAnchor: anchor, popupAnchor: popup });
@@ -18,23 +19,28 @@ export function getSubastaIcon(type: Subasta['type'], viabilidad: Subasta['viabi
       return L.icon({ iconUrl: carYellow, iconSize: size, iconAnchor: anchor, popupAnchor: popup });
     return L.icon({ iconUrl: carRed, iconSize: size, iconAnchor: anchor, popupAnchor: popup });
   }
-  if (type === 'house') {
-    if (viabilidad === 'green')
-      return L.icon({
-        iconUrl: houseGreen,
-        iconSize: size,
-        iconAnchor: anchor,
-        popupAnchor: popup,
-      });
-    if (viabilidad === 'yellow')
-      return L.icon({
-        iconUrl: houseYellow,
-        iconSize: size,
-        iconAnchor: anchor,
-        popupAnchor: popup,
-      });
-    return L.icon({ iconUrl: houseRed, iconSize: size, iconAnchor: anchor, popupAnchor: popup });
-  }
-  // fallback
-  return L.icon({ iconUrl: carGreen, iconSize: size, iconAnchor: anchor, popupAnchor: popup });
+
+  // default to house if not car
+  if (viabilidad === 'green')
+    return L.icon({
+      iconUrl: houseGreen,
+      iconSize: size,
+      iconAnchor: anchor,
+      popupAnchor: popup,
+    });
+  if (viabilidad === 'yellow')
+    return L.icon({
+      iconUrl: houseYellow,
+      iconSize: size,
+      iconAnchor: anchor,
+      popupAnchor: popup,
+    });
+
+  return L.icon({
+    iconUrl: houseRed,
+    iconSize: size,
+    iconAnchor: anchor,
+    popupAnchor: popup,
+  });
 }
+

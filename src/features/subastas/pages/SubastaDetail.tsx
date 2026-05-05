@@ -15,10 +15,14 @@ import SubastaImage from '../components/SubastaDetail/SubastaImage';
 import SubastaLocationMap from '../components/SubastaDetail/SubastaLocationMap';
 import SubastaRawText from '../components/SubastaDetail/SubastaRawText';
 import { DashboardNavbar } from '../../map/layout/DashboardNavbar';
+import { FavoriteButton } from '../components/SubastaDetail/FavoriteButton';
+import { ComentariosSection } from '../components/SubastaDetail/ComentariosSection';
 
 export const SubastaDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const [subasta, setSubasta] = React.useState<Awaited<ReturnType<typeof fetchSubastaById>> | null>(null);
+  const [subasta, setSubasta] = React.useState<Awaited<ReturnType<typeof fetchSubastaById>> | null>(
+    null,
+  );
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
 
@@ -29,6 +33,7 @@ export const SubastaDetail: React.FC = () => {
           setLoading(false);
           return;
         }
+
         const data = await fetchSubastaById(id);
         setSubasta(data);
       } catch (err) {
@@ -38,6 +43,7 @@ export const SubastaDetail: React.FC = () => {
         setLoading(false);
       }
     };
+
     loadSubasta();
   }, [id]);
 
@@ -46,45 +52,61 @@ export const SubastaDetail: React.FC = () => {
     return `${value.toLocaleString('es-ES')} €`;
   };
 
+  const formatPercentage = (value?: number | null) => {
+    if (value === null || value === undefined) return 'No disponible';
+    return `${value.toLocaleString('es-ES')}%`;
+  };
+
   if (loading) return <SubastaLoading />;
   if (error) return <SubastaError error={error} />;
   if (!subasta) return <SubastaNotFound id={id!} />;
 
-  const riesgoContent = subasta.riesgo_legal 
+  const riesgoContent = subasta.riesgo_legal
     ? `Nivel: ${subasta.riesgo_legal}\nOcupantes: ${subasta.ocupantes || 'Desconocido'}\nCargas Previas: ${subasta.cargas_previas || 'Ninguna'}`
     : 'No hay datos de riesgo extraídos para esta subasta.';
 
+  const oportunidadContent = `Nivel de oportunidad: ${
+    subasta.nivel_oportunidad || 'No disponible'
+  }\nDiferencia vs tasación: ${formatPercentage(subasta.diferencia_porcentual_oportunidad)}`;
+
   return (
     <div className="min-h-screen bg-[#050816] text-white flex flex-col">
-      <DashboardNavbar 
-        mobileView="map" 
-        onToggleMobileView={() => {}} 
-        showSearchAndFilters={false} 
+      <DashboardNavbar
+        mobileView="map"
+        onToggleMobileView={() => {}}
+        showSearchAndFilters={false}
       />
+
       <div className="flex-1 px-4 md:px-8 py-8 md:py-12">
         <div className="max-w-7xl mx-auto">
           <div className="bg-white text-black rounded-2xl shadow-2xl overflow-hidden p-4 md:p-6 lg:p-8">
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
               <div className="xl:col-span-2 space-y-8">
                 <SubastaImage
-                  src={'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80&w=1200'}
+                  src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80&w=1200"
                   alt={subasta.titulo}
                 />
-                <SubastaLocationMap 
-                  lat={subasta.lat} 
-                  lng={subasta.lng} 
-                  direccion={subasta.direccion} 
-                  hasLocation={subasta.hasLocation} 
+
+                <SubastaLocationMap
+                  lat={subasta.lat}
+                  lng={subasta.lng}
+                  direccion={subasta.direccion}
+                  hasLocation={subasta.hasLocation}
+                  type={subasta.type}
+                  viabilidad={subasta.viabilidad}
                 />
-                
+
                 <SubastaIAInfo
                   blocks={[
+                    { title: 'Oportunidad calculada', content: oportunidadContent },
                     { title: 'Advertencias Jurídicas (IA)', content: riesgoContent },
-                    { title: 'Resumen IA', content: subasta.descripcion }
+                    { title: 'Resumen IA', content: subasta.descripcion },
                   ]}
                 />
+
                 <SubastaRawText descripcion={subasta.textoBruto || ''} />
               </div>
+
               <aside className="xl:col-span-1 space-y-6">
                 <SubastaMainInfo
                   titulo={subasta.titulo_resumido || subasta.titulo}
@@ -92,18 +114,18 @@ export const SubastaDetail: React.FC = () => {
                   id={subasta.id}
                   descripcion={`Subasta ID ${subasta.id}`}
                 />
-                <SubastaPrice
-                  price={formatPrice(subasta.precioSalida)}
-                  label="Precio de salida"
-                />
-                <SubastaOriginalLink
-                  url={subasta.urlPdf || ''}
-                  text="Ver anuncio original"
-                />
+
+                <SubastaPrice price={formatPrice(subasta.precioSalida)} label="Precio de salida" />
+                <div className="flex gap-3 items-center">
+                  <SubastaOriginalLink url={subasta.urlPdf || ''} text="Ver anuncio original" />
+                  <FavoriteButton subastaId={subasta.id} />
+                </div>
+
                 <SubastaDescription
                   descripcion={subasta.descripcion}
                   title="Descripción de la oferta"
                 />
+
                 <SubastaStructuredFields
                   title="Datos extraídos por IA"
                   type={subasta.type}
@@ -113,11 +135,17 @@ export const SubastaDetail: React.FC = () => {
                   fields={[
                     `• Dirección: ${subasta.direccion || 'No especificada'}`,
                     `• Ref. Catastral: ${subasta.referenciaCatastral || 'No especificada'}`,
-                    `• Valor Tasación: ${formatPrice(subasta.valorTasacion)}`
+                    `• Valor Tasación: ${formatPrice(subasta.valorTasacion)}`,
+                    `• Nivel de oportunidad: ${subasta.nivel_oportunidad || 'No disponible'}`,
+                    `• Diferencia vs tasación: ${formatPercentage(
+                      subasta.diferencia_porcentual_oportunidad,
+                    )}`,
                   ]}
                 />
               </aside>
             </div>
+
+            <ComentariosSection subastaId={subasta.id} />
           </div>
         </div>
       </div>
