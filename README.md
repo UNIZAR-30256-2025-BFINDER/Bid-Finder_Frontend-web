@@ -237,3 +237,22 @@ npm run dev
 # build local (igual que CI)
 npm run build
 ```
+## 8. Despliegue en Producción (CI/CD)
+
+La aplicación web está desplegada utilizando Vercel, aprovechando su integración continua (CI/CD) mediante GitHub Actions. 
+Cada vez que se realiza un push o se aprueba un Pull Request hacia las ramas `main` o `dev`, se ejecuta un pipeline automatizado que instala las dependencias, construye la aplicación (`npm run build`) y la despliega automáticamente en el entorno de producción.
+
+## 9. Accesos y Entorno Vivo (Live URL)
+
+El frontend se encuentra accesible de forma pública en la siguiente URL:
+
+* **Sitio Web:** [https://bid-finder-frontend-web.vercel.app/](https://bid-finder-frontend-web.vercel.app/)
+
+### Credenciales de Demostración
+Para facilitar la evaluación y prueba completa del sistema (incluyendo funcionalidades protegidas como Favoritos), se han configurado los siguientes usuarios en la base de datos de producción:
+
+* **Usuario Administrador:** * Email: `admin@bfinder.com`
+  * Contraseña: `admin123`
+* **Usuario Inversor (Demo):**
+  * Email: `demo@bfinder.com`
+  * Contraseña: `123456`

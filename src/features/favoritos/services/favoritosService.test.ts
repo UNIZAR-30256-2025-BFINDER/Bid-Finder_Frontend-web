@@ -51,7 +51,7 @@ describe('favoritosService', () => {
       const result = await fetchFavoritos();
       expect(result).toEqual(['sub-1', 'sub-2']);
       expect(mockFetch).toHaveBeenCalledWith(
-        'http://localhost:3000/favoritos',
+        'http://localhost:3000/api/v1/favoritos',
         expect.objectContaining({
           headers: { Authorization: 'Bearer token', 'Content-Type': 'application/json' },
         }),

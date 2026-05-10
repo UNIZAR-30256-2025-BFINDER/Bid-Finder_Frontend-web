@@ -36,7 +36,7 @@ describe('authService', () => {
             password: '123456',
         });
 
-        expect(fetchMock).toHaveBeenCalledWith('http://localhost:3000/api/auth/login', {
+        expect(fetchMock).toHaveBeenCalledWith('http://localhost:3000/api/v1/auth/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -61,7 +61,7 @@ describe('authService', () => {
             password: '123456',
         });
 
-        expect(fetchMock).toHaveBeenCalledWith('http://localhost:3000/api/auth/register', {
+        expect(fetchMock).toHaveBeenCalledWith('http://localhost:3000/api/v1/auth/register', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
