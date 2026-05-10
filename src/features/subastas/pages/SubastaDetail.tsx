@@ -17,8 +17,11 @@ import SubastaRawText from '../components/SubastaDetail/SubastaRawText';
 import { DashboardNavbar } from '../../map/layout/DashboardNavbar';
 import { FavoriteButton } from '../components/SubastaDetail/FavoriteButton';
 import { ComentariosSection } from '../components/SubastaDetail/ComentariosSection';
+import { useNavigate } from 'react-router-dom';
+import { ArrowLeft } from 'lucide-react';
 
 export const SubastaDetail: React.FC = () => {
+  const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const [subasta, setSubasta] = React.useState<Awaited<ReturnType<typeof fetchSubastaById>> | null>(
     null,
@@ -79,6 +82,16 @@ export const SubastaDetail: React.FC = () => {
 
       <div className="flex-1 px-4 md:px-8 py-8 md:py-12">
         <div className="max-w-7xl mx-auto">
+          
+          {/* BOTÓN DE VOLVER MEJORADO */}
+          <button 
+            onClick={() => navigate(-1)} 
+            className="flex items-center gap-2 text-gray-400 hover:text-yellow-400 mb-6 transition-colors font-medium cursor-pointer group"
+          >
+            <ArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
+            <span>Volver a la vista anterior</span>
+          </button>
+
           <div className="bg-white text-black rounded-2xl shadow-2xl overflow-hidden p-4 md:p-6 lg:p-8">
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
               <div className="xl:col-span-2 space-y-8">

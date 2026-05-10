@@ -9,6 +9,7 @@ import { useIsMobile } from '../../../hooks/useIsMobile';
 import { removeFavorito } from '../services/favoritosService';
 import type { Subasta } from '../../../models/Subasta';
 import { FavoritosList } from '../components/FavoritosList';
+import toast from 'react-hot-toast';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
 
@@ -85,7 +86,7 @@ export const FavoritosPage: React.FC = () => {
       setFavoritos((prev) => prev.filter((s) => s.id !== subastaId));
     } catch (err: unknown) {
       if (err instanceof Error) {
-        alert(`No se pudo eliminar: ${err.message}`);
+        toast.error(`No se pudo eliminar: ${err.message}`);
       }
     } finally {
       setRemovingIds((prev) => {

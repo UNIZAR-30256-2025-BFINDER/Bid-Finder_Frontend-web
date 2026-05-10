@@ -26,7 +26,7 @@ const getAuthHeaders = () => {
 };
 
 export const getStatsCategorias = async (): Promise<StatsCategoria[]> => {
-    const response = await fetch(`${API_BASE_URL}/stats/categorias`, {
+    const response = await fetch(`${API_BASE_URL}/estadisticas/categorias`, {
         method: 'GET',
         headers: getAuthHeaders(),
     });

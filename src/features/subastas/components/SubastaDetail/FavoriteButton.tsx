@@ -4,6 +4,7 @@ import {
   addFavorito,
   removeFavorito,
 } from '../../../favoritos/services/favoritosService';
+import toast from 'react-hot-toast';
 import { authService } from '../../../auth/services/authService';
 
 interface FavoriteButtonProps {
@@ -32,7 +33,7 @@ export const FavoriteButton: React.FC<FavoriteButtonProps> = ({ subastaId, class
 
   const handleToggle = async () => {
     if (!authService.isAuthenticated()) {
-      alert('Debes iniciar sesión para guardar favoritos.');
+      toast.error('Debes iniciar sesión para guardar favoritos.');
       // Opcional: redirigir a login
       return;
     }
@@ -48,9 +49,9 @@ export const FavoriteButton: React.FC<FavoriteButtonProps> = ({ subastaId, class
     } catch (err: unknown) {
       console.error(err);
       if (err instanceof Error) {
-        alert(err.message || 'Error al actualizar favorito');
+        toast.error(err.message || 'Error al actualizar favorito');
       } else {
-        alert('Error al actualizar favorito');
+        toast.error('Error al actualizar favorito');
       }
     } finally {
       setLoading(false);
