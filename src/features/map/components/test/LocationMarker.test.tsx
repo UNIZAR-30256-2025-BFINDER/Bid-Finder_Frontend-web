@@ -9,7 +9,7 @@ import { LocationMarker } from '../LocationMarker';
 import { MapContainer } from 'react-leaflet';
 
 vi.mock('react-leaflet', async () => {
-  const actual: any = await vi.importActual('react-leaflet');
+  const actual = await vi.importActual<Record<string, unknown>>('react-leaflet');
   return {
     ...actual,
     useMap: () => ({
