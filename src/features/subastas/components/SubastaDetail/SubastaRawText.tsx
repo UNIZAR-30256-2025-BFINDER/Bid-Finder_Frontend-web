@@ -1,9 +1,20 @@
+/**
+ * @fileoverview Componente de tipo acordeón para mostrar
+ * el texto en bruto del BOE sin formatear.
+ */
+
 import React from 'react';
 
 interface Props {
+  /** Texto original extraído del documento legal del BOE */
   descripcion: string;
 }
 
+/**
+ * Renderiza un bloque colapsable con el texto legal íntegro para los usuarios
+ * que deseen leer la fuente original sin la interpretación de la IA.
+ * @param {Props} props - Propiedades del componente.
+ */
 const SubastaRawText: React.FC<Props> = ({ descripcion }) => {
   if (!descripcion) return null;
 

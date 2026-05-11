@@ -1,3 +1,8 @@
+/**
+ * @fileoverview Página de Favoritos del usuario.
+ * Integra la lógica de carga de la API, sincronización con el mapa y visualización de lista.
+ */
+
 import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authService } from '../../auth/services/authService';
@@ -25,6 +30,10 @@ export const FavoritosPage: React.FC = () => {
   const isAuthenticated = authService.isAuthenticated();
   const token = authService.getAccessToken();
 
+  /**
+   * Efectúa la llamada a la API para obtener los favoritos y transforma
+   * los datos al modelo de subasta del frontend.
+   */
   const cargarFavoritos = useCallback(async () => {
     if (!token) {
       setLoading(false);
@@ -62,7 +71,7 @@ export const FavoritosPage: React.FC = () => {
         lat: item.location?.coordinates?.[1] ?? item.lat ?? null,
         lng: item.location?.coordinates?.[0] ?? item.lng ?? null,
         hasLocation: !!(item.location?.coordinates || item.lat),
-        imagen: item.imagen || 'https://via.placeholder.com/300x200?text=Sin+Imagen',
+        imagen: item.imagen || '/Bfinder_logo.png',
         direccion: item.direccion || '',
       }));
 
@@ -78,6 +87,10 @@ export const FavoritosPage: React.FC = () => {
     }
   }, [token, navigate]);
 
+  /**
+   * Gestiona la eliminación de una subasta de favoritos tanto en el backend como en el estado local.
+   * @param {string} subastaId - ID único de la subasta.
+   */
   const handleRemove = async (subastaId: string) => {
     if (!token) return;
     setRemovingIds((prev) => new Set(prev).add(subastaId));
@@ -97,12 +110,12 @@ export const FavoritosPage: React.FC = () => {
     }
   };
 
+  /** Cambia entre vista de mapa y vista de lista en dispositivos móviles. */
   const toggleMobileView = () => {
     setMobileView((prev) => (prev === 'map' ? 'list' : 'map'));
   };
 
-  const handleBoundsChange = () => {
-  };
+  const handleBoundsChange = () => {};
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -164,11 +177,7 @@ export const FavoritosPage: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-[#0b0f19] text-white font-sans overflow-hidden">
-      <DashboardNavbar
-        mobileView={mobileView}
-        onToggleMobileView={toggleMobileView}
-        showSearchAndFilters={false}
-      />
+      <DashboardNavbar showSearchAndFilters={false} />
 
       <main className="flex-1 w-full overflow-hidden relative">
         {isMobile ? (

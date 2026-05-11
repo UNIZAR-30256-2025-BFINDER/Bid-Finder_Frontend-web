@@ -1,10 +1,20 @@
+/**
+ * @fileoverview Componente de interfaz para envolver elementos sobre el mapa.
+ * Proporciona un contenedor con estilo futurista (glassmorphism) y rejilla de fondo.
+ */
+
 import React from 'react';
 
 interface MapWidgetProps {
+  /** Elementos a renderizar dentro del widget */
   children?: React.ReactNode;
+  /** Clases adicionales de Tailwind para personalización */
   className?: string;
 }
 
+/**
+ * Widget contenedor con fondo traslúcido y efecto decorativo de malla.
+ */
 export const MapWidget: React.FC<MapWidgetProps> = ({ children, className = '' }) => {
   return (
     <div

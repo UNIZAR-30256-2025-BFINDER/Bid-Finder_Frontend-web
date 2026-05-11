@@ -1,9 +1,18 @@
+/**
+ * @fileoverview Pantalla de esqueleto para mostrar mientras
+ * se recuperan los detalles de la subasta desde el backend.
+ */
+
 import React from 'react';
 import { DashboardNavbar } from '../../../map/layout/DashboardNavbar';
 
+/**
+ * Renderiza una vista con marcadores de posición animados simulando la estructura
+ * final de la página de detalle para mejorar la percepción de carga.
+ */
 const SubastaLoading: React.FC = () => (
   <div className="min-h-screen bg-[#050816] text-white flex flex-col">
-    <DashboardNavbar mobileView="map" onToggleMobileView={() => {}} />
+    <DashboardNavbar showSearchAndFilters={false} />
     <div className="px-6 py-10">
       <div className="max-w-7xl mx-auto">
         <div className="animate-pulse space-y-6">

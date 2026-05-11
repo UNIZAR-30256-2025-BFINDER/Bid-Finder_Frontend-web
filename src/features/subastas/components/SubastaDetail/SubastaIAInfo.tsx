@@ -1,15 +1,25 @@
+/**
+ * @fileoverview Bloque visual para renderizar la información extraída y procesada 
+ * por la Inteligencia Artificial (oportunidades, riesgos y resúmenes).
+ */
+
 import React from 'react';
 
-
 interface IAInfoBlock {
+  /** Título descriptivo del bloque (ej. "Riesgo Legal") */
   title: string;
+  /** Contenido o valor asociado al bloque generado por la IA */
   content: string;
 }
 
 interface Props {
+  /** Colección de bloques de información a mostrar en el grid */
   blocks: IAInfoBlock[];
 }
 
+/**
+ * Renderiza una cuadrícula de tarjetas con la información estructurada por la IA.
+ */
 const SubastaIAInfo: React.FC<Props> = ({ blocks }) => (
   <section className="grid grid-cols-1 md:grid-cols-3 gap-4">
     {blocks.map((block, idx) => (

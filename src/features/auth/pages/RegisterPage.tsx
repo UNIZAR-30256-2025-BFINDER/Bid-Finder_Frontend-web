@@ -1,3 +1,8 @@
+/**
+ * @fileoverview Página principal de Registro.
+ * Agrupa el layout superior (header/logo) y el formulario de creación de cuenta.
+ */
+
 import { Link } from 'react-router-dom';
 import { RegisterForm } from '../components/RegisterForm';
 import { Logo } from '../../../components/ui/Logo';

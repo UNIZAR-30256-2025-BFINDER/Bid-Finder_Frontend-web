@@ -1,3 +1,9 @@
+/**
+ * @fileoverview Servicio principal para la obtención y mapeo de datos de subastas.
+ * Conecta con la API backend y transforma el modelo de datos crudo en el modelo
+ * optimizado para el frontend (Frontend Subasta Model).
+ */
+
 import type { Subasta } from '../../../models/Subasta';
 
 export interface BackendSubastaDetail {
@@ -42,13 +48,20 @@ export interface SubastaFilters {
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api/v1';
 
+/**
+ * Normaliza y mapea los datos procedentes del backend para adaptarlos
+ * a las interfaces de UI del frontend, infiriendo el tipo de activo y su viabilidad.
+ * @param {BackendSubastaDetail} item - Documento crudo proveniente de la base de datos.
+ * @returns {Subasta} Objeto Subasta tipado y listo para ser renderizado.
+ */
 const mapBackendToFrontend = (item: BackendSubastaDetail): Subasta => {
   const hasLocation = !!(item.location && item.location.coordinates && item.location.coordinates.length === 2);
 
+  // Fallback al centro de Madrid si no hay coordenadas
   const lng = hasLocation ? item.location!.coordinates[0] : -3.7038;
   const lat = hasLocation ? item.location!.coordinates[1] : 40.4168;
 
-  let inferredType = 'house'; // Default to house
+  let inferredType = 'house'; 
   const categoria = (item.categoria || '').toUpperCase();
   const textToAnalyze = (item.titulo_resumido || item.titulo || '').toLowerCase();
 
@@ -82,8 +95,7 @@ const mapBackendToFrontend = (item: BackendSubastaDetail): Subasta => {
     inferredType = 'house';
   }
 
-
-  let viabilidad = 'red'; // Default
+  let viabilidad = 'red';
 
   if (item.nivel_oportunidad) {
     if (item.nivel_oportunidad === 'ALTO') viabilidad = 'green';
@@ -118,7 +130,7 @@ const mapBackendToFrontend = (item: BackendSubastaDetail): Subasta => {
     valorTasacion: item.valor_tasacion,
     nivel_oportunidad: item.nivel_oportunidad ?? null,
     diferencia_porcentual_oportunidad: item.diferencia_porcentual_oportunidad ?? null,
-    imagen: item.imagen ?? 'https://via.placeholder.com/300x200?text=Sin+Imagen',
+    imagen: item.imagen ?? '/Bfinder_logo.png', 
     urlOriginal: item.urlOriginal ?? '',
     textoBruto: item.texto,
     riesgo_legal: item.riesgo_legal ?? null,
@@ -127,6 +139,11 @@ const mapBackendToFrontend = (item: BackendSubastaDetail): Subasta => {
   };
 };
 
+/**
+ * Consulta la base de datos para recuperar una lista paginada y filtrada de subastas.
+ * @param {SubastaFilters} filtros - Opciones de filtrado (opcional).
+ * @returns {Promise<Subasta[]>} Lista de subastas formateadas para el mapa y listados.
+ */
 export async function fetchSubastas(filtros?: SubastaFilters): Promise<Subasta[]> {
   try {
     const url = new URL(`${API_BASE_URL}/subastas`);
@@ -148,6 +165,11 @@ export async function fetchSubastas(filtros?: SubastaFilters): Promise<Subasta[]
   }
 }
 
+/**
+ * Obtiene los detalles completos de una subasta específica mediante su identificador BOE o de Mongo.
+ * @param {string} id - Identificador único de la subasta.
+ * @returns {Promise<Subasta | null>} Objeto con todo el detalle o null si no existe (404).
+ */
 export async function fetchSubastaById(id: string): Promise<Subasta | null> {
   const response = await fetch(`${API_BASE_URL}/subastas/${id}`);
 

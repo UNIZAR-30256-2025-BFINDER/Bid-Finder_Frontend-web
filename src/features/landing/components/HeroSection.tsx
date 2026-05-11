@@ -1,9 +1,18 @@
+/**
+ * @fileoverview Sección Hero (principal) de la Landing Page.
+ * Es el primer impacto visual del usuario, enfocado en el mensaje principal (Headline).
+ */
+
 import React from 'react';
 
 interface HeroSectionProps {
   title: React.ReactNode;
 }
 
+/**
+ * Renderiza el título principal con elementos decorativos abstractos de fondo.
+ * @param {HeroSectionProps} props - Propiedades que contienen el título (soporta JSX).
+ */
 export const HeroSection: React.FC<HeroSectionProps> = ({ title }) => {
   return (
     <section className="relative py-32 px-8 md:px-16 flex flex-col items-center text-center justify-center">
@@ -13,7 +22,6 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ title }) => {
         </h1>
       </div>
 
-      {/* Abstract Background Elements */}
       <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-primary-yellow/5 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute top-1/2 right-0 w-[400px] h-[400px] bg-white/5 rounded-full blur-[100px] pointer-events-none" />
     </section>

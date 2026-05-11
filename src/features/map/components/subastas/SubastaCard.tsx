@@ -1,3 +1,8 @@
+/**
+ * @fileoverview Tarjeta de previsualización de subasta para el listado lateral.
+ * Proporciona un resumen visual del activo y su estado de selección.
+ */
+
 import React from 'react';
 
 interface SubastaCardProps {
@@ -7,12 +12,17 @@ interface SubastaCardProps {
   location?: string;
   image?: string;
   onClick?: () => void;
+  /** Indica si la tarjeta debe resaltar como seleccionada (ej. al clicar en el mapa) */
   selected?: boolean;
 }
 
 const fallbackImg =
   'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80&w=300';
 
+/**
+ * Renderiza la información básica de una subasta en formato tarjeta.
+ * @param {SubastaCardProps} props - Propiedades del componente.
+ */
 export const SubastaCard: React.FC<SubastaCardProps> = ({
   title,
   subtitle,
@@ -48,7 +58,6 @@ export const SubastaCard: React.FC<SubastaCardProps> = ({
       )}
     </div>
 
-    {/* Contenido de texto */}
     <div className="flex flex-col gap-1 p-4">
       <span className="font-bold text-base truncate" title={title}>
         {title}

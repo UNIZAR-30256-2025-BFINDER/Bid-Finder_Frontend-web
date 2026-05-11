@@ -1,14 +1,30 @@
+/**
+ * @fileoverview Bloque de datos estructurados para listar las características
+ * concretas y advertencias extraídas de la subasta (ocupantes, cargas, tipo).
+ */
+
 import React, { JSX } from 'react';
 
 interface Props {
+  /** Título del bloque de datos */
   title: string;
+  /** Tipo de activo inferido (house, car, other) */
   type?: string;
+  /** Resumen textual de las cargas previas detectadas */
   cargas_previas?: string | null;
+  /** Estado de la ocupación del inmueble o activo */
   ocupantes?: string | null;
+  /** Nivel de riesgo legal evaluado ('alto', 'medio', 'bajo') */
   riesgo_legal?: string | null;
+  /** Array de strings con campos adicionales formateados para mostrar en lista */
   fields?: string[]; 
 }
 
+/**
+ * Traduce el identificador de tipo interno a un nombre legible en español.
+ * @param {string} [type] - Tipo de activo interno.
+ * @returns {string} Cadena de texto legible (Vivienda, Vehículo, etc.).
+ */
 const getTipoLegible = (type?: string): string => {
   if (!type) return 'no conocido';
   const mapping: Record<string, string> = {
@@ -18,6 +34,11 @@ const getTipoLegible = (type?: string): string => {
   return mapping[type] ?? 'no conocido';
 };
 
+/**
+ * Genera un indicador visual (círculo de color) basado en el nivel de riesgo legal.
+ * @param {string | null} [riesgo_legal] - Nivel de riesgo ('alto', 'medio', 'bajo').
+ * @returns {JSX.Element} Elemento span con el color de Tailwind correspondiente y tooltip informativo.
+ */
 const getColorCircle = (riesgo_legal?: string | null): JSX.Element => {
   const defaultColor = 'bg-gray-400';
   if (!riesgo_legal) {
@@ -47,6 +68,10 @@ const getColorCircle = (riesgo_legal?: string | null): JSX.Element => {
   );
 };
 
+/**
+ * Renderiza una sección con formato de lista detallando los aspectos clave y riesgos de la subasta.
+ * @param {Props} props - Propiedades del componente con los datos a estructurar.
+ */
 const SubastaStructuredFields: React.FC<Props> = ({
   title,
   type,

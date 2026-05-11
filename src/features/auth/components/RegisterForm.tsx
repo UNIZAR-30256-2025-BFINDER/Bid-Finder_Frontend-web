@@ -1,3 +1,8 @@
+/**
+ * @fileoverview Componente visual para el formulario de registro de nuevos usuarios.
+ * Gestiona el estado de los inputs, la validación en tiempo real y la llamada al authService.
+ */
+
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { authService } from '../services/authService';
@@ -21,6 +26,10 @@ export const RegisterForm: React.FC = () => {
     const [submitError, setSubmitError] = useState('');
     const [loading, setLoading] = useState(false);
 
+    /**
+     * Maneja el cambio de valor en cualquier input del formulario y aplica
+     * la validación en tiempo real correspondiente a ese campo.
+     */
     const handleChange = (field: keyof typeof form, value: string) => {
         setForm({ ...form, [field]: value });
         setSubmitError('');
@@ -36,6 +45,9 @@ export const RegisterForm: React.FC = () => {
     const hasErrors = Object.values(errors).some(Boolean);
     const isComplete = form.name && form.email && form.password;
 
+    /**
+     * Procesa el envío del formulario, bloquea si hay errores e invoca al servicio de registro.
+     */
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
 

@@ -1,3 +1,8 @@
+/**
+ * @fileoverview Página principal de destino (Landing Page).
+ * Orquesta todas las secciones informativas para usuarios no autenticados.
+ */
+
 import React from 'react';
 import { Navbar } from '../../../components/layout/Navbar';
 import { Logo } from '../../../components/ui/Logo';
@@ -8,6 +13,9 @@ import { FeaturesSection, Feature } from '../components/FeaturesSection';
 import { Footer } from '../../../components/layout/Footer';
 import { useNavigate } from 'react-router-dom';
 
+/**
+ * Componente principal que define la estructura y contenido de la página de aterrizaje.
+ */
 export const LandingPage: React.FC = () => {
   const navigate = useNavigate();
 

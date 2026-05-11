@@ -1,3 +1,8 @@
+/**
+ * @fileoverview Componente visual para el formulario de inicio de sesión.
+ * Gestiona el estado de los inputs, validación básica y la llamada al authService.
+ */
+
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { authService } from '../services/authService';
@@ -13,11 +18,19 @@ export const LoginForm: React.FC = () => {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
 
+    /**
+     * Actualiza el estado del formulario al modificar un input y limpia errores previos.
+     * @param {keyof typeof form} field - Campo del formulario a actualizar (email o password).
+     * @param {string} value - Nuevo valor introducido por el usuario.
+     */
     const handleChange = (field: keyof typeof form, value: string) => {
         setForm({ ...form, [field]: value });
         setError('');
     };
 
+    /**
+     * Procesa el envío del formulario, valida que no haya campos vacíos y ejecuta el login.
+     */
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
 

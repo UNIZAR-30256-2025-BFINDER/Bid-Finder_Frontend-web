@@ -1,13 +1,22 @@
+/**
+ * @fileoverview Pantalla de error cuando no se encuentra una subasta solicitada (Error 404).
+ */
+
 import React from 'react';
 import { DashboardNavbar } from '../../../map/layout/DashboardNavbar';
 
 interface Props {
+  /** ID de la subasta que no pudo ser encontrada en la base de datos */
   id?: string;
 }
 
+/**
+ * Renderiza una vista amigable indicando que el activo no existe o la URL es incorrecta.
+ * @param {Props} props - Propiedades del componente.
+ */
 const SubastaNotFound: React.FC<Props> = ({ id }) => (
   <div className="min-h-screen bg-[#050816] text-white flex flex-col">
-    <DashboardNavbar mobileView="map" onToggleMobileView={() => {}} />
+    <DashboardNavbar showSearchAndFilters={false} />
     <div className="px-6 py-10">
       <div className="max-w-5xl mx-auto bg-white rounded-2xl text-black p-8 shadow-2xl">
         <h1 className="text-3xl font-bold mb-4">Subasta no encontrada</h1>

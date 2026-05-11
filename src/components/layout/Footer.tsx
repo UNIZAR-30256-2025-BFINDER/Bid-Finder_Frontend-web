@@ -1,6 +1,14 @@
+/**
+ * @fileoverview Pie de página genérico de la aplicación.
+ * Usado principalmente en la Landing Page.
+ */
+
 import React from 'react';
 import { Logo } from '../ui/Logo';
 
+/**
+ * Renderiza el footer con enlaces legales, de navegación y copyright.
+ */
 export const Footer: React.FC = () => {
   return (
     <footer className="py-12 px-8 md:px-16 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-8 bg-black/80">

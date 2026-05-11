@@ -1,3 +1,8 @@
+/**
+ * @fileoverview Sección de comentarios (foro) para una subasta específica.
+ * Permite a los usuarios autenticados publicar dudas y a todos los usuarios leer el hilo.
+ */
+
 import React, { useEffect, useState } from 'react';
 import { Comentario } from '../../../../models/Comentario';
 import { getComentarios, postComentario } from '../../services/comentariosService';
@@ -5,9 +10,14 @@ import { authService } from '../../../auth/services/authService';
 import { Button } from '../../../../components/ui/Button';
 
 interface ComentariosSectionProps {
+  /** Identificador único de la subasta a la que pertenecen los comentarios */
   subastaId: string;
 }
 
+/**
+ * Renderiza el listado de comentarios y el formulario de inserción.
+ * Gestiona sus propios estados de carga, error y envío.
+ */
 export const ComentariosSection: React.FC<ComentariosSectionProps> = ({ subastaId }) => {
   const [comentarios, setComentarios] = useState<Comentario[]>([]);
   const [nuevoTexto, setNuevoTexto] = useState('');
@@ -31,6 +41,9 @@ export const ComentariosSection: React.FC<ComentariosSectionProps> = ({ subastaI
     fetchComentarios();
   }, [subastaId]);
 
+  /**
+   * Gestiona el envío del formulario para crear un nuevo comentario.
+   */
   const handleEnviar = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!nuevoTexto.trim()) return;
@@ -51,6 +64,10 @@ export const ComentariosSection: React.FC<ComentariosSectionProps> = ({ subastaI
     }
   };
 
+  /**
+   * Formatea una fecha ISO a una cadena legible.
+   * @param {string} dateString - Fecha original de creación.
+   */
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return new Intl.DateTimeFormat('es-ES', {

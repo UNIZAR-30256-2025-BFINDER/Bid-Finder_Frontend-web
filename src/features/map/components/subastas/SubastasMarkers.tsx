@@ -1,3 +1,8 @@
+/**
+ * @fileoverview Capa de marcadores geolocalizados para el mapa.
+ * Gestiona el clustering de puntos y la apertura de popups detallados.
+ */
+
 import React from 'react';
 import { Marker, Popup } from 'react-leaflet';
 import { getSubastaIcon } from './subastasIcons';
@@ -8,15 +13,18 @@ import { AuctionCard } from '../popup/subastaPopupCard';
 import { useNavigate } from 'react-router-dom';
 
 interface SubastasMarkersProps {
+  /** Colección de subastas que contienen datos de geolocalización */
   subastas: Subasta[];
 }
 
+/**
+ * Renderiza los marcadores en el mapa utilizando clustering para optimizar el rendimiento.
+ * Solo muestra marcadores que tengan coordenadas válidas y el flag 'hasLocation' activo.
+ */
 export const SubastasMarkers: React.FC<SubastasMarkersProps> = ({ subastas = [] }) => {
   const navigate = useNavigate();
 
-  if (!Array.isArray(subastas)) {
-    return null;
-  }
+  if (!Array.isArray(subastas)) return null;
 
   return (
     <MarkerClusterGroup
@@ -34,9 +42,7 @@ export const SubastasMarkers: React.FC<SubastasMarkersProps> = ({ subastas = [] 
             icon={getSubastaIcon(subasta.type, subasta.viabilidad)}
           >
             <Popup className="leaflet-popup-transparent !p-2 md:!p-4 !min-w-[180px] !max-w-[90vw] md:!max-w-xs" closeButton={false}>
-              <div
-                style={{ background: 'transparent', boxShadow: 'none', padding: 0, border: 'none' }}
-              >
+              <div style={{ background: 'transparent', boxShadow: 'none', padding: 0, border: 'none' }}>
                 <AuctionCard
                   title={subasta.titulo}
                   currentPrice={subasta.precioActual || 0}

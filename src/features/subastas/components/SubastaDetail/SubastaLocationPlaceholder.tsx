@@ -1,5 +1,13 @@
+/**
+ * @fileoverview Elemento de diseño de reserva (placeholder) visual para la sección 
+ * del mapa. Se usa típicamente durante los estados de carga o en mockups.
+ */
+
 import React from 'react';
 
+/**
+ * Renderiza una caja decorativa que simula el espacio que ocupará el mapa de ubicación.
+ */
 const SubastaLocationPlaceholder: React.FC = () => (
   <section>
     <h2 className="text-lg md:text-xl font-semibold mb-4">Ubicación</h2>

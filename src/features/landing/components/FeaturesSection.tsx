@@ -1,3 +1,8 @@
+/**
+ * @fileoverview Sección de características (Features) de la Landing Page.
+ * Muestra una rejilla de tarjetas resaltando las funcionalidades principales de la plataforma.
+ */
+
 import React from 'react';
 import { FeatureCard } from '../../../components/ui/FeatureCard';
 
@@ -13,6 +18,10 @@ interface FeaturesSectionProps {
   features: Feature[];
 }
 
+/**
+ * Renderiza un bloque con título, subtítulo y una lista de tarjetas de características.
+ * @param {FeaturesSectionProps} props - Propiedades con el contenido de la sección.
+ */
 export const FeaturesSection: React.FC<FeaturesSectionProps> = ({ title, subtitle, features }) => {
   return (
     <section className="py-24 px-8 md:px-16 border-t border-white/5 bg-black/50">

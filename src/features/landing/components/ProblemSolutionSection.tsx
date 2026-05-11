@@ -1,3 +1,8 @@
+/**
+ * @fileoverview Sección de "Problema y Solución" en la Landing Page.
+ * Contrasta la dificultad de leer el BOE con la claridad visual de BidFinder.
+ */
+
 import React from 'react';
 import { Subasta } from '../../../models/Subasta';
 import { SubastaCard } from '../../map/components/subastas/SubastaCard';
@@ -8,6 +13,10 @@ interface ProblemSolutionProps {
   onViewDetails: () => void;
 }
 
+/**
+ * Renderiza un bloque con una tarjeta de subasta de ejemplo y un texto persuasivo.
+ * @param {ProblemSolutionProps} props - Contenido y acción del botón de la tarjeta.
+ */
 export const ProblemSolutionSection: React.FC<ProblemSolutionProps> = ({
   title,
   description,
@@ -25,7 +34,7 @@ export const ProblemSolutionSection: React.FC<ProblemSolutionProps> = ({
     viabilidad: 'green',
     precioActual: 87500,
     valorSubasta: 150000,
-    imagen: 'https://via.placeholder.com/300x200?text=Vivienda',
+    imagen: '/Bfinder_logo.png', 
     urlOriginal: '',
   };
 
@@ -36,6 +45,7 @@ export const ProblemSolutionSection: React.FC<ProblemSolutionProps> = ({
           <SubastaCard
             key={heroSubasta.id}
             title={heroSubasta.titulo}
+            subtitle={heroSubasta.descripcion} 
             price={heroSubasta.precioActual}
             image={heroSubasta.imagen}
             location={heroSubasta.type}

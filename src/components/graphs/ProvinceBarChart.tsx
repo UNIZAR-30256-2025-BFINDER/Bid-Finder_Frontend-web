@@ -1,4 +1,7 @@
-// src/components/graphs/ProvinceBarChart.tsx
+/**
+ * @fileoverview Gráfica de barras horizontales/verticales para mostrar 
+ * el Top 10 de zonas/municipios con mayor volumen de subastas activas.
+ */
 
 import React, { useEffect, useState } from 'react';
 import { Bar } from 'react-chartjs-2';
@@ -8,46 +11,50 @@ import {
     StatsProvincia,
 } from '../../features/dashboard/services/statsService';
 
+/**
+ * Renderiza la gráfica de zonas activas utilizando Chart.js, limitando 
+ * visualmente los resultados al top 10.
+ */
 const ProvinceBarChart: React.FC = () => {
-    const [provinces, setProvinces] = useState<StatsProvincia[]>([]);
+    const [zonas, setZonas] = useState<StatsProvincia[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const fetchProvinces = async () => {
+        const fetchZonas = async () => {
             try {
                 const data = await getStatsProvincias();
-                setProvinces(data);
+                setZonas(data.slice(0, 10));
             } catch (error) {
-                console.error('Error al cargar estadísticas por provincia', error);
+                console.error('Error al cargar estadísticas por zona', error);
             } finally {
                 setLoading(false);
             }
         };
 
-        fetchProvinces();
+        fetchZonas();
     }, []);
 
     if (loading) {
         return <p className="text-gray-400 animate-pulse">Cargando gráfico...</p>;
     }
 
-    if (provinces.length === 0) {
+    if (zonas.length === 0) {
         return (
             <div className="h-full p-5 sm:p-6 bg-[#0A0D14] border border-white/5 rounded-2xl shadow-md">
                 <h2 className="text-lg sm:text-xl font-semibold text-white mb-4">
-                    Volumen por Provincias
+                    Top 10 Zonas Activas
                 </h2>
-                <p className="text-gray-400">No hay datos de provincias disponibles.</p>
+                <p className="text-gray-400">No hay datos de zonas disponibles.</p>
             </div>
         );
     }
 
     const data: ChartData<'bar'> = {
-        labels: provinces.map((item) => item.provincia || 'Sin provincia'),
+        labels: zonas.map((item) => item.provincia || 'Sin zona definida'),
         datasets: [
             {
                 label: 'Subastas',
-                data: provinces.map((item) => item.total),
+                data: zonas.map((item) => item.total),
                 backgroundColor: '#FACC15',
                 borderRadius: 8,
             },
@@ -95,7 +102,7 @@ const ProvinceBarChart: React.FC = () => {
     return (
         <div className="h-full p-5 sm:p-6 bg-[#0A0D14] border border-white/5 rounded-2xl shadow-md flex flex-col">
             <h2 className="text-lg sm:text-xl font-semibold text-white mb-4">
-                Volumen por Provincias
+                Top 10 Zonas Activas
             </h2>
             <div className="w-full h-72 sm:h-80 md:h-96">
                 <Bar data={data} options={options} />

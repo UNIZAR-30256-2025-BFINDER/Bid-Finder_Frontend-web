@@ -1,3 +1,8 @@
+/**
+ * @fileoverview Tarjeta compacta para el Popup de Leaflet.
+ * Diseñada para mostrar información esencial (título y precios) dentro del mapa.
+ */
+
 import React from 'react';
 
 interface AuctionCardProps {
@@ -10,6 +15,10 @@ interface AuctionCardProps {
   onViewClick: () => void;
 }
 
+/**
+ * Renderiza una versión mini de la subasta con contraste optimizado para popups.
+ * @param {AuctionCardProps} props - Propiedades del componente.
+ */
 export const AuctionCard: React.FC<AuctionCardProps> = ({
   title,
   currentPrice,
@@ -28,24 +37,18 @@ export const AuctionCard: React.FC<AuctionCardProps> = ({
       style={{ boxShadow: 'none', border: 'none' }}
     >
       <div className="h-32 w-full relative shrink-0">
-        <img src={image || fallbackImage} alt={title} className="w-full h-full object-cover" />
+        <img src={image || fallbackImage} alt={title} className="w-full h-full object-cover rounded-t-xl" />
         <div className="absolute top-2 left-2 bg-yellow-400 text-black text-[10px] uppercase tracking-wide font-extrabold px-2 py-1 rounded shadow">
           {badgeText}
         </div>
       </div>
 
-      <div
-        className="p-4 flex flex-col gap-3 flex-grow justify-between"
-        style={{ background: 'transparent', boxShadow: 'none', border: 'none' }}
-      >
+      <div className="p-4 flex flex-col gap-3 flex-grow justify-between">
         <h3 className="font-bold text-sm text-gray-100 truncate" title={title}>
           {title}
         </h3>
 
-        <div
-          className="flex items-end justify-between p-2 rounded-lg"
-          style={{ background: 'rgba(0,0,0,0.7)', border: 'none' }}
-        >
+        <div className="flex items-end justify-between p-2 rounded-lg bg-black/70">
           <div className="flex flex-col">
             <span className="text-[10px] text-gray-400 uppercase tracking-wider">Puja actual</span>
             <span className="text-yellow-400 font-bold text-base">

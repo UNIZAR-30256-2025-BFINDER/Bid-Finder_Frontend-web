@@ -1,36 +1,48 @@
+/**
+ * @fileoverview Tarjeta descriptiva para la Landing Page.
+ * Muestra un icono, un título y una descripción de una funcionalidad clave.
+ */
+
 import React from 'react';
 import {
   ShieldCheck,
-  MapTrifold,
-  TrafficSignal,
-  BellRinging,
-  ClockCountdown,
-  UsersThree,
-} from '@phosphor-icons/react';
+  Map,
+  Signal,
+  Bell,
+  Clock,
+  Users,
+} from 'lucide-react';
 
 interface FeatureCardProps {
+  /** Identificador del icono a renderizar */
   iconType: 'shield' | 'map' | 'signal' | 'bell' | 'clock' | 'users';
+  /** Título de la funcionalidad */
   title: string;
+  /** Breve descripción del valor que aporta */
   description: string;
 }
 
+/**
+ * Renderiza una tarjeta de característica con iconos de Lucide unificados.
+ * @param {FeatureCardProps} props - Propiedades del componente.
+ */
 export const FeatureCard: React.FC<FeatureCardProps> = ({ iconType, title, description }) => {
   const renderIcon = () => {
-    const iconProps = { size: 32, weight: 'regular' as const, color: 'var(--primary-yellow)' };
+    const iconProps = { size: 32, color: 'var(--primary-yellow)' };
 
     switch (iconType) {
       case 'shield':
         return <ShieldCheck {...iconProps} />;
       case 'map':
-        return <MapTrifold {...iconProps} />;
+        return <Map {...iconProps} />;
       case 'signal':
-        return <TrafficSignal {...iconProps} />;
+        return <Signal {...iconProps} />;
       case 'bell':
-        return <BellRinging {...iconProps} />;
+        return <Bell {...iconProps} />;
       case 'clock':
-        return <ClockCountdown {...iconProps} />;
+        return <Clock {...iconProps} />;
       case 'users':
-        return <UsersThree {...iconProps} />;
+        return <Users {...iconProps} />;
       default:
         return null;
     }

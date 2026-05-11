@@ -1,3 +1,9 @@
+/**
+ * @fileoverview Interfaz principal del modelo de dominio para las Subastas.
+ * Define la estructura de datos que utiliza todo el Frontend tras haber mapeado
+ * la respuesta en bruto del Backend.
+ */
+
 export interface Subasta {
   id: string;
   titulo: string;

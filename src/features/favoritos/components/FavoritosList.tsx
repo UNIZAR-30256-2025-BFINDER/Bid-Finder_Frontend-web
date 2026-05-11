@@ -1,4 +1,8 @@
-// src/features/favoritos/components/FavoritosList.tsx
+/**
+ * @fileoverview Listado paginado de subastas favoritas.
+ * Gestiona la partición de datos para la visualización y la navegación a detalles.
+ */
+
 import React, { useState } from 'react';
 import { FavoritosCard } from './FavoritosCard';
 import type { Subasta } from '../../../models/Subasta';
@@ -11,6 +15,10 @@ interface FavoritosListProps {
   removingIds: Set<string>;
 }
 
+/**
+ * Componente que organiza las tarjetas de favoritos y el paginador.
+ * @param {FavoritosListProps} props - Propiedades con la lista de subastas y callbacks.
+ */
 export const FavoritosList: React.FC<FavoritosListProps> = ({
   subastas,
   onRemove,

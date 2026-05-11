@@ -1,4 +1,7 @@
-// src/components/graphs/CategoryPieChart.tsx
+/**
+ * @fileoverview Gráfica de pastel para visualizar la distribución
+ * del volumen de subastas por categorías (Vivienda, Vehículo, Otros).
+ */
 
 import React, { useEffect, useState } from 'react';
 import { Pie } from 'react-chartjs-2';
@@ -9,6 +12,10 @@ import {
     TooltipItem,
 } from 'chart.js';
 
+/**
+ * Renderiza la gráfica de categorías solicitando los datos al backend
+ * y utilizando Chart.js para su visualización.
+ */
 const CategoryPieChart: React.FC = () => {
     const [categories, setCategories] = useState<StatsCategoria[]>([]);
     const [loading, setLoading] = useState(true);

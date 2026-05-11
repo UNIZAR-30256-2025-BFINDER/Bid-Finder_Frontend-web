@@ -1,3 +1,9 @@
+/**
+ * @fileoverview Página principal del panel de administración.
+ * Muestra métricas clave del sistema, estado del backend y gráficas de volumen
+ * de subastas por categoría y zona.
+ */
+
 import React, { useEffect, useState } from 'react';
 import { getSystemStatus, SystemStatus } from '../services/systemService';
 import { DashboardNavbar } from '../../map/layout/DashboardNavbar';
@@ -5,6 +11,10 @@ import { BarChart2, Users, ShieldAlert, Plus, Activity, Clock } from 'lucide-rea
 import CategoryPieChart from '../../../components/graphs/CategoryPieChart';
 import ProvinceBarChart from '../../../components/graphs/ProvinceBarChart';
 
+/**
+ * Componente principal del panel de administración.
+ * Gestiona la carga del estado del sistema y renderiza el layout del dashboard.
+ */
 export const Admin: React.FC = () => {
   const [status, setStatus] = useState<SystemStatus | null>(null);
   const [loading, setLoading] = useState(true);
@@ -23,6 +33,11 @@ export const Admin: React.FC = () => {
     fetchStatus();
   }, []);
 
+  /**
+   * Formatea una fecha ISO a formato local español (DD/MM/YYYY, HH:MM).
+   * @param {string | null} [dateString] - Cadena de texto con la fecha ISO.
+   * @returns {string} Fecha formateada o un mensaje por defecto si no hay registros.
+   */
   const formatDate = (dateString?: string | null) => {
     if (!dateString) return 'Sin registros';
     return new Intl.DateTimeFormat('es-ES', {
@@ -36,11 +51,7 @@ export const Admin: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#050816] text-white flex flex-col">
-      <DashboardNavbar
-        mobileView="map"
-        onToggleMobileView={() => { }}
-        showSearchAndFilters={false}
-      />
+      <DashboardNavbar showSearchAndFilters={false} />
 
       <div className="flex flex-1 overflow-hidden">
         <aside className="hidden md:flex flex-col w-32 py-10 items-center gap-10 shrink-0 border-r border-white/5 bg-[#050816]">

@@ -1,3 +1,8 @@
+/**
+ * @fileoverview Página principal de Login.
+ * Agrupa el layout superior (header/logo) y el formulario de inicio de sesión.
+ */
+
 import { Link } from 'react-router-dom';
 import { LoginForm } from '../components/LoginForm';
 import { Logo } from '../../../components/ui/Logo';

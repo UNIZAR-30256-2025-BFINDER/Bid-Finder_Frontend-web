@@ -1,3 +1,9 @@
+/**
+ * @fileoverview Página de detalle de una subasta específica.
+ * Orquesta la recuperación de datos desde el backend y ensambla los diferentes
+ * bloques de información: mapa local, análisis de IA, datos estructurados y comentarios.
+ */
+
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { fetchSubastaById } from '../services/subastasService';
@@ -20,6 +26,9 @@ import { ComentariosSection } from '../components/SubastaDetail/ComentariosSecti
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 
+/**
+ * Componente principal de la vista de detalle de la subasta.
+ */
 export const SubastaDetail: React.FC = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
@@ -30,6 +39,7 @@ export const SubastaDetail: React.FC = () => {
   const [error, setError] = React.useState<string | null>(null);
 
   React.useEffect(() => {
+    /** Llama al servicio asíncrono para cargar los datos de la subasta. */
     const loadSubasta = async () => {
       try {
         if (!id) {
@@ -50,6 +60,7 @@ export const SubastaDetail: React.FC = () => {
     loadSubasta();
   }, [id]);
 
+  /** Funciones de utilidades para la interfaz de detalle */
   const formatPrice = (value?: number | null) => {
     if (value === null || value === undefined) return 'No disponible';
     return `${value.toLocaleString('es-ES')} €`;
@@ -64,6 +75,7 @@ export const SubastaDetail: React.FC = () => {
   if (error) return <SubastaError error={error} />;
   if (!subasta) return <SubastaNotFound id={id!} />;
 
+  // Generadores de plantillas de texto a partir de metadatos IA
   const riesgoContent = subasta.riesgo_legal
     ? `Nivel: ${subasta.riesgo_legal}\nOcupantes: ${subasta.ocupantes || 'Desconocido'}\nCargas Previas: ${subasta.cargas_previas || 'Ninguna'}`
     : 'No hay datos de riesgo extraídos para esta subasta.';
@@ -74,16 +86,11 @@ export const SubastaDetail: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#050816] text-white flex flex-col">
-      <DashboardNavbar
-        mobileView="map"
-        onToggleMobileView={() => {}}
-        showSearchAndFilters={false}
-      />
+      <DashboardNavbar showSearchAndFilters={false} />
 
       <div className="flex-1 px-4 md:px-8 py-8 md:py-12">
         <div className="max-w-7xl mx-auto">
           
-          {/* BOTÓN DE VOLVER MEJORADO */}
           <button 
             onClick={() => navigate(-1)} 
             className="flex items-center gap-2 text-gray-400 hover:text-yellow-400 mb-6 transition-colors font-medium cursor-pointer group"

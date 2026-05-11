@@ -1,3 +1,8 @@
+/**
+ * @fileoverview Listado lateral de subastas que aparecen en el mapa.
+ * Gestiona la paginación local del contenido filtrado.
+ */
+
 import React, { useState } from 'react';
 import { SubastaCard } from './SubastaCard';
 import type { Subasta } from '../../../../models/Subasta';
@@ -5,9 +10,13 @@ import { Paginador } from '../../../../components/ui/Paginador';
 import { useNavigate } from 'react-router-dom';
 
 interface SubastaListProps {
+  /** Array de subastas filtradas según la zona del mapa o criterios del usuario */
   subastas: Subasta[];
 }
 
+/**
+ * Componente que organiza las tarjetas de subastas y gestiona la paginación.
+ */
 export const SubastaList: React.FC<SubastaListProps> = ({ subastas }) => {
   const [page, setPage] = useState(1);
   const navigate = useNavigate();

@@ -1,3 +1,8 @@
+/**
+ * @fileoverview Servicio encargado de consultar las métricas de estado general 
+ * del servidor (salud del backend, ingestas, etc.).
+ */
+
 import { authService } from '../../auth/services/authService';
 
 export interface SystemStatus {
@@ -9,6 +14,12 @@ export interface SystemStatus {
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api/v1';
 
+/**
+ * Obtiene las métricas en tiempo real del sistema de administración.
+ * Requiere un token JWT válido.
+ * @returns {Promise<SystemStatus>} Objeto con las métricas de estado y carga.
+ * @throws {Error} Si la API rechaza la solicitud o no hay conectividad.
+ */
 export const getSystemStatus = async (): Promise<SystemStatus> => {
   const token = authService.getAccessToken();
 

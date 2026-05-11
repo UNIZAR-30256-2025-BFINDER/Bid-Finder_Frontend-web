@@ -1,3 +1,8 @@
+/**
+ * @fileoverview Componente de mapa individual para mostrar la ubicación exacta 
+ * de una subasta específica en su página de detalle.
+ */
+
 import React from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -20,11 +25,16 @@ interface Props {
   lat: number;
   lng: number;
   direccion?: string | null;
+  /** Indica si la subasta posee coordenadas válidas */
   hasLocation?: boolean;
   type: string;
   viabilidad: string;
 }
 
+/**
+ * Renderiza un mapa estático centrado en el activo con su marcador personalizado.
+ * Si el activo no tiene ubicación, renderiza un mensaje informativo (fallback).
+ */
 const SubastaLocationMap: React.FC<Props> = ({ lat, lng, direccion, hasLocation, type, viabilidad }) => {
   if (!hasLocation) {
     return (

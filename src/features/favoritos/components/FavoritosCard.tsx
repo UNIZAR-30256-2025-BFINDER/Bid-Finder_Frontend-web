@@ -1,3 +1,8 @@
+/**
+ * @fileoverview Tarjeta individual para mostrar una subasta guardada en favoritos.
+ * Permite la visualización rápida y la eliminación directa de la lista.
+ */
+
 import React from 'react';
 import { XCircle } from 'lucide-react';
 
@@ -15,6 +20,10 @@ interface FavoritosCardProps {
 const fallbackImg =
   'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80&w=300';
 
+/**
+ * Renderiza la previsualización de una subasta favorita.
+ * @param {FavoritosCardProps} props - Propiedades del componente.
+ */
 export const FavoritosCard: React.FC<FavoritosCardProps> = ({
   title,
   subtitle,
@@ -25,6 +34,10 @@ export const FavoritosCard: React.FC<FavoritosCardProps> = ({
   onRemove,
   isRemoving = false,
 }) => {
+  /**
+   * Gestiona el clic en el botón de eliminar evitando la propagación al contenedor padre.
+   * @param {React.MouseEvent} e - Evento de clic.
+   */
   const handleRemoveClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     onRemove?.();
@@ -35,7 +48,6 @@ export const FavoritosCard: React.FC<FavoritosCardProps> = ({
       className="group relative min-w-0 rounded-xl shadow-md bg-[#111827] text-white cursor-pointer border-2 border-transparent hover:border-yellow-400 hover:bg-white/10 transition-all duration-300 overflow-hidden"
       onClick={onClick}
     >
-      {/* Botón eliminar (superior derecha) */}
       {onRemove && (
         <button
           onClick={handleRemoveClick}

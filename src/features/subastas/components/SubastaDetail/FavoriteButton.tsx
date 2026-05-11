@@ -1,3 +1,8 @@
+/**
+ * @fileoverview Botón interactivo para añadir o quitar una subasta de la lista de favoritos.
+ * Gestiona el estado local optimista y sincroniza con el backend.
+ */
+
 import React, { useState, useEffect } from 'react';
 import {
   fetchFavoritos,
@@ -8,20 +13,24 @@ import toast from 'react-hot-toast';
 import { authService } from '../../../auth/services/authService';
 
 interface FavoriteButtonProps {
-  subastaId: string; // ID público tipo 'BOE-B-2026-112'
-  className?: string; // para estilos adicionales
+  /** ID de la subasta */
+  subastaId: string;
+  /** Clases CSS adicionales para customización del contenedor */
+  className?: string;
 }
 
+/**
+ * Componente que renderiza el icono del corazón y maneja la lógica de favoritos.
+ */
 export const FavoriteButton: React.FC<FavoriteButtonProps> = ({ subastaId, className = '' }) => {
   const [isFavorite, setIsFavorite] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // Al montar, comprobar si esta subasta está en favoritos
   useEffect(() => {
     const checkStatus = async () => {
       if (!subastaId) return;
       try {
-        const favoritosIds = await fetchFavoritos(); // devuelve array de IDs públicos (strings)
+        const favoritosIds = await fetchFavoritos();
         setIsFavorite(favoritosIds.includes(subastaId));
       } catch (err) {
         console.error('Error al verificar favoritos:', err);
@@ -31,10 +40,12 @@ export const FavoriteButton: React.FC<FavoriteButtonProps> = ({ subastaId, class
     checkStatus();
   }, [subastaId]);
 
+  /**
+   * Intercambia el estado de favorito. Requiere autenticación.
+   */
   const handleToggle = async () => {
     if (!authService.isAuthenticated()) {
       toast.error('Debes iniciar sesión para guardar favoritos.');
-      // Opcional: redirigir a login
       return;
     }
     setLoading(true);
@@ -76,19 +87,8 @@ export const FavoriteButton: React.FC<FavoriteButtonProps> = ({ subastaId, class
           fill="none"
           viewBox="0 0 24 24"
         >
-          <circle
-            className="opacity-25"
-            cx="12"
-            cy="12"
-            r="10"
-            stroke="currentColor"
-            strokeWidth="4"
-          />
-          <path
-            className="opacity-75"
-            fill="currentColor"
-            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-          />
+          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
         </svg>
       ) : (
         <svg
@@ -99,11 +99,7 @@ export const FavoriteButton: React.FC<FavoriteButtonProps> = ({ subastaId, class
           stroke="currentColor"
           strokeWidth={2}
         >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-          />
+          <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
         </svg>
       )}
     </button>

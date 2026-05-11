@@ -1,8 +1,18 @@
+/**
+ * @fileoverview Servicio encargado de la comunicación asíncrona para la gestión 
+ * de la comunidad y comentarios dentro de las subastas.
+ */
+
 import { Comentario } from '../../../models/Comentario';
 import { authService } from '../../auth/services/authService';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api/v1';
 
+/**
+ * Obtiene el hilo de comentarios público de una subasta específica.
+ * @param {string} subastaId - Identificador único de la subasta.
+ * @returns {Promise<Comentario[]>} Array con los comentarios asociados.
+ */
 export const getComentarios = async (subastaId: string): Promise<Comentario[]> => {
   const response = await fetch(`${API_BASE_URL}/subastas/${subastaId}/comentarios`);
   
@@ -14,6 +24,14 @@ export const getComentarios = async (subastaId: string): Promise<Comentario[]> =
   return result.data;
 };
 
+/**
+ * Publica un nuevo comentario en el foro de una subasta.
+ * Requiere que el usuario esté autenticado.
+ * @param {string} subastaId - Identificador único de la subasta.
+ * @param {string} texto - Contenido del mensaje del usuario.
+ * @returns {Promise<Comentario>} Objeto de comentario creado.
+ * @throws {Error} Si el token es inválido, el contenido viola políticas o falla el servidor.
+ */
 export const postComentario = async (subastaId: string, texto: string): Promise<Comentario> => {
   const token = authService.getAccessToken();
   

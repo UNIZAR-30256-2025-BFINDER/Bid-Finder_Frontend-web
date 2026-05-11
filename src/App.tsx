@@ -1,3 +1,8 @@
+/**
+ * @fileoverview Configuración central del enrutamiento de la aplicación (React Router).
+ * Define el árbol de rutas, las vistas protegidas y el proveedor de notificaciones globales.
+ */
+
 import React from 'react';
 import { createBrowserRouter, RouterProvider, Link } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast'; 
@@ -13,6 +18,10 @@ import { FavoritosPage } from './features/favoritos/pages/FavoritosPage';
 import { ProtectedRoute } from './features/auth/components/ProtectedRoute';
 import { AdminRoute } from './features/auth/components/AdminRoute';
 
+/**
+ * Configuración del router declarativo. Define las rutas públicas, 
+ * protegidas por autenticación y exclusivas para administradores.
+ */
 const router = createBrowserRouter(
   [
     {
@@ -68,6 +77,9 @@ const router = createBrowserRouter(
   },
 );
 
+/**
+ * Componente raíz que envuelve la aplicación con el enrutador y el gestor de Toasts.
+ */
 export const App: React.FC = () => {
   return (
     <>
