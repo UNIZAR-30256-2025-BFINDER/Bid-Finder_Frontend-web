@@ -156,31 +156,71 @@ export const ComentariosSection: React.FC<ComentariosSectionProps> = ({ subastaI
             No hay comentarios todavía. ¡Sé el primero en opinar!
           </p>
         ) : (
-          comentarios.map((comentario) => (
-            <div key={comentario._id} className="bg-gray-50 p-4 rounded-lg border border-gray-100">
-              <div className="flex justify-between items-center mb-2">
-                <span className="font-semibold text-blue-900">
-                  {comentario.usuario_id?.nombre || 'Usuario Anónimo'}
-                </span>
-                <span className="text-xs text-gray-400">{formatDate(comentario.createdAt)}</span>
-                {puedeEliminar(comentario) && (
-                  <button
-                    onClick={() => handleDelete(comentario._id!)}
-                    disabled={eliminandoId === comentario._id}
-                    className="text-red-500 hover:text-red-700 transition-colors"
-                    title="Eliminar comentario"
-                  >
-                    {eliminandoId === comentario._id ? (
-                      <span className="text-xs">...</span>
-                    ) : (
-                      <Trash2 size={16} />
-                    )}
-                  </button>
-                )}
+          comentarios.map((comentario) => {
+            const puedeBorrar = puedeEliminar(comentario);
+            return (
+              <div
+                key={comentario._id}
+                className="bg-gray-50 p-4 rounded-lg border border-gray-100"
+              >
+                <div className="flex justify-between items-center mb-2">
+                  {currentUser?._id === comentario.usuario_id._id ? (
+                    <>
+                      {/* Izquierda: botón de eliminar + fecha */}
+                      <div className="flex items-center gap-3">
+                        <button
+                          onClick={() => handleDelete(comentario._id!)}
+                          disabled={eliminandoId === comentario._id}
+                          className="text-red-500 hover:text-red-700 transition-colors"
+                          title="Eliminar comentario"
+                        >
+                          {eliminandoId === comentario._id ? (
+                            <span className="text-xs">...</span>
+                          ) : (
+                            <Trash2 size={16} />
+                          )}
+                        </button>
+                        <span className="text-xs text-gray-400">
+                          {formatDate(comentario.createdAt)}
+                        </span>
+                      </div>
+                      {/* Derecha: nombre */}
+                      <span className="font-semibold text-blue-900">
+                        {comentario.usuario_id?.nombre || 'Usuario Anónimo'}
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      {/* Sin permisos: nombre a la izquierda, fecha a la derecha */}
+                      <span className="font-semibold text-blue-900">
+                        {comentario.usuario_id?.nombre || 'Usuario Anónimo'}
+                      </span>
+                      <div className="flex items-center gap-3">
+                        {puedeBorrar && (
+                          <button
+                            onClick={() => handleDelete(comentario._id!)}
+                            disabled={eliminandoId === comentario._id}
+                            className="text-red-500 hover:text-red-700 transition-colors"
+                            title="Eliminar comentario"
+                          >
+                            {eliminandoId === comentario._id ? (
+                              <span className="text-xs">...</span>
+                            ) : (
+                              <Trash2 size={16} />
+                            )}
+                          </button>
+                        )}
+                        <span className="text-xs text-gray-400">
+                          {formatDate(comentario.createdAt)}
+                        </span>
+                      </div>
+                    </>
+                  )}
+                </div>
+                <p className="text-gray-700 whitespace-pre-wrap">{comentario.texto}</p>
               </div>
-              <p className="text-gray-700 whitespace-pre-wrap">{comentario.texto}</p>
-            </div>
-          ))
+            );
+          })
         )}
       </div>
     </div>
