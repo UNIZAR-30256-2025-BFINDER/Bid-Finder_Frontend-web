@@ -5,7 +5,12 @@
 
 import React, { useEffect, useState } from 'react';
 import { Comentario } from '../../../../models/Comentario';
-import { getComentarios, postComentario } from '../../services/comentariosService';
+import { Trash2 } from 'lucide-react';
+import {
+  getComentarios,
+  postComentario,
+  deleteComentario,
+} from '../../services/comentariosService';
 import { authService } from '../../../auth/services/authService';
 import { Button } from '../../../../components/ui/Button';
 
@@ -24,8 +29,11 @@ export const ComentariosSection: React.FC<ComentariosSectionProps> = ({ subastaI
   const [loading, setLoading] = useState(true);
   const [enviando, setEnviando] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [eliminandoId, setEliminandoId] = useState<string | null>(null);
 
   const isAuthenticated = authService.isAuthenticated();
+  const currentUser = authService.getCurrentUser();
+  const isAdmin = currentUser?.rol === 'admin';
 
   useEffect(() => {
     const fetchComentarios = async () => {
@@ -65,6 +73,22 @@ export const ComentariosSection: React.FC<ComentariosSectionProps> = ({ subastaI
   };
 
   /**
+   * Gestiona el borrado del comentario.
+   */
+  const handleDelete = async (comentarioId: string) => {
+    if (!confirm('¿Eliminar este comentario permanentemente?')) return;
+    setEliminandoId(comentarioId);
+    try {
+      await deleteComentario(subastaId, comentarioId);
+      setComentarios((prev) => prev.filter((c) => c._id !== comentarioId));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error al eliminar');
+    } finally {
+      setEliminandoId(null);
+    }
+  };
+
+  /**
    * Formatea una fecha ISO a una cadena legible.
    * @param {string} dateString - Fecha original de creación.
    */
@@ -75,8 +99,19 @@ export const ComentariosSection: React.FC<ComentariosSectionProps> = ({ subastaI
       month: 'short',
       year: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     }).format(date);
+  };
+
+  /**
+   * Determina si el usuario actual puede eliminar un comentario.
+   */
+  const puedeEliminar = (comentario: Comentario): boolean => {
+    if (!isAuthenticated) return false;
+    // Admin puede eliminar cualquier comentario
+    if (isAdmin) return true;
+    // Usuario normal solo puede eliminar sus propios comentarios
+    return comentario.usuario_id?._id === currentUser?._id;
   };
 
   return (
@@ -103,7 +138,9 @@ export const ComentariosSection: React.FC<ComentariosSectionProps> = ({ subastaI
           </form>
         ) : (
           <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 text-center">
-            <p className="text-gray-600 mb-4">Debes iniciar sesión para participar en la conversación.</p>
+            <p className="text-gray-600 mb-4">
+              Debes iniciar sesión para participar en la conversación.
+            </p>
             <a href="/login">
               <Button variant="secondary">Iniciar Sesión</Button>
             </a>
@@ -115,13 +152,31 @@ export const ComentariosSection: React.FC<ComentariosSectionProps> = ({ subastaI
         {loading ? (
           <p className="text-gray-500 animate-pulse">Cargando comentarios...</p>
         ) : comentarios.length === 0 ? (
-          <p className="text-gray-500 italic">No hay comentarios todavía. ¡Sé el primero en opinar!</p>
+          <p className="text-gray-500 italic">
+            No hay comentarios todavía. ¡Sé el primero en opinar!
+          </p>
         ) : (
           comentarios.map((comentario) => (
             <div key={comentario._id} className="bg-gray-50 p-4 rounded-lg border border-gray-100">
               <div className="flex justify-between items-center mb-2">
-                <span className="font-semibold text-blue-900">{comentario.usuario_id?.nombre || 'Usuario Anónimo'}</span>
+                <span className="font-semibold text-blue-900">
+                  {comentario.usuario_id?.nombre || 'Usuario Anónimo'}
+                </span>
                 <span className="text-xs text-gray-400">{formatDate(comentario.createdAt)}</span>
+                {puedeEliminar(comentario) && (
+                  <button
+                    onClick={() => handleDelete(comentario._id!)}
+                    disabled={eliminandoId === comentario._id}
+                    className="text-red-500 hover:text-red-700 transition-colors"
+                    title="Eliminar comentario"
+                  >
+                    {eliminandoId === comentario._id ? (
+                      <span className="text-xs">...</span>
+                    ) : (
+                      <Trash2 size={16} />
+                    )}
+                  </button>
+                )}
               </div>
               <p className="text-gray-700 whitespace-pre-wrap">{comentario.texto}</p>
             </div>
