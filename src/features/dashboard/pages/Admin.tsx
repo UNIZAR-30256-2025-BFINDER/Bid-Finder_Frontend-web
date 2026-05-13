@@ -7,6 +7,7 @@ import React, { useState } from 'react';
 import { DashboardNavbar } from '../../map/layout/DashboardNavbar';
 import { BarChart2, Users, ShieldAlert } from 'lucide-react';
 import { DashboardView } from '../components/DashboardView';
+import { UsersTable } from '../components/UsersTable';
 import { ModeracionTable } from '../components/ModeracionTable';
 
 type AdminTab = 'dashboard' | 'usuarios' | 'moderacion';
@@ -21,38 +22,50 @@ export const Admin: React.FC = () => {
       <div className="flex flex-1 overflow-hidden">
         {/* MENÚ LATERAL */}
         <aside className="hidden md:flex flex-col w-32 py-10 items-center gap-10 shrink-0 border-r border-white/5 bg-[#050816]">
-          <div 
+          <div
             onClick={() => setActiveTab('dashboard')}
             className="flex flex-col items-center gap-3 cursor-pointer group"
           >
-            <div className={`p-4 rounded-full transition-all ${activeTab === 'dashboard' ? 'bg-yellow-400/10 text-yellow-400' : 'bg-white/5 text-gray-400 group-hover:bg-white/10 group-hover:text-white'}`}>
+            <div
+              className={`p-4 rounded-full transition-all ${activeTab === 'dashboard' ? 'bg-yellow-400/10 text-yellow-400' : 'bg-white/5 text-gray-400 group-hover:bg-white/10 group-hover:text-white'}`}
+            >
               <BarChart2 size={26} strokeWidth={1.5} />
             </div>
-            <span className={`text-sm font-semibold transition-colors ${activeTab === 'dashboard' ? 'text-yellow-400' : 'text-gray-400 group-hover:text-white'}`}>
+            <span
+              className={`text-sm font-semibold transition-colors ${activeTab === 'dashboard' ? 'text-yellow-400' : 'text-gray-400 group-hover:text-white'}`}
+            >
               Dashboard
             </span>
           </div>
 
-          <div 
+          <div
             onClick={() => setActiveTab('usuarios')}
             className="flex flex-col items-center gap-3 cursor-pointer group"
           >
-            <div className={`p-4 rounded-full transition-all ${activeTab === 'usuarios' ? 'bg-yellow-400/10 text-yellow-400' : 'bg-white/5 text-gray-400 group-hover:bg-white/10 group-hover:text-white'}`}>
+            <div
+              className={`p-4 rounded-full transition-all ${activeTab === 'usuarios' ? 'bg-yellow-400/10 text-yellow-400' : 'bg-white/5 text-gray-400 group-hover:bg-white/10 group-hover:text-white'}`}
+            >
               <Users size={26} strokeWidth={1.5} />
             </div>
-            <span className={`text-sm font-semibold transition-colors ${activeTab === 'usuarios' ? 'text-yellow-400' : 'text-gray-400 group-hover:text-white'}`}>
+            <span
+              className={`text-sm font-semibold transition-colors ${activeTab === 'usuarios' ? 'text-yellow-400' : 'text-gray-400 group-hover:text-white'}`}
+            >
               Usuarios
             </span>
           </div>
 
-          <div 
+          <div
             onClick={() => setActiveTab('moderacion')}
             className="flex flex-col items-center gap-3 cursor-pointer group"
           >
-            <div className={`p-4 rounded-full transition-all ${activeTab === 'moderacion' ? 'bg-yellow-400/10 text-yellow-400' : 'bg-white/5 text-gray-400 group-hover:bg-white/10 group-hover:text-white'}`}>
+            <div
+              className={`p-4 rounded-full transition-all ${activeTab === 'moderacion' ? 'bg-yellow-400/10 text-yellow-400' : 'bg-white/5 text-gray-400 group-hover:bg-white/10 group-hover:text-white'}`}
+            >
               <ShieldAlert size={26} strokeWidth={1.5} />
             </div>
-            <span className={`text-sm font-semibold transition-colors ${activeTab === 'moderacion' ? 'text-yellow-400' : 'text-gray-400 group-hover:text-white'}`}>
+            <span
+              className={`text-sm font-semibold transition-colors ${activeTab === 'moderacion' ? 'text-yellow-400' : 'text-gray-400 group-hover:text-white'}`}
+            >
               Moderación
             </span>
           </div>
@@ -65,9 +78,7 @@ export const Admin: React.FC = () => {
           {activeTab === 'usuarios' && (
             <div className="animate-in fade-in duration-300">
               <h2 className="text-2xl font-bold mb-4">Gestión de Usuarios</h2>
-              <div className="bg-white/5 border border-dashed border-white/20 rounded-xl p-10 text-center text-gray-400">
-                <p>El panel de usuarios está en construcción.</p>
-              </div>
+              <UsersTable />
             </div>
           )}
 
