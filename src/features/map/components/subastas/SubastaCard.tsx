@@ -4,8 +4,10 @@
  */
 
 import React from 'react';
+import { FavoriteButton } from './FavoriteButton';
 
 interface SubastaCardProps {
+  id: string;
   title: string;
   subtitle: string;
   price: number;
@@ -24,6 +26,7 @@ const fallbackImg =
  * @param {SubastaCardProps} props - Propiedades del componente.
  */
 export const SubastaCard: React.FC<SubastaCardProps> = ({
+  id,
   title,
   subtitle,
   price,
@@ -41,6 +44,9 @@ export const SubastaCard: React.FC<SubastaCardProps> = ({
     onClick={onClick}
   >
     <div className="aspect-video w-full relative overflow-hidden bg-black/50">
+      <div className="absolute top-2 right-2 z-10">
+        <FavoriteButton subastaId={id} />
+      </div>
       <img
         src={image || fallbackImg}
         alt={subtitle}
