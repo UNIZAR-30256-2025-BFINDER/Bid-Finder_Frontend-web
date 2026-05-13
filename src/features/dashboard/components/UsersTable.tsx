@@ -4,9 +4,9 @@
  */
 
 // src/features/admin/components/AdminUsersTable.tsx
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState } from 'react';
 import type { Usuario } from '../../../models/Usuario';
-import { Search, Filter, UserCheck, UserX, Shield, Users } from 'lucide-react';
+import { Search, Filter, Shield, Users } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { fetchAllUsers } from '../services/userService';
 import { Paginador } from '../../../components/ui/Paginador';
@@ -23,7 +23,6 @@ export const UsersTable: React.FC = () => {
     filteredTotal: 0,
     filteredAdmins: 0,
   });
-  const [procesandoId, setProcesandoId] = useState<string | null>(null);
 
   const ITEMS_PER_PAGE = 8;
 
@@ -142,7 +141,6 @@ export const UsersTable: React.FC = () => {
               </tr>
             ) : (
               usuarios.map((usuario) => {
-                const procesando = procesandoId === usuario._id;
                 return (
                   <tr
                     key={usuario._id}

@@ -31,8 +31,17 @@ export interface PaginatedComentarios {
  * Exclusivo para administradores.
  * @returns {Promise<PaginatedComentarios>} Array global de comentarios y metadatos de paginación.
  */
-export const fetchAllComentarios = async (page: number = 1, limit: number = 10): Promise<PaginatedComentarios> => {
-  const response = await fetch(`${API_BASE_URL}/admin/comentarios?page=${page}&limit=${limit}`, {
+export const fetchAllComentarios = async (
+  page: number = 1,
+  limit: number = 10,
+  search = '',
+): Promise<PaginatedComentarios> => {
+  const params = new URLSearchParams({
+    page: page.toString(),
+    limit: limit.toString(),
+    ...(search && { search }),
+  });
+  const response = await fetch(`${API_BASE_URL}/admin/comentarios?${params}`, {
     headers: getAuthHeaders(),
   });
 
@@ -43,7 +52,7 @@ export const fetchAllComentarios = async (page: number = 1, limit: number = 10):
   const result = await response.json();
   return {
     comentarios: result.data,
-    pagination: result.pagination
+    pagination: result.pagination,
   };
 };
 
@@ -52,13 +61,16 @@ export const fetchAllComentarios = async (page: number = 1, limit: number = 10):
  * @param {string} subastaId - ID de la subasta a la que pertenece el comentario.
  * @param {string} comentarioId - ID del comentario a borrar.
  */
-export const deleteComentarioAdmin = async (subastaId: string, comentarioId: string): Promise<void> => {
+export const deleteComentarioAdmin = async (
+  subastaId: string,
+  comentarioId: string,
+): Promise<void> => {
   const response = await fetch(
     `${API_BASE_URL}/subastas/${subastaId}/comentarios/${comentarioId}`,
     {
       method: 'DELETE',
       headers: getAuthHeaders(),
-    }
+    },
   );
 
   if (!response.ok) {

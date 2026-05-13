@@ -3,7 +3,7 @@
  * Incluye búsqueda local (en la página actual), paginación de servidor y borrado.
  */
 
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState } from 'react';
 import type { Comentario } from '../../../models/Comentario';
 import { Search, Trash2, Filter } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -12,7 +12,7 @@ import { Paginador } from '../../../components/ui/Paginador';
 
 export const ModeracionTable: React.FC = () => {
   const [comentarios, setComentarios] = useState<Comentario[]>([]);
-  const [totalItems, setTotalItems] = useState(0); 
+  const [totalItems, setTotalItems] = useState(0);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
@@ -24,7 +24,7 @@ export const ModeracionTable: React.FC = () => {
     const loadComentarios = async () => {
       setLoading(true);
       try {
-        const data = await fetchAllComentarios(currentPage, ITEMS_PER_PAGE);
+        const data = await fetchAllComentarios(currentPage, ITEMS_PER_PAGE, searchTerm);
         setComentarios(data.comentarios);
         setTotalItems(data.pagination.totalItems);
       } catch {
@@ -33,32 +33,27 @@ export const ModeracionTable: React.FC = () => {
         setLoading(false);
       }
     };
-    loadComentarios();
-  }, [currentPage]);
-
-  const filteredComentarios = useMemo(() => {
-    if (!searchTerm) return comentarios;
-    const lowerSearch = searchTerm.toLowerCase();
-    return comentarios.filter(
-      (c) =>
-        c.texto.toLowerCase().includes(lowerSearch) ||
-        (c.usuario_id?.nombre || '').toLowerCase().includes(lowerSearch)
-    );
-  }, [comentarios, searchTerm]);
+    const timer = setTimeout(loadComentarios, 400);
+    return () => clearTimeout(timer);
+  }, [currentPage, searchTerm]);
 
   /**
    * Maneja el borrado real en la base de datos.
    */
   const handleBorrar = async (subastaId: string, comentarioId: string) => {
-    if (!window.confirm("¿Seguro que deseas borrar este comentario? Esta acción no se puede deshacer.")) return;
-    
+    if (
+      !window.confirm(
+        '¿Seguro que deseas borrar este comentario? Esta acción no se puede deshacer.',
+      )
+    )
+      return;
+
     setProcesandoId(comentarioId);
     try {
       await deleteComentarioAdmin(subastaId, comentarioId);
       setComentarios((prev) => prev.filter((c) => c._id !== comentarioId));
       setTotalItems((prev) => prev - 1);
       toast.success('Comentario eliminado');
-      
     } catch {
       toast.error('No se pudo eliminar el comentario');
     } finally {
@@ -111,14 +106,14 @@ export const ModeracionTable: React.FC = () => {
             </tr>
           </thead>
           <tbody className="divide-y divide-white/5">
-            {filteredComentarios.length === 0 ? (
+            {comentarios.length === 0 ? (
               <tr>
                 <td colSpan={3} className="px-6 py-12 text-center text-gray-500">
                   No hay reportes pendientes en esta vista.
                 </td>
               </tr>
             ) : (
-              filteredComentarios.map((comentario) => {
+              comentarios.map((comentario) => {
                 const procesando = procesandoId === comentario._id;
                 return (
                   <tr
