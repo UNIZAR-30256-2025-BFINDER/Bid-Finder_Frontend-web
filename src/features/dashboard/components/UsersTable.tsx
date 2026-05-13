@@ -171,7 +171,7 @@ export const UsersTable: React.FC = () => {
                       <span
                         className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                           usuario.rol === 'admin'
-                            ? 'bg-purple-100 text-purple-800'
+                            ? 'bg-purple-800 text-purple-100'
                             : 'bg-gray-100 text-gray-800'
                         }`}
                       >
