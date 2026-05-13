@@ -1,153 +1,80 @@
 /**
  * @fileoverview Página principal del panel de administración.
- * Muestra métricas clave del sistema, estado del backend y gráficas de volumen
- * de subastas por categoría y zona.
+ * Gestiona el layout y la navegación entre las distintas vistas de administración.
  */
 
-import React, { useEffect, useState } from 'react';
-import { getSystemStatus, SystemStatus } from '../services/systemService';
+import React, { useState } from 'react';
 import { DashboardNavbar } from '../../map/layout/DashboardNavbar';
-import { BarChart2, Users, ShieldAlert, Plus, Activity, Clock } from 'lucide-react';
-import CategoryPieChart from '../../../components/graphs/CategoryPieChart';
-import ProvinceBarChart from '../../../components/graphs/ProvinceBarChart';
+import { BarChart2, Users, ShieldAlert } from 'lucide-react';
+import { DashboardView } from '../components/DashboardView';
+import { ModeracionTable } from '../components/ModeracionTable';
 
-/**
- * Componente principal del panel de administración.
- * Gestiona la carga del estado del sistema y renderiza el layout del dashboard.
- */
+type AdminTab = 'dashboard' | 'usuarios' | 'moderacion';
+
 export const Admin: React.FC = () => {
-  const [status, setStatus] = useState<SystemStatus | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchStatus = async () => {
-      try {
-        const data = await getSystemStatus();
-        setStatus(data);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchStatus();
-  }, []);
-
-  /**
-   * Formatea una fecha ISO a formato local español (DD/MM/YYYY, HH:MM).
-   * @param {string | null} [dateString] - Cadena de texto con la fecha ISO.
-   * @returns {string} Fecha formateada o un mensaje por defecto si no hay registros.
-   */
-  const formatDate = (dateString?: string | null) => {
-    if (!dateString) return 'Sin registros';
-    return new Intl.DateTimeFormat('es-ES', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    }).format(new Date(dateString));
-  };
+  const [activeTab, setActiveTab] = useState<AdminTab>('dashboard');
 
   return (
     <div className="min-h-screen bg-[#050816] text-white flex flex-col">
       <DashboardNavbar showSearchAndFilters={false} />
 
       <div className="flex flex-1 overflow-hidden">
+        {/* MENÚ LATERAL */}
         <aside className="hidden md:flex flex-col w-32 py-10 items-center gap-10 shrink-0 border-r border-white/5 bg-[#050816]">
-          <div className="flex flex-col items-center gap-3 cursor-pointer">
-            <div className="bg-yellow-400/10 p-4 rounded-full text-yellow-400">
+          <div 
+            onClick={() => setActiveTab('dashboard')}
+            className="flex flex-col items-center gap-3 cursor-pointer group"
+          >
+            <div className={`p-4 rounded-full transition-all ${activeTab === 'dashboard' ? 'bg-yellow-400/10 text-yellow-400' : 'bg-white/5 text-gray-400 group-hover:bg-white/10 group-hover:text-white'}`}>
               <BarChart2 size={26} strokeWidth={1.5} />
             </div>
-            <span className="text-sm font-semibold text-yellow-400">Dashboard</span>
+            <span className={`text-sm font-semibold transition-colors ${activeTab === 'dashboard' ? 'text-yellow-400' : 'text-gray-400 group-hover:text-white'}`}>
+              Dashboard
+            </span>
           </div>
 
-          <div className="flex flex-col items-center gap-3 cursor-pointer group">
-            <div className="bg-white/5 p-4 rounded-full text-gray-400 group-hover:bg-white/10 group-hover:text-white transition-all">
+          <div 
+            onClick={() => setActiveTab('usuarios')}
+            className="flex flex-col items-center gap-3 cursor-pointer group"
+          >
+            <div className={`p-4 rounded-full transition-all ${activeTab === 'usuarios' ? 'bg-yellow-400/10 text-yellow-400' : 'bg-white/5 text-gray-400 group-hover:bg-white/10 group-hover:text-white'}`}>
               <Users size={26} strokeWidth={1.5} />
             </div>
-            <span className="text-sm text-gray-400 group-hover:text-white transition-colors">
+            <span className={`text-sm font-semibold transition-colors ${activeTab === 'usuarios' ? 'text-yellow-400' : 'text-gray-400 group-hover:text-white'}`}>
               Usuarios
             </span>
           </div>
 
-          <div className="flex flex-col items-center gap-3 cursor-pointer group">
-            <div className="bg-white/5 p-4 rounded-full text-gray-400 group-hover:bg-white/10 group-hover:text-white transition-all">
+          <div 
+            onClick={() => setActiveTab('moderacion')}
+            className="flex flex-col items-center gap-3 cursor-pointer group"
+          >
+            <div className={`p-4 rounded-full transition-all ${activeTab === 'moderacion' ? 'bg-yellow-400/10 text-yellow-400' : 'bg-white/5 text-gray-400 group-hover:bg-white/10 group-hover:text-white'}`}>
               <ShieldAlert size={26} strokeWidth={1.5} />
             </div>
-            <span className="text-sm text-gray-400 group-hover:text-white transition-colors">
+            <span className={`text-sm font-semibold transition-colors ${activeTab === 'moderacion' ? 'text-yellow-400' : 'text-gray-400 group-hover:text-white'}`}>
               Moderación
             </span>
           </div>
         </aside>
 
-        <main className="flex-1 px-5 py-8 md:px-12 md:py-10 max-w-6xl">
-          {loading ? (
-            <p className="text-gray-400 animate-pulse">Cargando datos del sistema...</p>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="bg-[#0A0D14] border border-white/5 rounded-2xl p-6 flex justify-between items-center relative overflow-hidden group shadow-[0_4px_30px_rgba(0,0,0,0.5)] hover:bg-[#0d111a] transition-colors">
-                <div className="z-10">
-                  <h3 className="text-white text-base font-medium mb-3">
-                    Estado del Servidor
-                  </h3>
-                  <div className="flex items-center gap-4">
-                    <span className="text-gray-400 text-sm">Status:</span>
-                    <span className="text-xl font-bold text-white flex items-center gap-2">
-                      <span className="relative flex h-3 w-3">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
-                      </span>
-                      {status?.estado_backend || 'DESCONOCIDO'}
-                    </span>
-                  </div>
-                </div>
-                <div className="z-10 text-emerald-500 border-[2.5px] border-emerald-500 rounded-full p-1.5 flex items-center justify-center">
-                  <Activity size={22} strokeWidth={2.5} />
-                </div>
-              </div>
+        {/* CONTENIDO PRINCIPAL */}
+        <main className="flex-1 px-5 py-8 md:px-12 md:py-10 max-w-6xl overflow-y-auto custom-scrollbar">
+          {activeTab === 'dashboard' && <DashboardView />}
 
-              <div className="bg-[#0A0D14] border border-white/5 rounded-2xl p-6 flex justify-between items-center relative overflow-hidden group shadow-[0_4px_30px_rgba(0,0,0,0.5)] hover:bg-[#0d111a] transition-colors">
-                <div className="z-10">
-                  <h3 className="text-white text-base font-medium mb-3">
-                    Subastas Procesadas
-                  </h3>
-                  <div className="flex items-center gap-4">
-                    <span className="text-gray-400 text-sm">Hoy:</span>
-                    <span className="text-2xl font-bold text-white">
-                      {status?.ingresadasHoy || 0}
-                    </span>
-                  </div>
-                </div>
-                <div className="z-10 text-yellow-400 border-[2.5px] border-yellow-400 rounded-full p-1.5 flex items-center justify-center">
-                  <Plus size={22} strokeWidth={2.5} />
-                </div>
+          {activeTab === 'usuarios' && (
+            <div className="animate-in fade-in duration-300">
+              <h2 className="text-2xl font-bold mb-4">Gestión de Usuarios</h2>
+              <div className="bg-white/5 border border-dashed border-white/20 rounded-xl p-10 text-center text-gray-400">
+                <p>El panel de usuarios está en construcción.</p>
               </div>
+            </div>
+          )}
 
-              <div className="bg-[#0A0D14] border border-white/5 rounded-2xl p-6 flex justify-between items-center relative overflow-hidden group shadow-[0_4px_30px_rgba(0,0,0,0.5)] hover:bg-[#0d111a] transition-colors">
-                <div className="z-10">
-                  <h3 className="text-white text-base font-medium mb-3">
-                    Última Ingesta
-                  </h3>
-                  <div className="flex items-center gap-4">
-                    <span className="text-gray-400 text-sm">Fecha:</span>
-                    <span className="text-lg font-bold text-white">
-                      {formatDate(status?.ultimaIngesta)}
-                    </span>
-                  </div>
-                </div>
-                <div className="z-10 text-black bg-white border-[2.5px] border-white rounded-full p-1.5 flex items-center justify-center">
-                  <Clock size={22} strokeWidth={2.5} fill="currentColor" />
-                </div>
-              </div>
-
-              <div className="col-span-1 md:col-span-1 xl:col-span-1">
-                <CategoryPieChart />
-              </div>
-
-              <div className="col-span-1 md:col-span-2 xl:col-span-2">
-                <ProvinceBarChart />
-              </div>
+          {activeTab === 'moderacion' && (
+            <div className="animate-in fade-in duration-300">
+              <h2 className="text-2xl font-bold mb-4">Panel de Moderación</h2>
+              <ModeracionTable />
             </div>
           )}
         </main>

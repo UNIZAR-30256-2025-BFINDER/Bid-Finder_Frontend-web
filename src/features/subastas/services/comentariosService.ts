@@ -8,7 +8,7 @@ import { authService } from '../../auth/services/authService';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api/v1';
 
-const getAuthHeaders = (): HeadersInit => {
+const getAuthHeaders = (): Record<string, string> => {
   const token = authService.getAccessToken();
   return {
     'Content-Type': 'application/json',
@@ -41,8 +41,6 @@ export const getComentarios = async (subastaId: string): Promise<Comentario[]> =
  * @throws {Error} Si el token es inválido, el contenido viola políticas o falla el servidor.
  */
 export const postComentario = async (subastaId: string, texto: string): Promise<Comentario> => {
-  const token = authService.getAccessToken();
-
   const response = await fetch(`${API_BASE_URL}/subastas/${subastaId}/comentarios`, {
     method: 'POST',
     headers: getAuthHeaders(),

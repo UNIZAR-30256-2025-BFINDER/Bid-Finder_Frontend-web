@@ -5,7 +5,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { Comentario } from '../../../../models/Comentario';
-import { Trash2 } from 'lucide-react';
+import { Trash2, AlertTriangle } from 'lucide-react';
 import {
   getComentarios,
   postComentario,
@@ -29,7 +29,9 @@ export const ComentariosSection: React.FC<ComentariosSectionProps> = ({ subastaI
   const [loading, setLoading] = useState(true);
   const [enviando, setEnviando] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  
   const [eliminandoId, setEliminandoId] = useState<string | null>(null);
+  const [comentarioConfirmar, setComentarioConfirmar] = useState<string | null>(null);
 
   const isAuthenticated = authService.isAuthenticated();
   const currentUser = authService.getCurrentUser();
@@ -73,14 +75,18 @@ export const ComentariosSection: React.FC<ComentariosSectionProps> = ({ subastaI
   };
 
   /**
-   * Gestiona el borrado del comentario.
+   * Ejecuta el borrado real tras la confirmación del modal.
    */
-  const handleDelete = async (comentarioId: string) => {
-    if (!confirm('¿Eliminar este comentario permanentemente?')) return;
-    setEliminandoId(comentarioId);
+  const confirmarBorrado = async () => {
+    if (!comentarioConfirmar) return;
+    
+    const idParaBorrar = comentarioConfirmar;
+    setComentarioConfirmar(null); // Cerramos el modal inmediatamente
+    setEliminandoId(idParaBorrar); // Mostramos el feedback visual de carga
+
     try {
-      await deleteComentario(subastaId, comentarioId);
-      setComentarios((prev) => prev.filter((c) => c._id !== comentarioId));
+      await deleteComentario(subastaId, idParaBorrar);
+      setComentarios((prev) => prev.filter((c) => c._id !== idParaBorrar));
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error al eliminar');
     } finally {
@@ -103,19 +109,8 @@ export const ComentariosSection: React.FC<ComentariosSectionProps> = ({ subastaI
     }).format(date);
   };
 
-  /**
-   * Determina si el usuario actual puede eliminar un comentario.
-   */
-  const puedeEliminar = (comentario: Comentario): boolean => {
-    if (!isAuthenticated) return false;
-    // Admin puede eliminar cualquier comentario
-    if (isAdmin) return true;
-    // Usuario normal solo puede eliminar sus propios comentarios
-    return comentario.usuario_id?._id === currentUser?._id;
-  };
-
   return (
-    <div className="mt-12 bg-white rounded-2xl shadow-xl p-6 md:p-8 text-black">
+    <div className="mt-12 bg-white rounded-2xl shadow-xl p-6 md:p-8 text-black relative">
       <h3 className="text-2xl font-bold mb-6 border-b pb-2">Comentarios</h3>
 
       <div className="mb-8">
@@ -157,72 +152,83 @@ export const ComentariosSection: React.FC<ComentariosSectionProps> = ({ subastaI
           </p>
         ) : (
           comentarios.map((comentario) => {
-            const puedeBorrar = puedeEliminar(comentario);
+            const esMio = currentUser?._id === comentario.usuario_id._id;
+            const puedeBorrar = esMio || isAdmin;
+            const estaEliminandose = eliminandoId === comentario._id;
+
             return (
               <div
                 key={comentario._id}
-                className="bg-gray-50 p-4 rounded-lg border border-gray-100"
+                className={`p-4 rounded-lg border transition-all ${
+                  esMio ? 'bg-blue-50 border-blue-100' : 'bg-gray-50 border-gray-100'
+                }`}
               >
-                <div className="flex justify-between items-center mb-2">
-                  {currentUser?._id === comentario.usuario_id._id ? (
-                    <>
-                      {/* Izquierda: botón de eliminar + fecha */}
-                      <div className="flex items-center gap-3">
-                        <button
-                          onClick={() => handleDelete(comentario._id!)}
-                          disabled={eliminandoId === comentario._id}
-                          className="text-red-500 hover:text-red-700 transition-colors"
-                          title="Eliminar comentario"
-                        >
-                          {eliminandoId === comentario._id ? (
-                            <span className="text-xs">...</span>
-                          ) : (
-                            <Trash2 size={16} />
-                          )}
-                        </button>
-                        <span className="text-xs text-gray-400">
-                          {formatDate(comentario.createdAt)}
-                        </span>
-                      </div>
-                      {/* Derecha: nombre */}
-                      <span className="font-semibold text-blue-900">
-                        {comentario.usuario_id?.nombre || 'Usuario Anónimo'}
-                      </span>
-                    </>
-                  ) : (
-                    <>
-                      {/* Sin permisos: nombre a la izquierda, fecha a la derecha */}
-                      <span className="font-semibold text-blue-900">
-                        {comentario.usuario_id?.nombre || 'Usuario Anónimo'}
-                      </span>
-                      <div className="flex items-center gap-3">
-                        {puedeBorrar && (
-                          <button
-                            onClick={() => handleDelete(comentario._id!)}
-                            disabled={eliminandoId === comentario._id}
-                            className="text-red-500 hover:text-red-700 transition-colors"
-                            title="Eliminar comentario"
-                          >
-                            {eliminandoId === comentario._id ? (
-                              <span className="text-xs">...</span>
-                            ) : (
-                              <Trash2 size={16} />
-                            )}
-                          </button>
+                <div className="flex justify-between items-start mb-2">
+                  {/* Izquierda: Nombre */}
+                  <span className={`font-semibold ${esMio ? 'text-blue-700' : 'text-gray-700'}`}>
+                    {esMio ? 'Yo' : comentario.usuario_id?.nombre || 'Usuario Anónimo'}
+                  </span>
+                  
+                  {/* Derecha: Fecha y Acciones */}
+                  <div className="flex items-center gap-3">
+                    <span className="text-xs text-gray-400">
+                      {formatDate(comentario.createdAt)}
+                    </span>
+                    {puedeBorrar && (
+                      <button
+                        // En lugar de borrar directo, abrimos el modal
+                        onClick={() => setComentarioConfirmar(comentario._id!)}
+                        disabled={estaEliminandose}
+                        className="text-red-400 hover:text-red-600 transition-colors p-1"
+                        title="Eliminar comentario"
+                      >
+                        {estaEliminandose ? (
+                          <span className="text-xs animate-pulse">Borrando...</span>
+                        ) : (
+                          <Trash2 size={16} />
                         )}
-                        <span className="text-xs text-gray-400">
-                          {formatDate(comentario.createdAt)}
-                        </span>
-                      </div>
-                    </>
-                  )}
+                      </button>
+                    )}
+                  </div>
                 </div>
-                <p className="text-gray-700 whitespace-pre-wrap">{comentario.texto}</p>
+                <p className="text-gray-800 whitespace-pre-wrap mt-1">{comentario.texto}</p>
               </div>
             );
           })
         )}
       </div>
+
+      {comentarioConfirmar && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white rounded-xl shadow-2xl p-6 w-full max-w-sm transform transition-all scale-100 opacity-100">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="bg-red-100 p-2 rounded-full text-red-600">
+                <AlertTriangle size={24} />
+              </div>
+              <h3 className="text-lg font-bold text-gray-900">Eliminar comentario</h3>
+            </div>
+            
+            <p className="text-gray-600 mb-6">
+              ¿Estás seguro de que quieres eliminar este comentario? Esta acción no se puede deshacer.
+            </p>
+            
+            <div className="flex justify-end gap-3">
+              <Button 
+                variant="secondary" 
+                onClick={() => setComentarioConfirmar(null)}
+              >
+                Cancelar
+              </Button>
+              <button
+                onClick={confirmarBorrado}
+                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg shadow-sm transition-colors"
+              >
+                Sí, eliminar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
