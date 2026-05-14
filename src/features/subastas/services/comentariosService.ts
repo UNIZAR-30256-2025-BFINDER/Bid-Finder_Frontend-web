@@ -1,5 +1,5 @@
 /**
- * @fileoverview Servicio encargado de la comunicación asíncrona para la gestión 
+ * @fileoverview Servicio encargado de la comunicación asíncrona para la gestión
  * de la comunidad y comentarios dentro de las subastas.
  */
 
@@ -8,6 +8,14 @@ import { authService } from '../../auth/services/authService';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api/v1';
 
+const getAuthHeaders = (): Record<string, string> => {
+  const token = authService.getAccessToken();
+  return {
+    'Content-Type': 'application/json',
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+  };
+};
+
 /**
  * Obtiene el hilo de comentarios público de una subasta específica.
  * @param {string} subastaId - Identificador único de la subasta.
@@ -15,7 +23,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000
  */
 export const getComentarios = async (subastaId: string): Promise<Comentario[]> => {
   const response = await fetch(`${API_BASE_URL}/subastas/${subastaId}/comentarios`);
-  
+
   if (!response.ok) {
     throw new Error('Error al cargar los comentarios');
   }
@@ -33,15 +41,10 @@ export const getComentarios = async (subastaId: string): Promise<Comentario[]> =
  * @throws {Error} Si el token es inválido, el contenido viola políticas o falla el servidor.
  */
 export const postComentario = async (subastaId: string, texto: string): Promise<Comentario> => {
-  const token = authService.getAccessToken();
-  
   const response = await fetch(`${API_BASE_URL}/subastas/${subastaId}/comentarios`, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      ...(token ? { 'Authorization': `Bearer ${token}` } : {})
-    },
-    body: JSON.stringify({ texto })
+    headers: getAuthHeaders(),
+    body: JSON.stringify({ texto }),
   });
 
   const result = await response.json();
@@ -52,3 +55,17 @@ export const postComentario = async (subastaId: string, texto: string): Promise<
 
   return result.data;
 };
+
+export async function deleteComentario(subastaId: string, comentarioId: string): Promise<void> {
+  const response = await fetch(
+    `${API_BASE_URL}/subastas/${subastaId}/comentarios/${comentarioId}`,
+    {
+      method: 'DELETE',
+      headers: getAuthHeaders(),
+    },
+  );
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error?.message || 'Error al eliminar comentario');
+  }
+}

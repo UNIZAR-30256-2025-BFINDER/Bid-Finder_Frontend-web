@@ -43,6 +43,7 @@ export const SubastaList: React.FC<SubastaListProps> = ({ subastas }) => {
           {paged.map((subasta) => (
             <SubastaCard
               key={subasta.id}
+              id={subasta.id}
               title={subasta.titulo_resumido ?? subasta.titulo}
               subtitle={subasta.titulo}
               price={subasta.precioActual}

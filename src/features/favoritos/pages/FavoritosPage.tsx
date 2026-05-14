@@ -16,7 +16,7 @@ import type { Subasta } from '../../../models/Subasta';
 import { FavoritosList } from '../components/FavoritosList';
 import toast from 'react-hot-toast';
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api/v1';
 
 export const FavoritosPage: React.FC = () => {
   const navigate = useNavigate();
@@ -54,7 +54,7 @@ export const FavoritosPage: React.FC = () => {
         throw new Error('Error al cargar favoritos');
       }
       const result = await response.json();
-      
+
       type RawFavorito = Subasta & {
         location?: {
           coordinates?: number[];
