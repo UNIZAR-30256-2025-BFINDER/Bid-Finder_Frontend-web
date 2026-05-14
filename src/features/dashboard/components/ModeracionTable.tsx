@@ -9,6 +9,7 @@ import { Search, Trash2, Filter } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { fetchAllComentarios, deleteComentarioAdmin } from '../services/moderacionService';
 import { Paginador } from '../../../components/ui/Paginador';
+import { ConfirmModal } from '../../../components/ui/ConfirmModal';
 
 export const ModeracionTable: React.FC = () => {
   const [comentarios, setComentarios] = useState<Comentario[]>([]);
@@ -17,6 +18,11 @@ export const ModeracionTable: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [procesandoId, setProcesandoId] = useState<string | null>(null);
+  const [modalConfirm, setModalConfirm] = useState<{
+    subastaId: string;
+    comentarioId: string;
+  } | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const ITEMS_PER_PAGE = 8;
 
@@ -38,16 +44,20 @@ export const ModeracionTable: React.FC = () => {
   }, [currentPage, searchTerm]);
 
   /**
+   * Abre el modal de confirmación de borrado.
+   */
+  const handleBorrar = (subastaId: string, comentarioId: string) => {
+    setModalConfirm({ subastaId, comentarioId });
+  };
+
+  /**
    * Maneja el borrado real en la base de datos.
    */
-  const handleBorrar = async (subastaId: string, comentarioId: string) => {
-    if (
-      !window.confirm(
-        '¿Seguro que deseas borrar este comentario? Esta acción no se puede deshacer.',
-      )
-    )
-      return;
-
+  const confirmarEliminacion = async () => {
+    if (!modalConfirm) return;
+    const { subastaId, comentarioId } = modalConfirm;
+    setIsDeleting(true);
+    setModalConfirm(null);
     setProcesandoId(comentarioId);
     try {
       await deleteComentarioAdmin(subastaId, comentarioId);
@@ -57,8 +67,13 @@ export const ModeracionTable: React.FC = () => {
     } catch {
       toast.error('No se pudo eliminar el comentario');
     } finally {
+      setIsDeleting(false);
       setProcesandoId(null);
     }
+  };
+
+  const cancelarEliminacion = () => {
+    setModalConfirm(null);
   };
 
   if (loading && comentarios.length === 0) {
@@ -174,6 +189,17 @@ export const ModeracionTable: React.FC = () => {
           />
         )}
       </div>
+      <ConfirmModal
+        isOpen={modalConfirm !== null}
+        title="Eliminar comentario"
+        message="¿Estás seguro de que quieres eliminar este comentario? Esta acción no se puede deshacer."
+        confirmText="Sí, eliminar"
+        cancelText="Cancelar"
+        variant="red"
+        onConfirm={confirmarEliminacion}
+        onCancel={cancelarEliminacion}
+        isLoading={isDeleting}
+      />
     </div>
   );
 };

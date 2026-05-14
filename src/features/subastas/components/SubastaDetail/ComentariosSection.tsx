@@ -5,7 +5,8 @@
 
 import React, { useEffect, useState } from 'react';
 import { Comentario } from '../../../../models/Comentario';
-import { Trash2, AlertTriangle } from 'lucide-react';
+import { Trash2 } from 'lucide-react';
+import toast from 'react-hot-toast';
 import {
   getComentarios,
   postComentario,
@@ -13,6 +14,7 @@ import {
 } from '../../services/comentariosService';
 import { authService } from '../../../auth/services/authService';
 import { Button } from '../../../../components/ui/Button';
+import { ConfirmModal } from '../../../../components/ui/ConfirmModal';
 
 interface ComentariosSectionProps {
   /** Identificador único de la subasta a la que pertenecen los comentarios */
@@ -28,10 +30,10 @@ export const ComentariosSection: React.FC<ComentariosSectionProps> = ({ subastaI
   const [nuevoTexto, setNuevoTexto] = useState('');
   const [loading, setLoading] = useState(true);
   const [enviando, setEnviando] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  
+
   const [eliminandoId, setEliminandoId] = useState<string | null>(null);
-  const [comentarioConfirmar, setComentarioConfirmar] = useState<string | null>(null);
+  const [modalConfirm, setModalConfirm] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const isAuthenticated = authService.isAuthenticated();
   const currentUser = authService.getCurrentUser();
@@ -43,7 +45,7 @@ export const ComentariosSection: React.FC<ComentariosSectionProps> = ({ subastaI
         const data = await getComentarios(subastaId);
         setComentarios(data);
       } catch {
-        setError('No se pudieron cargar los comentarios.');
+        toast.error('No se pudieron cargar los comentarios.');
       } finally {
         setLoading(false);
       }
@@ -59,40 +61,43 @@ export const ComentariosSection: React.FC<ComentariosSectionProps> = ({ subastaI
     if (!nuevoTexto.trim()) return;
 
     setEnviando(true);
-    setError(null);
 
     try {
       const nuevoComentario = await postComentario(subastaId, nuevoTexto);
       setComentarios((prev) => [nuevoComentario, ...prev]);
       setNuevoTexto('');
+      toast.success('Comentario publicado');
     } catch (err: unknown) {
-      if (err instanceof Error) {
-        setError(err.message || 'Error al publicar el comentario');
-      }
+      const message = err instanceof Error ? err.message : 'Error al publicar el comentario';
+      toast.error(message);
     } finally {
       setEnviando(false);
     }
   };
 
   /**
-   * Ejecuta el borrado real tras la confirmación del modal.
+   * Maneja el borrado real en la base de datos.
    */
-  const confirmarBorrado = async () => {
-    if (!comentarioConfirmar) return;
-    
-    const idParaBorrar = comentarioConfirmar;
-    setComentarioConfirmar(null); // Cerramos el modal inmediatamente
-    setEliminandoId(idParaBorrar); // Mostramos el feedback visual de carga
-
+  const confirmarEliminacion = async () => {
+    if (!modalConfirm) return;
+    const comentarioId = modalConfirm;
+    setModalConfirm(null);
+    setIsDeleting(true);
+    setEliminandoId(comentarioId);
     try {
-      await deleteComentario(subastaId, idParaBorrar);
-      setComentarios((prev) => prev.filter((c) => c._id !== idParaBorrar));
+      await deleteComentario(subastaId, comentarioId);
+      setComentarios((prev) => prev.filter((c) => c._id !== comentarioId));
+      toast.success('Comentario eliminado');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al eliminar');
+      const mensaje = err instanceof Error ? err.message : 'Error al eliminar';
+      toast.error(mensaje);
     } finally {
+      setIsDeleting(false);
       setEliminandoId(null);
     }
   };
+
+  const cancelarEliminacion = () => setModalConfirm(null);
 
   /**
    * Formatea una fecha ISO a una cadena legible.
@@ -129,7 +134,6 @@ export const ComentariosSection: React.FC<ComentariosSectionProps> = ({ subastaI
                 {enviando ? 'Enviando...' : 'Publicar comentario'}
               </Button>
             </div>
-            {error && <p className="text-red-500 text-sm">{error}</p>}
           </form>
         ) : (
           <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 text-center">
@@ -154,7 +158,6 @@ export const ComentariosSection: React.FC<ComentariosSectionProps> = ({ subastaI
           comentarios.map((comentario) => {
             const esMio = currentUser?._id === comentario.usuario_id._id;
             const puedeBorrar = esMio || isAdmin;
-            const estaEliminandose = eliminandoId === comentario._id;
 
             return (
               <div
@@ -168,7 +171,7 @@ export const ComentariosSection: React.FC<ComentariosSectionProps> = ({ subastaI
                   <span className={`font-semibold ${esMio ? 'text-blue-700' : 'text-gray-700'}`}>
                     {esMio ? 'Yo' : comentario.usuario_id?.nombre || 'Usuario Anónimo'}
                   </span>
-                  
+
                   {/* Derecha: Fecha y Acciones */}
                   <div className="flex items-center gap-3">
                     <span className="text-xs text-gray-400">
@@ -177,12 +180,12 @@ export const ComentariosSection: React.FC<ComentariosSectionProps> = ({ subastaI
                     {puedeBorrar && (
                       <button
                         // En lugar de borrar directo, abrimos el modal
-                        onClick={() => setComentarioConfirmar(comentario._id!)}
-                        disabled={estaEliminandose}
+                        onClick={() => setModalConfirm(comentario._id!)}
+                        disabled={eliminandoId === comentario._id}
                         className="text-red-400 hover:text-red-600 transition-colors p-1"
                         title="Eliminar comentario"
                       >
-                        {estaEliminandose ? (
+                        {eliminandoId === comentario._id ? (
                           <span className="text-xs animate-pulse">Borrando...</span>
                         ) : (
                           <Trash2 size={16} />
@@ -198,37 +201,17 @@ export const ComentariosSection: React.FC<ComentariosSectionProps> = ({ subastaI
         )}
       </div>
 
-      {comentarioConfirmar && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white rounded-xl shadow-2xl p-6 w-full max-w-sm transform transition-all scale-100 opacity-100">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="bg-red-100 p-2 rounded-full text-red-600">
-                <AlertTriangle size={24} />
-              </div>
-              <h3 className="text-lg font-bold text-gray-900">Eliminar comentario</h3>
-            </div>
-            
-            <p className="text-gray-600 mb-6">
-              ¿Estás seguro de que quieres eliminar este comentario? Esta acción no se puede deshacer.
-            </p>
-            
-            <div className="flex justify-end gap-3">
-              <Button 
-                variant="secondary" 
-                onClick={() => setComentarioConfirmar(null)}
-              >
-                Cancelar
-              </Button>
-              <button
-                onClick={confirmarBorrado}
-                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg shadow-sm transition-colors"
-              >
-                Sí, eliminar
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <ConfirmModal
+        isOpen={modalConfirm !== null}
+        title="Eliminar comentario"
+        message="¿Estás seguro de que quieres eliminar este comentario? Esta acción no se puede deshacer."
+        confirmText="Sí, eliminar"
+        cancelText="Cancelar"
+        variant="red"
+        onConfirm={confirmarEliminacion}
+        onCancel={cancelarEliminacion}
+        isLoading={isDeleting}
+      />
     </div>
   );
 };
