@@ -24,11 +24,13 @@ interface FeaturesSectionProps {
  */
 export const FeaturesSection: React.FC<FeaturesSectionProps> = ({ title, subtitle, features }) => {
   return (
-    <section className="py-24 px-8 md:px-16 border-t border-white/5 bg-black/50">
-      <div className="max-w-7xl mx-auto">
-        <div className="mb-16">
+    <section className="relative py-24 px-8 md:px-16 border-t border-white/5 bg-[#0b0f19] overflow-hidden">
+      <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-yellow-400/5 rounded-full blur-[120px] pointer-events-none translate-y-1/2" />
+
+      <div className="relative z-10 max-w-7xl mx-auto">
+        <div className="mb-16 text-center md:text-left">
           <h2 className="text-3xl md:text-5xl font-bold mb-4 text-white">{title}</h2>
-          <p className="text-white/50 text-xl">{subtitle}</p>
+          <p className="text-gray-400 text-xl max-w-2xl">{subtitle}</p>
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
