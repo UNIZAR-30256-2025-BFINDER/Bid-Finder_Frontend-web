@@ -3,9 +3,14 @@ import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { LandingPage } from './LandingPage';
 
-// Mock de SubastaMap ya que usa Leaflet y puede fallar en tests unitarios
-vi.mock('../../map/components/SubastaMap', () => ({
-  SubastaMap: () => <div data-testid="mock-map">Map</div>,
+vi.mock('react-leaflet', () => ({
+  MapContainer: () => <div data-testid="mock-map">Map</div>,
+  TileLayer: () => null,
+  Marker: () => null,
+}));
+
+vi.mock('../../subastas/services/subastasService', () => ({
+  fetchSubastas: vi.fn().mockResolvedValue([]),
 }));
 
 describe('LandingPage', () => {
@@ -17,7 +22,8 @@ describe('LandingPage', () => {
     );
 
     expect(screen.getByText(/Oportunidades del/i)).toBeDefined();
-    expect(screen.getByText(/Todo lo que necesitas/i)).toBeDefined();
+    // Actualizado al nuevo texto del componente FeaturesSection
+    expect(screen.getByText(/Herramientas para analizar mejor/i)).toBeDefined();
     expect(screen.getByTestId('mock-map')).toBeDefined();
   });
 });
