@@ -5,7 +5,7 @@
  */
 
 import React, { useEffect, useState, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { SubastaMap } from '../components/SubastaMap';
 import L from 'leaflet';
 import { filtrarSubastasPorBounds } from '../../subastas/services/subastasFiltroService';
@@ -18,13 +18,17 @@ import { DashboardNavbar } from '../layout/DashboardNavbar';
 import { MobileViewToggle } from '../components/MobileViewToggle';
 import { useIsMobile } from '../../../hooks/useIsMobile';
 
-/**
- * Componente principal que gestiona el estado global de la exploración de subastas.
- */
 export const DashBoard: React.FC = () => {
+  const location = useLocation();
+  const heroQuery = (location.state as { heroQuery?: string } | null)?.heroQuery ?? '';
+
+  const mapRef = useRef<L.Map | null>(null);
+  const pendingFlyRef = useRef<string>(heroQuery);
+
   const [subastas, setSubastas] = useState<Subasta[]>([]);
   const [subastasVisibles, setSubastasVisibles] = useState<Subasta[]>([]);
   const [mobileView, setMobileView] = useState<'map' | 'list'>('map');
+  const [locationNotFound, setLocationNotFound] = useState(false);
   const isMobile = useIsMobile();
   const mapBoundsRef = useRef<L.LatLngBounds | null>(null);
 
@@ -39,13 +43,45 @@ export const DashBoard: React.FC = () => {
 
   const isAuthenticated = !!localStorage.getItem('token');
 
-  /** Efecto para manejar el debounce de la búsqueda global */
+  const centrarMapaEnBusqueda = async (query: string) => {
+    if (!query || !mapRef.current) return;
+    setLocationNotFound(false);
+    try {
+      const res = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}, España`,
+      );
+      const data = await res.json();
+      if (data && data.length > 0) {
+        const { lat, lon } = data[0];
+        mapRef.current.flyTo([parseFloat(lat), parseFloat(lon)], 11, {
+          animate: true,
+          duration: 1.5,
+        });
+      } else {
+        setLocationNotFound(true);
+        setTimeout(() => setLocationNotFound(false), 4000);
+      }
+    } catch (error) {
+      console.error('Error geocodificando búsqueda', error);
+    }
+  };
+
+  const handleMapReady = (map: L.Map) => {
+    mapRef.current = map;
+    if (pendingFlyRef.current) {
+      centrarMapaEnBusqueda(pendingFlyRef.current);
+      pendingFlyRef.current = '';
+    }
+  };
+
   useEffect(() => {
-    const timer = setTimeout(() => setDebouncedQuery(searchQuery), 400);
+    const timer = setTimeout(() => {
+      setDebouncedQuery(searchQuery);
+      if (searchQuery) centrarMapaEnBusqueda(searchQuery);
+    }, 800);
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
-  /** Carga inicial y reactiva de subastas filtradas desde la API */
   useEffect(() => {
     const params = { ...filtros, q: debouncedQuery || undefined };
     fetchSubastas(params).then((data) => {
@@ -60,10 +96,6 @@ export const DashBoard: React.FC = () => {
     });
   }, [filtros, debouncedQuery, isMobile]);
 
-  /**
-   * Actualiza el listado lateral cuando el usuario mueve o hace zoom en el mapa.
-   * @param {L.LatLngBounds} bounds - Límites geográficos visibles actualmente.
-   */
   const handleBoundsChange = (bounds: L.LatLngBounds) => {
     mapBoundsRef.current = bounds;
     if (!isMobile) {
@@ -71,7 +103,6 @@ export const DashBoard: React.FC = () => {
     }
   };
 
-  /** Cambia entre vista de mapa y listado en resoluciones móviles */
   const toggleMobileView = () => {
     setMobileView((prev) => (prev === 'map' ? 'list' : 'map'));
   };
@@ -107,6 +138,21 @@ export const DashBoard: React.FC = () => {
     </div>
   );
 
+  const mapContent = (
+    <div className="w-full h-full bg-[#0b0f19] relative z-0">
+      {locationNotFound && (
+        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-[1100] bg-red-500/90 text-white text-sm font-semibold px-4 py-2 rounded-full shadow-lg pointer-events-none">
+          No se encontró esa ubicación en España
+        </div>
+      )}
+      <SubastaMap
+        subastas={subastas}
+        onBoundsChange={handleBoundsChange}
+        onMapReady={handleMapReady}
+      />
+    </div>
+  );
+
   return (
     <div className="h-[100dvh] flex flex-col bg-[#0b0f19] text-white font-sans overflow-hidden">
       <DashboardNavbar
@@ -122,13 +168,7 @@ export const DashBoard: React.FC = () => {
         {isMobile ? (
           <>
             <div className="w-full h-full relative overflow-hidden">
-              {mobileView === 'map' ? (
-                <div className="w-full h-full bg-[#0b0f19] relative z-0">
-                  <SubastaMap subastas={subastas} onBoundsChange={handleBoundsChange} />
-                </div>
-              ) : (
-                sidebarContent
-              )}
+              {mobileView === 'map' ? mapContent : sidebarContent}
             </div>
             <MobileViewToggle
               currentView={mobileView}
@@ -137,14 +177,7 @@ export const DashBoard: React.FC = () => {
             />
           </>
         ) : (
-          <SplitView
-            left={sidebarContent}
-            right={
-              <div className="w-full h-full bg-[#0b0f19] relative z-0">
-                <SubastaMap subastas={subastas} onBoundsChange={handleBoundsChange} />
-              </div>
-            }
-          />
+          <SplitView left={sidebarContent} right={mapContent} />
         )}
       </main>
     </div>

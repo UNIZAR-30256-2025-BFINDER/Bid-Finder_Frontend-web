@@ -27,6 +27,7 @@ import type { Subasta } from '../../../models/Subasta';
 interface SubastaMapProps {
   subastas: Subasta[];
   onBoundsChange?: (bounds: L.LatLngBounds) => void;
+  onMapReady?: (map: L.Map) => void;
 }
 
 function MarkersVisibilityController({ children }: { children: React.ReactNode }) {
@@ -68,7 +69,7 @@ function MarkersVisibilityController({ children }: { children: React.ReactNode }
   );
 }
 
-export const SubastaMap: React.FC<SubastaMapProps> = ({ subastas, onBoundsChange }) => {
+export const SubastaMap: React.FC<SubastaMapProps> = ({ subastas, onBoundsChange, onMapReady }) => {
   const userLocation = useGeolocation();
 
   const [initialView] = useState(() => {
@@ -111,6 +112,17 @@ export const SubastaMap: React.FC<SubastaMapProps> = ({ subastas, onBoundsChange
     return null;
   };
 
+  /** Componente para extraer la instancia del mapa y pasarla al padre */
+  const MapInstanceExtractor = () => {
+    const map = useMap();
+    useEffect(() => {
+      if (onMapReady) {
+        onMapReady(map);
+      }
+    }, [map]);
+    return null;
+  };
+
   function BoundsNotifier() {
     useMapEvent('moveend', (e) => {
       const map = e.target as L.Map;
@@ -148,6 +160,7 @@ export const SubastaMap: React.FC<SubastaMapProps> = ({ subastas, onBoundsChange
         className="w-full h-full bg-[#0b0f19] rounded-lg"
         preferCanvas={true}
       >
+        <MapInstanceExtractor />
         <MapAutoResize />
         <InitialViewHandler location={userLocation} />
         <BoundsNotifier />

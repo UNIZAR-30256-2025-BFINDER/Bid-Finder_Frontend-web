@@ -30,7 +30,10 @@ vi.mock('../mapConstants', () => ({
   MAP_MAX_ZOOM: 18,
   MAP_ZOOM_DELTA: 0.5,
   MAP_ZOOM_SNAP: 0.5,
-  SPAIN_MAX_BOUNDS: [[24.0, -22.0], [45.5, 6.0]],
+  SPAIN_MAX_BOUNDS: [
+    [24.0, -22.0],
+    [45.5, 6.0],
+  ],
 }));
 
 vi.mock('../LocationMarker', () => ({
