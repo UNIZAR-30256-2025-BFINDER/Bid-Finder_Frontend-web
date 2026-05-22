@@ -41,11 +41,7 @@ const router = createBrowserRouter(
         },
         {
           path: 'dashboard',
-          element: (
-            <ProtectedRoute>
-              <DashBoard />
-            </ProtectedRoute>
-          ),
+          element: <DashBoard />,
         },
         {
           path: 'favorites',

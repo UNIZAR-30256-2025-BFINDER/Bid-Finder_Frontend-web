@@ -3,11 +3,10 @@
  * Incluye un botón flotante para centrar la vista y un marcador visual en el mapa.
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import { LocateFixed } from 'lucide-react';
-import React from 'react';
 import {
   handleLocationFound,
   hereIcon,
@@ -16,30 +15,39 @@ import {
   LOCATION_DENIED_WARNING,
 } from './mapConstants';
 
-/**
- * Componente que utiliza la API de geolocalización de Leaflet para ubicar al usuario.
- * Renderiza un botón de control y un marcador con popup informativo.
- */
 export const LocationMarker = () => {
   const [position, setPosition] = useState<L.LatLng | null>(null);
   const map = useMap();
+  const shouldFlyToRef = useRef(false);
 
-  /**
-   * Dispara el proceso de localización nativo de Leaflet.
-   */
-  const handleLocate = React.useCallback(() => {
-    map.locate();
-  }, [map]);
+  const locate = useCallback(
+    (flyTo: boolean) => {
+      shouldFlyToRef.current = flyTo;
+      map.locate();
+    },
+    [map],
+  );
 
   useEffect(() => {
-    handleLocate();
+    const hasSavedView = !!sessionStorage.getItem('bidfinder_map_view');
+    locate(!hasSavedView);
 
-    // Suscripción a eventos de Leaflet para éxito y error de ubicación
-    map.on('locationfound', handleLocationFound(map, setPosition));
-    map.on('locationerror', (e) => {
+    const onLocationFound = (e: L.LocationEvent) => {
+      handleLocationFound(map, setPosition, shouldFlyToRef.current)(e);
+    };
+
+    const onLocationError = (e: L.ErrorEvent) => {
       console.warn(LOCATION_DENIED_WARNING, e.message);
-    });
-  }, [handleLocate, map]);
+    };
+
+    map.on('locationfound', onLocationFound);
+    map.on('locationerror', onLocationError);
+
+    return () => {
+      map.off('locationfound', onLocationFound);
+      map.off('locationerror', onLocationError);
+    };
+  }, [locate, map]);
 
   return (
     <>
@@ -48,7 +56,7 @@ export const LocationMarker = () => {
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
-            handleLocate();
+            locate(true);
           }}
           className="flex items-center justify-center w-12 h-12 md:w-14 md:h-14 bg-white/90 hover:bg-gray-100 text-slate-800 rounded-full shadow-2xl transition-all border border-slate-200 active:scale-95"
           title={LOCATION_BUTTON_TITLE}

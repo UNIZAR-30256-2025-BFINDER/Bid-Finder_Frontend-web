@@ -37,7 +37,8 @@ export const PoliticaPrivacidad: React.FC = () => {
                 bidfinder.legal@gmail.com
               </li>
               <li>
-                <strong className="text-white">Sitio web:</strong> https://bid-finder-frontend-web.vercel.app/
+                <strong className="text-white">Sitio web:</strong>{' '}
+                https://bid-finder-frontend-web.vercel.app/
               </li>
             </ul>
             <p>

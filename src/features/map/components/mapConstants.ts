@@ -8,10 +8,13 @@ import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 import 'leaflet.markercluster';
 
-/** Coordenadas por defecto (Centro de Madrid) */
 export const MAP_DEFAULT_CENTER: [number, number] = [40.416775, -3.70379];
 
-/** Configuración del icono por defecto de Leaflet */
+export const SPAIN_MAX_BOUNDS: L.LatLngBoundsLiteral = [
+  [24.0, -22.0],
+  [45.5, 6.0],
+];
+
 export const DefaultIcon = L.icon({
   iconUrl: icon,
   shadowUrl: iconShadow,
@@ -19,9 +22,6 @@ export const DefaultIcon = L.icon({
   popupAnchor: [1, -34],
 });
 
-/**
- * Sobrescribe el icono de marcador global de Leaflet con el icono por defecto configurado.
- */
 export const setDefaultMarkerIcon = () => {
   L.Marker.prototype.options.icon = DefaultIcon;
 };
@@ -30,17 +30,18 @@ export const LOCATION_POPUP_TEXT = 'Estás aquí';
 export const LOCATION_BUTTON_TITLE = 'Ubicarme';
 export const LOCATION_DENIED_WARNING = 'Ubicación denegada:';
 
-export const MAP_DEFAULT_ZOOM = 16;
-export const MAP_MIN_ZOOM = 1;
+export const MAP_DEFAULT_ZOOM = 6;
+export const MAP_MIN_ZOOM = 5;
 export const MAP_MAX_ZOOM = 18;
 
-/** Opciones de animación para el desplazamiento del mapa */
+export const MAP_ZOOM_DELTA = 0.5;
+export const MAP_ZOOM_SNAP = 0.5;
+
 export const MAP_FLYTO_OPTIONS = {
   animate: true,
   duration: 1.5,
 };
 
-/** Icono personalizado para representar la ubicación actual del usuario */
 export const hereIcon = L.divIcon({
   className: '',
   html: `
@@ -58,22 +59,15 @@ export const hereIcon = L.divIcon({
   iconAnchor: [11, 11],
 });
 
-/**
- * Handler para cuando se encuentra la ubicación del usuario.
- * @param {L.Map} map - Instancia del mapa de Leaflet.
- * @param {(latlng: L.LatLng) => void} setPosition - Estado para actualizar la posición en el componente.
- */
 export const handleLocationFound =
-  (map: L.Map, setPosition: (latlng: L.LatLng) => void) => (e: L.LocationEvent) => {
+  (map: L.Map, setPosition: (latlng: L.LatLng) => void, shouldFlyTo: boolean) =>
+  (e: L.LocationEvent) => {
     setPosition(e.latlng);
-    map.flyTo(e.latlng, MAP_DEFAULT_ZOOM, MAP_FLYTO_OPTIONS);
+    if (shouldFlyTo) {
+      map.flyTo(e.latlng, 14, MAP_FLYTO_OPTIONS);
+    }
   };
 
-/**
- * Crea un icono personalizado para los clusters de marcadores.
- * @param {L.MarkerCluster} cluster - El objeto cluster proporcionado por leaflet.markercluster.
- * @returns {L.DivIcon} Icono circular amarillo con el conteo de elementos.
- */
 export function createYellowClusterIcon(cluster: L.MarkerCluster) {
   const count = cluster.getChildCount();
   const size = Math.max(40, Math.min(80, 30 + count * 4));

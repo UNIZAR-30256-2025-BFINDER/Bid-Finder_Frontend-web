@@ -5,6 +5,7 @@
  */
 
 import React, { useEffect, useState, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import { SubastaMap } from '../components/SubastaMap';
 import L from 'leaflet';
 import { filtrarSubastasPorBounds } from '../../subastas/services/subastasFiltroService';
@@ -36,6 +37,8 @@ export const DashBoard: React.FC = () => {
   const [debouncedQuery, setDebouncedQuery] = useState('');
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
 
+  const isAuthenticated = !!localStorage.getItem('token');
+
   /** Efecto para manejar el debounce de la búsqueda global */
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedQuery(searchQuery), 400);
@@ -51,6 +54,8 @@ export const DashBoard: React.FC = () => {
         setSubastasVisibles(data);
       } else if (mapBoundsRef.current) {
         setSubastasVisibles(filtrarSubastasPorBounds(data, mapBoundsRef.current));
+      } else {
+        setSubastasVisibles(data);
       }
     });
   }, [filtros, debouncedQuery, isMobile]);
@@ -75,6 +80,20 @@ export const DashBoard: React.FC = () => {
 
   const sidebarContent = (
     <div className="h-full flex flex-col p-4 md:p-6 bg-[#0b0f19] overflow-y-auto">
+      {!isAuthenticated && (
+        <div className="mb-6 p-4 rounded-xl border border-yellow-400/20 bg-yellow-400/10 text-center shrink-0">
+          <p className="text-sm font-medium text-gray-200">
+            Regístrate para guardar subastas y comentar
+          </p>
+          <Link
+            to="/register"
+            className="mt-3 inline-block w-full rounded-lg bg-yellow-400 py-2 text-xs font-bold text-black hover:bg-yellow-300 transition-colors"
+          >
+            Crear cuenta gratis
+          </Link>
+        </div>
+      )}
+
       <div className="flex justify-between items-end mb-4 shrink-0">
         <div>
           <h1 className="text-2xl font-bold">Subastas Activas</h1>

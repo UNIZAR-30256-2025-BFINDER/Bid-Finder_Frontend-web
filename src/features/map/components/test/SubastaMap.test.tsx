@@ -1,3 +1,7 @@
+/**
+ * @fileoverview Tests unitarios para el componente SubastaMap.
+ */
+
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
@@ -20,9 +24,13 @@ vi.mock('../../hooks/useMapAutoResize', () => ({
 
 vi.mock('../mapConstants', () => ({
   setDefaultMarkerIcon: () => mocks.setDefaultMarkerIcon(),
-  MAP_DEFAULT_ZOOM: 13,
+  MAP_DEFAULT_CENTER: [40.416775, -3.70379] as [number, number],
+  MAP_DEFAULT_ZOOM: 6,
   MAP_MIN_ZOOM: 5,
   MAP_MAX_ZOOM: 18,
+  MAP_ZOOM_DELTA: 0.5,
+  MAP_ZOOM_SNAP: 0.5,
+  SPAIN_MAX_BOUNDS: [[24.0, -22.0], [45.5, 6.0]],
 }));
 
 vi.mock('../LocationMarker', () => ({
@@ -53,6 +61,8 @@ vi.mock('react-leaflet', () => {
       fitBounds: vi.fn(),
       setView: vi.fn(),
       getBounds: vi.fn(),
+      on: vi.fn(),
+      off: vi.fn(),
     }),
     useMapEvents: vi.fn(),
     useMapEvent: vi.fn(),
@@ -64,16 +74,16 @@ describe('SubastaMap', () => {
     vi.clearAllMocks();
   });
 
-  it('muestra el estado de carga si no hay geolocalización', () => {
+  it('muestra el mapa con el centro por defecto si no hay geolocalización', () => {
     mocks.useGeolocation.mockReturnValue(null);
 
     render(
       <MemoryRouter>
-        <SubastaMap onBoundsChange={vi.fn()} />
+        <SubastaMap subastas={[]} onBoundsChange={vi.fn()} />
       </MemoryRouter>,
     );
 
-    expect(screen.getByText('Cargando mapa...')).toBeInTheDocument();
+    expect(screen.getByTestId('map-container')).toBeInTheDocument();
   });
 
   it('renderiza el mapa cuando hay geolocalización', () => {
@@ -81,7 +91,7 @@ describe('SubastaMap', () => {
 
     render(
       <MemoryRouter>
-        <SubastaMap onBoundsChange={vi.fn()} />
+        <SubastaMap subastas={[]} onBoundsChange={vi.fn()} />
       </MemoryRouter>,
     );
 

@@ -1,83 +1,166 @@
 /**
  * @fileoverview Componente integrador del mapa de subastas.
- * Configura el contenedor de Leaflet, las capas de teselas y los eventos de interacción.
+ * Configura el contenedor de Leaflet, las capas de teselas, límites, zoom suave
+ * y persistencia de la posición durante la sesión.
  */
 
 import React from 'react';
-import { useEffect } from 'react';
-import { setDefaultMarkerIcon, MAP_DEFAULT_ZOOM, MAP_MIN_ZOOM, MAP_MAX_ZOOM } from './mapConstants';
+import { useEffect, useState, useRef } from 'react';
+import {
+  setDefaultMarkerIcon,
+  MAP_DEFAULT_ZOOM,
+  MAP_MIN_ZOOM,
+  MAP_MAX_ZOOM,
+  MAP_ZOOM_DELTA,
+  MAP_ZOOM_SNAP,
+  SPAIN_MAX_BOUNDS,
+  MAP_DEFAULT_CENTER,
+} from './mapConstants';
 import { useGeolocation } from '../hooks/useGeolocation';
 import { useMapAutoResize } from '../hooks/useMapAutoResize';
-import { MapContainer, TileLayer, useMapEvent } from 'react-leaflet';
+import { MapContainer, TileLayer, useMapEvent, useMap } from 'react-leaflet';
 import { LocationMarker } from './LocationMarker';
 import { SubastasMarkers } from '../components/subastas/SubastasMarkers';
 import L from 'leaflet';
 import type { Subasta } from '../../../models/Subasta';
 
 interface SubastaMapProps {
-  /** Colección de subastas a mostrar mediante marcadores */
   subastas: Subasta[];
-  /** Notifica al padre cuando cambian los límites visuales del mapa (zoom/pan) */
   onBoundsChange?: (bounds: L.LatLngBounds) => void;
 }
 
-/**
- * Renderiza el mapa interactivo principal.
- * Gestiona la carga inicial de iconos y la geolocalización del centro del mapa.
- */
+function MarkersVisibilityController({ children }: { children: React.ReactNode }) {
+  const map = useMap();
+  const [visible, setVisible] = useState(true);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    const hide = () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+      setVisible(false);
+    };
+
+    const show = () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+      timerRef.current = setTimeout(() => setVisible(true), 120);
+    };
+
+    map.on('zoomstart', hide);
+    map.on('zoomend', show);
+
+    return () => {
+      map.off('zoomstart', hide);
+      map.off('zoomend', show);
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, [map]);
+
+  return (
+    <div
+      style={{
+        opacity: visible ? 1 : 0,
+        transition: visible ? 'opacity 0.15s ease-in' : 'none',
+        pointerEvents: visible ? 'auto' : 'none',
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+
 export const SubastaMap: React.FC<SubastaMapProps> = ({ subastas, onBoundsChange }) => {
+  const userLocation = useGeolocation();
+
+  const [initialView] = useState(() => {
+    const saved = sessionStorage.getItem('bidfinder_map_view');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        return {
+          center: [parsed.lat, parsed.lng] as [number, number],
+          zoom: parsed.zoom as number,
+          hasSavedView: true,
+        };
+      } catch (e) {
+        console.error('Error leyendo estado del mapa', e);
+      }
+    }
+    return {
+      center: MAP_DEFAULT_CENTER,
+      zoom: MAP_DEFAULT_ZOOM,
+      hasSavedView: false,
+    };
+  });
+
   useEffect(() => {
     setDefaultMarkerIcon();
   }, []);
 
-  const center = useGeolocation();
-
-  /** Componente interno para aplicar el hook de redimensionamiento automático */
   const MapAutoResize = () => {
     useMapAutoResize();
     return null;
   };
 
-  /** * Componente interno que escucha el evento 'moveend' de Leaflet
-   * para informar sobre el cambio de área visible.
-   */
+  const InitialViewHandler = ({ location }: { location: [number, number] | null }) => {
+    const map = useMap();
+    useEffect(() => {
+      if (!initialView.hasSavedView && location) {
+        map.setView(location, 14);
+      }
+    }, [map, location]);
+    return null;
+  };
+
   function BoundsNotifier() {
     useMapEvent('moveend', (e) => {
+      const map = e.target as L.Map;
+      const center = map.getCenter();
+      const zoom = map.getZoom();
+
+      sessionStorage.setItem(
+        'bidfinder_map_view',
+        JSON.stringify({
+          lat: center.lat,
+          lng: center.lng,
+          zoom: zoom,
+        }),
+      );
+
       if (onBoundsChange) {
-        onBoundsChange(e.target.getBounds());
+        onBoundsChange(map.getBounds());
       }
     });
     return null;
   }
 
-  if (!center) {
-    return (
-      <div className="w-full h-[92vh] min-h-[600px] z-0 relative rounded-lg overflow-hidden shadow-md flex items-center justify-center">
-        Cargando mapa...
-      </div>
-    );
-  }
-
   return (
     <div className="w-full h-full min-h-0 flex-1 z-0 relative rounded-lg shadow-md">
       <MapContainer
-        center={center}
-        zoom={MAP_DEFAULT_ZOOM}
+        center={initialView.center}
+        zoom={initialView.zoom}
         minZoom={MAP_MIN_ZOOM}
         maxZoom={MAP_MAX_ZOOM}
+        zoomDelta={MAP_ZOOM_DELTA}
+        zoomSnap={MAP_ZOOM_SNAP}
+        maxBounds={SPAIN_MAX_BOUNDS}
+        maxBoundsViscosity={0.5}
         scrollWheelZoom={true}
         className="w-full h-full bg-[#0b0f19] rounded-lg"
         preferCanvas={true}
       >
         <MapAutoResize />
+        <InitialViewHandler location={userLocation} />
         <BoundsNotifier />
 
         <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
           url="https://cartodb-basemaps-a.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png"
         />
 
-        <SubastasMarkers subastas={subastas} />
+        <MarkersVisibilityController>
+          <SubastasMarkers subastas={subastas} />
+        </MarkersVisibilityController>
+
         <LocationMarker />
       </MapContainer>
     </div>

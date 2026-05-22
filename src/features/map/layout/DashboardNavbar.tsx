@@ -1,12 +1,13 @@
 /**
- * @fileoverview Barra de navegación principal para usuarios autenticados.
+ * @fileoverview Barra de navegación principal para el Dashboard.
  * Gestiona el buscador global, el despliegue de filtros y la navegación administrativa.
+ * Adapta sus opciones dinámicamente según el estado de autenticación.
  */
 
 import React, { useRef, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Navbar } from '../../../components/layout/Navbar';
-import { Search, Filter, X } from 'lucide-react';
+import { Search, Filter, X, LogIn } from 'lucide-react';
 import { SubastasFilters, FiltrosState } from '../components/subastas/SubastasFilters';
 import { authService } from '../../auth/services/authService';
 
@@ -39,18 +40,16 @@ export const DashboardNavbar: React.FC<DashboardNavbarProps> = ({
 
   const currentUser = authService.getCurrentUser();
   const isAdmin = currentUser?.rol === 'admin';
+  const isAuthenticated = !!localStorage.getItem('token');
 
-  /** Determina si una ruta está activa para resaltar el link en el menú */
   const isActive = (path: string) => location.pathname.startsWith(path);
 
-  /** Cierra la sesión y redirige al usuario al login */
   const handleLogout = () => {
     authService.logout();
-    navigate('/login');
+    navigate('/');
   };
 
   useEffect(() => {
-    /** Cierra el panel de filtros si el usuario clica fuera del contenedor */
     function handleClickOutside(event: MouseEvent) {
       if (
         filtersRef.current &&
@@ -78,28 +77,30 @@ export const DashboardNavbar: React.FC<DashboardNavbarProps> = ({
           </div>
         }
         links={
-          <>
-            <button
-              onClick={() => navigate('/dashboard')}
-              className={`transition-all px-2 lg:px-3 text-base text-left ${isActive('/dashboard') ? 'text-yellow-400 font-semibold' : 'text-gray-300 hover:text-white'}`}
-            >
-              Explorar
-            </button>
-            <button
-              onClick={() => navigate('/favorites')}
-              className={`transition-all px-2 lg:px-3 text-base text-left ${isActive('/favorites') ? 'text-yellow-400 font-semibold' : 'text-gray-300 hover:text-white'}`}
-            >
-              Favoritos
-            </button>
-            {isAdmin && (
+          isAuthenticated ? (
+            <>
               <button
-                onClick={() => navigate('/admin')}
-                className={`transition-all px-2 lg:px-3 text-base text-left ${isActive('/admin') ? 'text-yellow-400 font-semibold' : 'text-gray-300 hover:text-white'}`}
+                onClick={() => navigate('/dashboard')}
+                className={`transition-all px-2 lg:px-3 text-base text-left ${isActive('/dashboard') ? 'text-yellow-400 font-semibold' : 'text-gray-300 hover:text-white'}`}
               >
-                Admin
+                Explorar
               </button>
-            )}
-          </>
+              <button
+                onClick={() => navigate('/favorites')}
+                className={`transition-all px-2 lg:px-3 text-base text-left ${isActive('/favorites') ? 'text-yellow-400 font-semibold' : 'text-gray-300 hover:text-white'}`}
+              >
+                Favoritos
+              </button>
+              {isAdmin && (
+                <button
+                  onClick={() => navigate('/admin')}
+                  className={`transition-all px-2 lg:px-3 text-base text-left ${isActive('/admin') ? 'text-yellow-400 font-semibold' : 'text-gray-300 hover:text-white'}`}
+                >
+                  Admin
+                </button>
+              )}
+            </>
+          ) : null
         }
         actions={
           <>
@@ -126,17 +127,27 @@ export const DashboardNavbar: React.FC<DashboardNavbarProps> = ({
                 </button>
               </div>
             )}
-            <button
-              onClick={handleLogout}
-              className="text-sm font-semibold text-gray-300 border border-white/20 hover:border-red-400 hover:text-red-400 px-4 py-1.5 rounded-lg transition-colors"
-            >
-              Cerrar Sesión
-            </button>
+
+            {isAuthenticated ? (
+              <button
+                onClick={handleLogout}
+                className="text-sm font-semibold text-gray-300 border border-white/20 hover:border-red-400 hover:text-red-400 px-4 py-1.5 rounded-lg transition-colors"
+              >
+                Cerrar Sesión
+              </button>
+            ) : (
+              <button
+                onClick={() => navigate('/login')}
+                className="flex items-center gap-2 text-sm font-bold text-black bg-yellow-400 hover:bg-yellow-300 px-4 py-1.5 rounded-lg transition-colors"
+              >
+                <LogIn size={16} />
+                Iniciar Sesión
+              </button>
+            )}
           </>
         }
       />
 
-      {/* Menú de filtros desplegable */}
       {showSearchAndFilters && isFiltersOpen && (
         <div
           ref={filtersRef}

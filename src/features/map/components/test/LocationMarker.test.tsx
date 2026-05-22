@@ -15,6 +15,7 @@ vi.mock('react-leaflet', async () => {
     useMap: () => ({
       locate: vi.fn(),
       on: vi.fn(),
+      off: vi.fn(),
     }),
   };
 });

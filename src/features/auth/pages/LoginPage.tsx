@@ -1,27 +1,39 @@
 /**
  * @fileoverview Página principal de Login.
- * Agrupa el layout superior (header/logo) y el formulario de inicio de sesión.
+ * Implementa el componente de navegación global y renderiza el formulario de inicio de sesión.
  */
 
-import { Link } from 'react-router-dom';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { LoginForm } from '../components/LoginForm';
-import { Logo } from '../../../components/ui/Logo';
+import { Navbar } from '../../../components/layout/Navbar';
 
-const LoginPage = () => {
+const LoginPage: React.FC = () => {
+  const navigate = useNavigate();
+
   return (
-    <div className="min-h-screen bg-black text-white">
-      <header className="flex items-center justify-between border-b border-white/10 px-8 py-4">
-        <Logo />
+    <div className="min-h-screen bg-[#0b0f19] text-white flex flex-col">
+      <Navbar
+        logo={
+          <div
+            className="cursor-pointer select-none text-2xl font-bold tracking-widest"
+            onClick={() => navigate('/dashboard')}
+          >
+            <span className="text-yellow-400">B</span>
+            <span className="text-white">-FINDER</span>
+          </div>
+        }
+        actions={
+          <button
+            onClick={() => navigate('/register')}
+            className="rounded-lg bg-yellow-400 px-4 py-2 text-sm font-bold text-black transition hover:bg-yellow-300"
+          >
+            Registrarse
+          </button>
+        }
+      />
 
-        <Link
-          to="/register"
-          className="rounded-lg bg-yellow-400 px-4 py-2 text-sm font-bold text-black transition hover:bg-yellow-300"
-        >
-          Register
-        </Link>
-      </header>
-
-      <main className="flex min-h-[calc(100vh-73px)] items-start justify-center px-4 pt-12 md:pt-20">
+      <main className="flex flex-1 items-center justify-center px-4 py-12">
         <LoginForm />
       </main>
     </div>

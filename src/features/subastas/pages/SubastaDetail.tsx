@@ -5,7 +5,7 @@
  */
 
 import React from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { fetchSubastaById } from '../services/subastasService';
 
 import SubastaLoading from '../components/SubastaDetail/SubastaLoading';
@@ -19,7 +19,7 @@ import SubastaStructuredFields from '../components/SubastaDetail/SubastaStructur
 import SubastaIAInfo from '../components/SubastaDetail/SubastaIAInfo';
 import SubastaImage from '../components/SubastaDetail/SubastaImage';
 import SubastaLocationMap from '../components/SubastaDetail/SubastaLocationMap';
-import SubastaRawText from '../components/SubastaDetail/SubastaRawText';
+import SubastaOriginalText from '../components/SubastaDetail/SubastaRawText';
 import { DashboardNavbar } from '../../map/layout/DashboardNavbar';
 import { FavoriteButton } from '../components/SubastaDetail/FavoriteButton';
 import { ComentariosSection } from '../components/SubastaDetail/ComentariosSection';
@@ -37,6 +37,8 @@ export const SubastaDetail: React.FC = () => {
   );
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
+
+  const isAuthenticated = !!localStorage.getItem('token');
 
   React.useEffect(() => {
     /** Llama al servicio asíncrono para cargar los datos de la subasta. */
@@ -75,7 +77,6 @@ export const SubastaDetail: React.FC = () => {
   if (error) return <SubastaError error={error} />;
   if (!subasta) return <SubastaNotFound id={id!} />;
 
-  // Generadores de plantillas de texto a partir de metadatos IA
   const riesgoContent = subasta.riesgo_legal
     ? `Nivel: ${subasta.riesgo_legal}\nOcupantes: ${subasta.ocupantes || 'Desconocido'}\nCargas Previas: ${subasta.cargas_previas || 'Ninguna'}`
     : 'No hay datos de riesgo extraídos para esta subasta.';
@@ -123,7 +124,7 @@ export const SubastaDetail: React.FC = () => {
                   ]}
                 />
 
-                <SubastaRawText descripcion={subasta.textoBruto || ''} />
+                <SubastaOriginalText descripcion={subasta.textoBruto || ''} />
               </div>
 
               <aside className="xl:col-span-1 space-y-6">
@@ -137,7 +138,7 @@ export const SubastaDetail: React.FC = () => {
                 <SubastaPrice price={formatPrice(subasta.precioSalida)} label="Precio de salida" />
                 <div className="flex gap-3 items-center">
                   <SubastaOriginalLink url={subasta.urlPdf || ''} text="Ver anuncio original" />
-                  <FavoriteButton subastaId={subasta.id} />
+                  {isAuthenticated && <FavoriteButton subastaId={subasta.id} />}
                 </div>
 
                 <SubastaDescription
@@ -163,6 +164,28 @@ export const SubastaDetail: React.FC = () => {
                 />
               </aside>
             </div>
+
+            {!isAuthenticated && (
+              <div className="mt-8 p-6 rounded-xl border border-yellow-400/30 bg-yellow-400/5 text-center">
+                <p className="text-base font-semibold text-gray-900">
+                  Regístrate para guardar subastas y comentar
+                </p>
+                <div className="mt-4 flex justify-center gap-4">
+                  <Link
+                    to="/register"
+                    className="px-5 py-2.5 bg-yellow-400 text-black text-xs font-bold rounded-lg hover:bg-yellow-300 transition-colors"
+                  >
+                    Registrarse
+                  </Link>
+                  <Link
+                    to="/login"
+                    className="px-5 py-2.5 border border-gray-400 text-gray-900 text-xs font-bold rounded-lg hover:bg-gray-100 transition-colors"
+                  >
+                    Iniciar sesión
+                  </Link>
+                </div>
+              </div>
+            )}
 
             <ComentariosSection subastaId={subasta.id} />
           </div>
