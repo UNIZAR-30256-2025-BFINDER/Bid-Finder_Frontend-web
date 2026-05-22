@@ -34,9 +34,7 @@ vi.mock('react-leaflet', () => ({
   Marker: ({ children }: { children: React.ReactNode }) => (
     <div data-testid="marker">{children}</div>
   ),
-  Popup: ({ children }: { children: React.ReactNode }) => (
-    <div data-testid="popup">{children}</div>
-  ),
+  Popup: ({ children }: { children: React.ReactNode }) => <div data-testid="popup">{children}</div>,
 }));
 
 describe('SubastasMarkers', () => {
@@ -45,8 +43,9 @@ describe('SubastasMarkers', () => {
   });
 
   it('renderiza las subastas recibidas por props', () => {
-    const longTitle = 'Resolución de la Delegación del Gobierno para el Plan Nacional sobre Drogas, por la que se anuncia la venta en Subasta Pública Electrónica 4/2026 de Cuadros de distintos artistas.';
-    
+    const longTitle =
+      'Resolución de la Delegación del Gobierno para el Plan Nacional sobre Drogas, por la que se anuncia la venta en Subasta Pública Electrónica 4/2026 de Cuadros de distintos artistas.';
+
     const mockSubastas: Subasta[] = [
       {
         id: 'BOE-B-2026-9180',
@@ -56,7 +55,7 @@ describe('SubastasMarkers', () => {
         descripcion: 'desc',
         urlPdf: '',
         lat: 38.48,
-        lng: -5.80,
+        lng: -5.8,
         hasLocation: true,
         type: 'house',
         viabilidad: 'green',
@@ -64,8 +63,8 @@ describe('SubastasMarkers', () => {
         valorSubasta: 0,
         imagen: '',
         urlOriginal: '',
-        textoBruto: ''
-      }
+        textoBruto: '',
+      },
     ];
 
     render(<SubastasMarkers subastas={mockSubastas} />);

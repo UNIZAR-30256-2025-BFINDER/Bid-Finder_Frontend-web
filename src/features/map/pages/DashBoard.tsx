@@ -27,7 +27,11 @@ export const DashBoard: React.FC = () => {
   const isMobile = useIsMobile();
   const mapBoundsRef = useRef<L.LatLngBounds | null>(null);
 
-  const [filtros, setFiltros] = useState<FiltrosState>({ provincia: '', categoria: '', nivel_oportunidad: '' });
+  const [filtros, setFiltros] = useState<FiltrosState>({
+    provincia: '',
+    categoria: '',
+    nivel_oportunidad: '',
+  });
   const [searchQuery, setSearchQuery] = useState('');
   const [debouncedQuery, setDebouncedQuery] = useState('');
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);

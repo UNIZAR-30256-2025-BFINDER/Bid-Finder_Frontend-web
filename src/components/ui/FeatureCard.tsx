@@ -4,14 +4,7 @@
  */
 
 import React from 'react';
-import {
-  ShieldCheck,
-  Map,
-  Signal,
-  Bell,
-  Clock,
-  Users,
-} from 'lucide-react';
+import { ShieldCheck, Map, Signal, Bell, Clock, Users } from 'lucide-react';
 
 interface FeatureCardProps {
   /** Identificador del icono a renderizar */

@@ -71,9 +71,7 @@ export const DashboardView: React.FC = () => {
           <h3 className="text-white text-base font-medium mb-3">Subastas Procesadas</h3>
           <div className="flex items-center gap-4">
             <span className="text-gray-400 text-sm">Hoy:</span>
-            <span className="text-2xl font-bold text-white">
-              {status?.ingresadasHoy || 0}
-            </span>
+            <span className="text-2xl font-bold text-white">{status?.ingresadasHoy || 0}</span>
           </div>
         </div>
         <div className="z-10 text-yellow-400 border-[2.5px] border-yellow-400 rounded-full p-1.5 flex items-center justify-center">

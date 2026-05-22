@@ -38,7 +38,7 @@ export const SubastaMap: React.FC<SubastaMapProps> = ({ subastas, onBoundsChange
     return null;
   };
 
-  /** * Componente interno que escucha el evento 'moveend' de Leaflet 
+  /** * Componente interno que escucha el evento 'moveend' de Leaflet
    * para informar sobre el cambio de área visible.
    */
   function BoundsNotifier() {
@@ -66,7 +66,7 @@ export const SubastaMap: React.FC<SubastaMapProps> = ({ subastas, onBoundsChange
         minZoom={MAP_MIN_ZOOM}
         maxZoom={MAP_MAX_ZOOM}
         scrollWheelZoom={true}
-        className="w-full h-full bg-[#0b0f19] rounded-lg" 
+        className="w-full h-full bg-[#0b0f19] rounded-lg"
         preferCanvas={true}
       >
         <MapAutoResize />

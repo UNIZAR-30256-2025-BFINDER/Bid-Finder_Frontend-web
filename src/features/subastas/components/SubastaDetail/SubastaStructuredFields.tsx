@@ -17,7 +17,7 @@ interface Props {
   /** Nivel de riesgo legal evaluado ('alto', 'medio', 'bajo') */
   riesgo_legal?: string | null;
   /** Array de strings con campos adicionales formateados para mostrar en lista */
-  fields?: string[]; 
+  fields?: string[];
 }
 
 /**
@@ -78,20 +78,21 @@ const SubastaStructuredFields: React.FC<Props> = ({
   cargas_previas,
   ocupantes,
   riesgo_legal,
-  fields = [], 
+  fields = [],
 }) => (
   <section className="rounded-2xl border border-dashed border-yellow-400/60 bg-yellow-50 p-5 text-black">
     <h3 className="text-base font-semibold mb-2">{title}</h3>
     <ul className="text-sm text-gray-700 space-y-2">
       <li>• Tipo de activo: {getTipoLegible(type)}</li>
-      <li>• Riesgo legal detectado: {riesgo_legal || 'no conocido'} {getColorCircle(riesgo_legal)}</li>
+      <li>
+        • Riesgo legal detectado: {riesgo_legal || 'no conocido'} {getColorCircle(riesgo_legal)}
+      </li>
       <li>• Ocupantes detectados: {ocupantes || 'no constan'}</li>
       <li>• Cargas detectadas: {cargas_previas || 'no constan'}</li>
-      
+
       {fields.map((field, index) => (
         <li key={index}>{field}</li>
       ))}
-      
     </ul>
   </section>
 );

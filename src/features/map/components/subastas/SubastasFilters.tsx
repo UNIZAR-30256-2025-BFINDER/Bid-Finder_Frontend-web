@@ -25,9 +25,18 @@ interface SubastasFiltersProps {
  */
 export const SubastasFilters: React.FC<SubastasFiltersProps> = ({ filtros, onChange }) => {
   const provincias = [
-    'Madrid', 'Barcelona', 'Valencia', 'Sevilla',
-    'Alicante', 'Málaga', 'Murcia', 'Cádiz',
-    'Baleares', 'A Coruña', 'Zaragoza', 'Asturias'
+    'Madrid',
+    'Barcelona',
+    'Valencia',
+    'Sevilla',
+    'Alicante',
+    'Málaga',
+    'Murcia',
+    'Cádiz',
+    'Baleares',
+    'A Coruña',
+    'Zaragoza',
+    'Asturias',
   ];
 
   const categorias = ['Inmueble', 'Vehículo', 'Otros'];
@@ -43,8 +52,10 @@ export const SubastasFilters: React.FC<SubastasFiltersProps> = ({ filtros, onCha
           onChange={(e) => onChange({ ...filtros, provincia: e.target.value })}
         >
           <option value="">Todas las provincias</option>
-          {provincias.map(prov => (
-            <option key={prov} value={prov}>{prov}</option>
+          {provincias.map((prov) => (
+            <option key={prov} value={prov}>
+              {prov}
+            </option>
           ))}
         </select>
       </div>
@@ -58,8 +69,10 @@ export const SubastasFilters: React.FC<SubastasFiltersProps> = ({ filtros, onCha
           onChange={(e) => onChange({ ...filtros, categoria: e.target.value })}
         >
           <option value="">Todas las categorías</option>
-          {categorias.map(cat => (
-            <option key={cat} value={cat}>{cat}</option>
+          {categorias.map((cat) => (
+            <option key={cat} value={cat}>
+              {cat}
+            </option>
           ))}
         </select>
       </div>
@@ -100,7 +113,9 @@ export const SubastasFilters: React.FC<SubastasFiltersProps> = ({ filtros, onCha
 
       {/* Selector de Viabilidad */}
       <div>
-        <label className="block text-sm font-medium text-gray-400 mb-1.5">Nivel de Oportunidad</label>
+        <label className="block text-sm font-medium text-gray-400 mb-1.5">
+          Nivel de Oportunidad
+        </label>
         <select
           className="w-full bg-[#0b0f19] border border-white/20 text-white text-sm rounded-lg focus:ring-yellow-400 focus:border-yellow-400 p-2.5 outline-none appearance-none cursor-pointer transition-colors hover:border-white/40"
           value={filtros.nivel_oportunidad}

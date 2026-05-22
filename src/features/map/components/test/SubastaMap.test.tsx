@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { MemoryRouter } from 'react-router-dom'; 
+import { MemoryRouter } from 'react-router-dom';
 import { SubastaMap } from '../SubastaMap';
 
 const mocks = vi.hoisted(() => ({
@@ -35,7 +35,7 @@ vi.mock('../subastas/SubastasMarkers', () => ({
 
 vi.mock('react-leaflet', () => {
   const DummyContainer = ({ children }: { children?: React.ReactNode }) => <div>{children}</div>;
-  
+
   return {
     MapContainer: ({ children }: { children: React.ReactNode }) => (
       <div data-testid="map-container">{children}</div>
@@ -70,7 +70,7 @@ describe('SubastaMap', () => {
     render(
       <MemoryRouter>
         <SubastaMap onBoundsChange={vi.fn()} />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
 
     expect(screen.getByText('Cargando mapa...')).toBeInTheDocument();
@@ -82,7 +82,7 @@ describe('SubastaMap', () => {
     render(
       <MemoryRouter>
         <SubastaMap onBoundsChange={vi.fn()} />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
 
     expect(screen.getByTestId('map-container')).toBeInTheDocument();

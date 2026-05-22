@@ -79,14 +79,23 @@ export const DashboardNavbar: React.FC<DashboardNavbarProps> = ({
         }
         links={
           <>
-            <button onClick={() => navigate('/dashboard')} className={`transition-all px-2 lg:px-3 text-base text-left ${isActive('/dashboard') ? 'text-yellow-400 font-semibold' : 'text-gray-300 hover:text-white'}`}>
+            <button
+              onClick={() => navigate('/dashboard')}
+              className={`transition-all px-2 lg:px-3 text-base text-left ${isActive('/dashboard') ? 'text-yellow-400 font-semibold' : 'text-gray-300 hover:text-white'}`}
+            >
               Explorar
             </button>
-            <button onClick={() => navigate('/favorites')} className={`transition-all px-2 lg:px-3 text-base text-left ${isActive('/favorites') ? 'text-yellow-400 font-semibold' : 'text-gray-300 hover:text-white'}`}>
+            <button
+              onClick={() => navigate('/favorites')}
+              className={`transition-all px-2 lg:px-3 text-base text-left ${isActive('/favorites') ? 'text-yellow-400 font-semibold' : 'text-gray-300 hover:text-white'}`}
+            >
               Favoritos
             </button>
             {isAdmin && (
-              <button onClick={() => navigate('/admin')} className={`transition-all px-2 lg:px-3 text-base text-left ${isActive('/admin') ? 'text-yellow-400 font-semibold' : 'text-gray-300 hover:text-white'}`}>
+              <button
+                onClick={() => navigate('/admin')}
+                className={`transition-all px-2 lg:px-3 text-base text-left ${isActive('/admin') ? 'text-yellow-400 font-semibold' : 'text-gray-300 hover:text-white'}`}
+              >
                 Admin
               </button>
             )}
@@ -107,7 +116,10 @@ export const DashboardNavbar: React.FC<DashboardNavbarProps> = ({
                   />
                 </div>
                 <button
-                  onClick={(e) => { e.stopPropagation(); if (onToggleFilters) onToggleFilters(); }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (onToggleFilters) onToggleFilters();
+                  }}
                   className={`flex p-2 rounded-md transition-colors ${isFiltersOpen ? 'bg-yellow-400 text-black' : 'bg-white/10 text-white hover:bg-white/20'}`}
                 >
                   <Filter className="w-5 h-5" />
@@ -126,15 +138,23 @@ export const DashboardNavbar: React.FC<DashboardNavbarProps> = ({
 
       {/* Menú de filtros desplegable */}
       {showSearchAndFilters && isFiltersOpen && (
-        <div ref={filtersRef} className="absolute right-4 md:right-8 top-full mt-2 w-80 bg-[#161b22] border border-white/10 shadow-2xl rounded-xl p-5 z-50">
+        <div
+          ref={filtersRef}
+          className="absolute right-4 md:right-8 top-full mt-2 w-80 bg-[#161b22] border border-white/10 shadow-2xl rounded-xl p-5 z-50"
+        >
           <div className="flex justify-between items-center mb-4 pb-3 border-b border-white/10">
             <h3 className="text-lg font-semibold text-white flex items-center gap-2">
               <Filter className="w-4 h-4 text-yellow-400" />
               Filtros
             </h3>
-            <button onClick={onToggleFilters} className="text-gray-400 hover:text-white"><X className="w-5 h-5" /></button>
+            <button onClick={onToggleFilters} className="text-gray-400 hover:text-white">
+              <X className="w-5 h-5" />
+            </button>
           </div>
-          <SubastasFilters filtros={filtros} onChange={(n) => onFiltrosChange && onFiltrosChange(n)} />
+          <SubastasFilters
+            filtros={filtros}
+            onChange={(n) => onFiltrosChange && onFiltrosChange(n)}
+          />
         </div>
       )}
     </div>

@@ -5,7 +5,7 @@ import { LandingPage } from './LandingPage';
 
 // Mock de SubastaMap ya que usa Leaflet y puede fallar en tests unitarios
 vi.mock('../../map/components/SubastaMap', () => ({
-  SubastaMap: () => <div data-testid="mock-map">Map</div>
+  SubastaMap: () => <div data-testid="mock-map">Map</div>,
 }));
 
 describe('LandingPage', () => {
@@ -13,9 +13,9 @@ describe('LandingPage', () => {
     render(
       <MemoryRouter>
         <LandingPage />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
-    
+
     expect(screen.getByText(/Oportunidades del/i)).toBeDefined();
     expect(screen.getByText(/Todo lo que necesitas/i)).toBeDefined();
     expect(screen.getByTestId('mock-map')).toBeDefined();

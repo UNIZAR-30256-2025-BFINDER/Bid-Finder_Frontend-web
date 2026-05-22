@@ -24,11 +24,11 @@ describe('LocationMarker', () => {
     render(
       <MapContainer>
         <LocationMarker />
-      </MapContainer>
+      </MapContainer>,
     );
-    
+
     const button = screen.getByTitle('Ubicarme');
-    
+
     expect(button).toBeDefined();
     expect(button.tagName).toBe('BUTTON');
   });

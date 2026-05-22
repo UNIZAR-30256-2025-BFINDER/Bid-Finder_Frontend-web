@@ -7,7 +7,7 @@ import { Navigate } from 'react-router-dom';
 import { authService } from '../services/authService';
 
 interface ProtectedRouteProps {
-    children: React.ReactElement;
+  children: React.ReactElement;
 }
 
 /**
@@ -15,9 +15,9 @@ interface ProtectedRouteProps {
  * Si no está autenticado, corta el renderizado y redirige al login.
  */
 export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
-    if (!authService.isAuthenticated()) {
-        return <Navigate to="/login" replace />;
-    }
+  if (!authService.isAuthenticated()) {
+    return <Navigate to="/login" replace />;
+  }
 
-    return children;
+  return children;
 };

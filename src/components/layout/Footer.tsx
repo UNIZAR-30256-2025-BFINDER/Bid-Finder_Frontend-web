@@ -4,6 +4,7 @@
  */
 
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Logo } from '../ui/Logo';
 
 /**
@@ -14,13 +15,19 @@ export const Footer: React.FC = () => {
     <footer className="py-12 px-8 md:px-16 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-8 bg-black/80">
       <Logo />
       <div className="flex gap-8 text-sm font-semibold text-white/70">
-        <a href="#" className="hover:text-primary-yellow transition-colors">
-          Features
-        </a>
-        <a href="#" className="hover:text-primary-yellow transition-colors">
-          Aviso Legal
-        </a>
-        <a href="#" className="hover:text-primary-yellow transition-colors">
+        <Link to="/" className="hover:text-yellow-400 transition-colors">
+          Inicio
+        </Link>
+        <Link to="/terminos" className="hover:text-yellow-400 transition-colors">
+          Aviso Legal y Términos
+        </Link>
+        <Link to="/privacidad" className="hover:text-yellow-400 transition-colors">
+          Política de Privacidad
+        </Link>
+        <a
+          href="mailto:privacidad@bidfinder.es"
+          className="hover:text-yellow-400 transition-colors"
+        >
           Contacto
         </a>
       </div>

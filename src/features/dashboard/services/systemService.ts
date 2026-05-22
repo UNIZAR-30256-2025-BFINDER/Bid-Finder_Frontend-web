@@ -1,5 +1,5 @@
 /**
- * @fileoverview Servicio encargado de consultar las métricas de estado general 
+ * @fileoverview Servicio encargado de consultar las métricas de estado general
  * del servidor (salud del backend, ingestas, etc.).
  */
 
@@ -26,8 +26,8 @@ export const getSystemStatus = async (): Promise<SystemStatus> => {
   const response = await fetch(`${API_BASE_URL}/admin/status`, {
     method: 'GET',
     headers: {
-      'Authorization': `Bearer ${token}`
-    }
+      Authorization: `Bearer ${token}`,
+    },
   });
 
   if (!response.ok) {

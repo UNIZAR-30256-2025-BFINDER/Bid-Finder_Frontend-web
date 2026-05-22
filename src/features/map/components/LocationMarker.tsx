@@ -33,7 +33,7 @@ export const LocationMarker = () => {
 
   useEffect(() => {
     handleLocate();
-    
+
     // Suscripción a eventos de Leaflet para éxito y error de ubicación
     map.on('locationfound', handleLocationFound(map, setPosition));
     map.on('locationerror', (e) => {

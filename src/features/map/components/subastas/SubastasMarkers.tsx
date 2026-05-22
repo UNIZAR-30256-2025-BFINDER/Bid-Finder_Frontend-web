@@ -33,7 +33,8 @@ export const SubastasMarkers: React.FC<SubastasMarkersProps> = ({ subastas = [] 
       iconCreateFunction={createYellowClusterIcon}
     >
       {subastas.map((subasta: Subasta) => {
-        if (!subasta.hasLocation || subasta.lat === undefined || subasta.lng === undefined) return null;
+        if (!subasta.hasLocation || subasta.lat === undefined || subasta.lng === undefined)
+          return null;
 
         return (
           <Marker
@@ -41,8 +42,13 @@ export const SubastasMarkers: React.FC<SubastasMarkersProps> = ({ subastas = [] 
             position={[subasta.lat, subasta.lng]}
             icon={getSubastaIcon(subasta.type, subasta.viabilidad)}
           >
-            <Popup className="leaflet-popup-transparent !p-2 md:!p-4 !min-w-[180px] !max-w-[90vw] md:!max-w-xs" closeButton={false}>
-              <div style={{ background: 'transparent', boxShadow: 'none', padding: 0, border: 'none' }}>
+            <Popup
+              className="leaflet-popup-transparent !p-2 md:!p-4 !min-w-[180px] !max-w-[90vw] md:!max-w-xs"
+              closeButton={false}
+            >
+              <div
+                style={{ background: 'transparent', boxShadow: 'none', padding: 0, border: 'none' }}
+              >
                 <AuctionCard
                   title={subasta.titulo}
                   currentPrice={subasta.precioActual || 0}

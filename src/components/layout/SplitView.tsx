@@ -15,7 +15,7 @@ interface SplitViewProps {
 }
 
 /**
- * Renderiza una interfaz de dos columnas en escritorio que colapsa 
+ * Renderiza una interfaz de dos columnas en escritorio que colapsa
  * en una pila vertical (columna) en dispositivos móviles.
  * @param {SplitViewProps} props - Elementos a ubicar en cada lado del layout.
  */

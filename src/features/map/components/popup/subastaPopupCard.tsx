@@ -37,7 +37,11 @@ export const AuctionCard: React.FC<AuctionCardProps> = ({
       style={{ boxShadow: 'none', border: 'none' }}
     >
       <div className="h-32 w-full relative shrink-0">
-        <img src={image || fallbackImage} alt={title} className="w-full h-full object-cover rounded-t-xl" />
+        <img
+          src={image || fallbackImage}
+          alt={title}
+          className="w-full h-full object-cover rounded-t-xl"
+        />
         <div className="absolute top-2 left-2 bg-yellow-400 text-black text-[10px] uppercase tracking-wide font-extrabold px-2 py-1 rounded shadow">
           {badgeText}
         </div>

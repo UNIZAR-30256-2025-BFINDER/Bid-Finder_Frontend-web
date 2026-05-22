@@ -8,7 +8,7 @@ describe('SubastasFilters Component', () => {
     categoria: '',
     precio_min: undefined,
     precio_max: undefined,
-    nivel_oportunidad: ''
+    nivel_oportunidad: '',
   };
   const mockOnChange = vi.fn();
 

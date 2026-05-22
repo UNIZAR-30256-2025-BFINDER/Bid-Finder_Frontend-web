@@ -7,7 +7,7 @@ describe('MapWidget', () => {
     render(
       <MapWidget>
         <span>Contenido del mapa</span>
-      </MapWidget>
+      </MapWidget>,
     );
 
     expect(screen.getByText('Contenido del mapa')).toBeInTheDocument();
@@ -17,7 +17,7 @@ describe('MapWidget', () => {
     const { container } = render(
       <MapWidget className="custom-class">
         <span>Mapa</span>
-      </MapWidget>
+      </MapWidget>,
     );
 
     expect(container.firstChild).toHaveClass('custom-class');

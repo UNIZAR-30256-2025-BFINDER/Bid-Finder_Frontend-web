@@ -16,10 +16,10 @@ describe('MobileViewToggle', () => {
   it('ejecuta la función onToggle al hacer clic', () => {
     const onToggleMock = vi.fn();
     render(<MobileViewToggle currentView="map" onToggle={onToggleMock} />);
-    
+
     const button = screen.getByRole('button');
     fireEvent.click(button);
-    
+
     expect(onToggleMock).toHaveBeenCalledTimes(1);
   });
 });

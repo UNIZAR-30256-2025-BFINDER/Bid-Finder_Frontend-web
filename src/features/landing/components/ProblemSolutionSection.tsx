@@ -34,7 +34,7 @@ export const ProblemSolutionSection: React.FC<ProblemSolutionProps> = ({
     viabilidad: 'green',
     precioActual: 87500,
     valorSubasta: 150000,
-    imagen: '/Bfinder_logo.png', 
+    imagen: '/Bfinder_logo.png',
     urlOriginal: '',
   };
 
@@ -45,7 +45,7 @@ export const ProblemSolutionSection: React.FC<ProblemSolutionProps> = ({
           <SubastaCard
             key={heroSubasta.id}
             title={heroSubasta.titulo}
-            subtitle={heroSubasta.descripcion} 
+            subtitle={heroSubasta.descripcion}
             price={heroSubasta.precioActual}
             image={heroSubasta.imagen}
             location={heroSubasta.type}

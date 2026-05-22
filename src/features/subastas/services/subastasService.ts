@@ -55,13 +55,17 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000
  * @returns {Subasta} Objeto Subasta tipado y listo para ser renderizado.
  */
 const mapBackendToFrontend = (item: BackendSubastaDetail): Subasta => {
-  const hasLocation = !!(item.location && item.location.coordinates && item.location.coordinates.length === 2);
+  const hasLocation = !!(
+    item.location &&
+    item.location.coordinates &&
+    item.location.coordinates.length === 2
+  );
 
   // Fallback al centro de Madrid si no hay coordenadas
   const lng = hasLocation ? item.location!.coordinates[0] : -3.7038;
   const lat = hasLocation ? item.location!.coordinates[1] : 40.4168;
 
-  let inferredType = 'house'; 
+  let inferredType = 'house';
   const categoria = (item.categoria || '').toUpperCase();
   const textToAnalyze = (item.titulo_resumido || item.titulo || '').toLowerCase();
 
@@ -130,7 +134,7 @@ const mapBackendToFrontend = (item: BackendSubastaDetail): Subasta => {
     valorTasacion: item.valor_tasacion,
     nivel_oportunidad: item.nivel_oportunidad ?? null,
     diferencia_porcentual_oportunidad: item.diferencia_porcentual_oportunidad ?? null,
-    imagen: item.imagen ?? '/Bfinder_logo.png', 
+    imagen: item.imagen ?? '/Bfinder_logo.png',
     urlOriginal: item.urlOriginal ?? '',
     textoBruto: item.texto,
     riesgo_legal: item.riesgo_legal ?? null,
@@ -149,9 +153,12 @@ export async function fetchSubastas(filtros?: SubastaFilters): Promise<Subasta[]
     const url = new URL(`${API_BASE_URL}/subastas`);
 
     if (filtros?.provincia) url.searchParams.append('provincia', filtros.provincia);
-    if (filtros?.precio_min != null) url.searchParams.append('precio_min', String(filtros.precio_min));
-    if (filtros?.precio_max != null) url.searchParams.append('precio_max', String(filtros.precio_max));
-    if (filtros?.nivel_oportunidad) url.searchParams.append('nivel_oportunidad', filtros.nivel_oportunidad);
+    if (filtros?.precio_min != null)
+      url.searchParams.append('precio_min', String(filtros.precio_min));
+    if (filtros?.precio_max != null)
+      url.searchParams.append('precio_max', String(filtros.precio_max));
+    if (filtros?.nivel_oportunidad)
+      url.searchParams.append('nivel_oportunidad', filtros.nivel_oportunidad);
     if (filtros?.q) url.searchParams.append('q', filtros.q);
 
     const response = await fetch(url.toString());

@@ -90,9 +90,8 @@ export const SubastaDetail: React.FC = () => {
 
       <div className="flex-1 px-4 md:px-8 py-8 md:py-12">
         <div className="max-w-7xl mx-auto">
-          
-          <button 
-            onClick={() => navigate(-1)} 
+          <button
+            onClick={() => navigate(-1)}
             className="flex items-center gap-2 text-gray-400 hover:text-yellow-400 mb-6 transition-colors font-medium cursor-pointer group"
           >
             <ArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform" />

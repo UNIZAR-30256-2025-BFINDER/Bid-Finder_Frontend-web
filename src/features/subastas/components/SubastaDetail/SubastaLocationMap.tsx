@@ -1,5 +1,5 @@
 /**
- * @fileoverview Componente de mapa individual para mostrar la ubicación exacta 
+ * @fileoverview Componente de mapa individual para mostrar la ubicación exacta
  * de una subasta específica en su página de detalle.
  */
 
@@ -35,14 +35,23 @@ interface Props {
  * Renderiza un mapa estático centrado en el activo con su marcador personalizado.
  * Si el activo no tiene ubicación, renderiza un mensaje informativo (fallback).
  */
-const SubastaLocationMap: React.FC<Props> = ({ lat, lng, direccion, hasLocation, type, viabilidad }) => {
+const SubastaLocationMap: React.FC<Props> = ({
+  lat,
+  lng,
+  direccion,
+  hasLocation,
+  type,
+  viabilidad,
+}) => {
   if (!hasLocation) {
     return (
       <section>
         <h2 className="text-lg md:text-xl font-semibold mb-4">Ubicación</h2>
         <div className="rounded-2xl border border-gray-800 bg-[#121723] p-8 text-center text-gray-400">
           <p>📍 No se pudo geolocalizar la ubicación exacta para esta subasta.</p>
-          <p className="text-sm mt-2 text-white/60">{direccion || 'Dirección no disponible en el texto original.'}</p>
+          <p className="text-sm mt-2 text-white/60">
+            {direccion || 'Dirección no disponible en el texto original.'}
+          </p>
         </div>
       </section>
     );

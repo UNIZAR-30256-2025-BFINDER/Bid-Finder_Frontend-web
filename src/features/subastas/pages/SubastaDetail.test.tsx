@@ -34,15 +34,17 @@ describe('SubastaDetail', () => {
       </MemoryRouter>,
     );
 
-    expect(screen.getByText((_content, node) => {
-      const hasText = (node: Element | null) =>
-        !!node && node.textContent?.replace(/\s/g, '') === 'B-FINDER';
-      const nodeHasText = hasText(node as Element);
-      const childrenDontHaveText = Array.from(node?.children || []).every(
-        (child) => !hasText(child as Element)
-      );
-      return nodeHasText && childrenDontHaveText;
-    })).toBeInTheDocument();
+    expect(
+      screen.getByText((_content, node) => {
+        const hasText = (node: Element | null) =>
+          !!node && node.textContent?.replace(/\s/g, '') === 'B-FINDER';
+        const nodeHasText = hasText(node as Element);
+        const childrenDontHaveText = Array.from(node?.children || []).every(
+          (child) => !hasText(child as Element),
+        );
+        return nodeHasText && childrenDontHaveText;
+      }),
+    ).toBeInTheDocument();
     expect(document.querySelector('.animate-pulse')).toBeInTheDocument();
   });
 
@@ -50,7 +52,7 @@ describe('SubastaDetail', () => {
     mocks.fetchSubastaById.mockResolvedValue({
       id: '1',
       titulo: 'Subasta test original',
-      titulo_resumido: 'Subasta test resumida', 
+      titulo_resumido: 'Subasta test resumida',
       precio: 1000,
       descripcion: 'Descripción test',
       urlOriginal: 'https://subastas.boe.es/test',
@@ -74,13 +76,13 @@ describe('SubastaDetail', () => {
     );
 
     await waitFor(() => {
-        expect(screen.getByText('Subasta test resumida')).toBeInTheDocument();
-        expect(screen.getByText('Subasta test original')).toBeInTheDocument();
-        expect(screen.getByText('Texto bruto recuperado')).toBeInTheDocument();
-        expect(screen.getByText('Ver anuncio original')).toBeInTheDocument();
-      });
-      
-      expect(screen.getAllByText('Descripción test')).toHaveLength(2);
+      expect(screen.getByText('Subasta test resumida')).toBeInTheDocument();
+      expect(screen.getByText('Subasta test original')).toBeInTheDocument();
+      expect(screen.getByText('Texto bruto recuperado')).toBeInTheDocument();
+      expect(screen.getByText('Ver anuncio original')).toBeInTheDocument();
+    });
+
+    expect(screen.getAllByText('Descripción test')).toHaveLength(2);
   });
 
   it('muestra mensaje de error si falla la petición', async () => {
@@ -115,9 +117,7 @@ describe('SubastaDetail', () => {
 
     await waitFor(() => {
       expect(screen.getByText('Subasta no encontrada')).toBeInTheDocument();
-      expect(
-        screen.getByText(/No hemos podido encontrar la subasta con ID:/i),
-      ).toBeInTheDocument();
+      expect(screen.getByText(/No hemos podido encontrar la subasta con ID:/i)).toBeInTheDocument();
     });
   });
 });

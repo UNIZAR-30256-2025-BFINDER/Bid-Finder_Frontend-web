@@ -7,7 +7,7 @@ import { Navigate } from 'react-router-dom';
 import { authService } from '../services/authService';
 
 interface AdminRouteProps {
-    children: React.ReactElement;
+  children: React.ReactElement;
 }
 
 /**
@@ -16,14 +16,14 @@ interface AdminRouteProps {
  * Si hay sesión pero no es administrador, redirige al dashboard.
  */
 export const AdminRoute: React.FC<AdminRouteProps> = ({ children }) => {
-    if (!authService.isAuthenticated()) {
-        return <Navigate to="/login" replace />;
-    }
+  if (!authService.isAuthenticated()) {
+    return <Navigate to="/login" replace />;
+  }
 
-    const user = authService.getCurrentUser();
-    if (!user || user.rol !== 'admin') {
-        return <Navigate to="/dashboard" replace />;
-    }
+  const user = authService.getCurrentUser();
+  if (!user || user.rol !== 'admin') {
+    return <Navigate to="/dashboard" replace />;
+  }
 
-    return children;
+  return children;
 };

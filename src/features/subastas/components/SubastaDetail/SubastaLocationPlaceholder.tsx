@@ -1,5 +1,5 @@
 /**
- * @fileoverview Elemento de diseño de reserva (placeholder) visual para la sección 
+ * @fileoverview Elemento de diseño de reserva (placeholder) visual para la sección
  * del mapa. Se usa típicamente durante los estados de carga o en mockups.
  */
 

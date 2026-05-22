@@ -19,7 +19,11 @@ interface MobileViewToggleProps {
  * Componente de interfaz que muestra un botón con icono y texto dinámico.
  * @param {MobileViewToggleProps} props - Propiedades del componente.
  */
-export const MobileViewToggle: React.FC<MobileViewToggleProps> = ({ currentView, onToggle, className = "" }) => {
+export const MobileViewToggle: React.FC<MobileViewToggleProps> = ({
+  currentView,
+  onToggle,
+  className = '',
+}) => {
   return (
     <button
       onClick={onToggle}

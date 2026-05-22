@@ -1,5 +1,5 @@
 /**
- * @fileoverview Bloque visual para renderizar la información extraída y procesada 
+ * @fileoverview Bloque visual para renderizar la información extraída y procesada
  * por la Inteligencia Artificial (oportunidades, riesgos y resúmenes).
  */
 
