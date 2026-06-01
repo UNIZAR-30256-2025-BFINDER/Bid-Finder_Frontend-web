@@ -1,10 +1,12 @@
 /**
  * @fileoverview Componente de mapa individual para mostrar la ubicación exacta
  * de una subasta específica en su página de detalle.
+ * Fix: Añadido useEffect con invalidateSize para resolver el bug de tiles
+ * que no se cargan correctamente al montar el componente en un layout flex/grid.
  */
 
-import React from 'react';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import React, { useEffect } from 'react';
+import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import { getSubastaIcon } from '../../../map/components/subastas/subastasIcons';
@@ -30,6 +32,23 @@ interface Props {
   type: string;
   viabilidad: string;
 }
+
+/**
+ * Sub-componente interno que fuerza invalidateSize tras el montaje del mapa.
+ * Necesario para que Leaflet calcule el tamaño real del contenedor y cargue
+ * todos los tiles correctamente cuando el mapa está en un layout dinámico.
+ */
+const MapResizer: React.FC = () => {
+  const map = useMap();
+  useEffect(() => {
+    // Pequeño delay para que el contenedor tenga su tamaño final calculado por el navegador
+    const timer = setTimeout(() => {
+      map.invalidateSize();
+    }, 200);
+    return () => clearTimeout(timer);
+  }, [map]);
+  return null;
+};
 
 /**
  * Renderiza un mapa estático centrado en el activo con su marcador personalizado.
@@ -62,10 +81,15 @@ const SubastaLocationMap: React.FC<Props> = ({
       <h2 className="text-lg md:text-xl font-semibold mb-4">Ubicación</h2>
       <div className="rounded-2xl overflow-hidden border border-gray-800 bg-[#121723] h-[300px] md:h-[400px] relative z-0">
         <MapContainer
+          key={`${lat}-${lng}`}
           center={[lat, lng]}
           zoom={16}
           scrollWheelZoom={false}
           className="h-full w-full"
+          // whenReady también dispara invalidateSize para el caso inicial
+          whenReady={(map) => {
+            setTimeout(() => map.target.invalidateSize(), 100);
+          }}
         >
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>'
@@ -74,6 +98,8 @@ const SubastaLocationMap: React.FC<Props> = ({
           <Marker position={[lat, lng]} icon={getSubastaIcon(type, viabilidad)}>
             {direccion && <Popup>{direccion}</Popup>}
           </Marker>
+          {/* Componente que detecta el resize y fuerza recarga de tiles */}
+          <MapResizer />
         </MapContainer>
       </div>
     </section>

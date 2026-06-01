@@ -17,6 +17,7 @@ import type { Subasta } from '../../../models/Subasta';
 import { DashboardNavbar } from '../layout/DashboardNavbar';
 import { MobileViewToggle } from '../components/MobileViewToggle';
 import { useIsMobile } from '../../../hooks/useIsMobile';
+import { authService } from '../../auth/services/authService';
 
 /**
  * Componente principal que gestiona el estado global de la exploración de subastas.
@@ -32,12 +33,13 @@ export const DashBoard: React.FC = () => {
     provincia: '',
     categoria: '',
     nivel_oportunidad: '',
+    tipo_lote: '',
   });
   const [searchQuery, setSearchQuery] = useState('');
   const [debouncedQuery, setDebouncedQuery] = useState('');
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
 
-  const isAuthenticated = !!localStorage.getItem('token');
+  const isAuthenticated = authService.isAuthenticated();
 
   /** Efecto para manejar el debounce de la búsqueda global */
   useEffect(() => {

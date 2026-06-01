@@ -26,7 +26,7 @@ interface DashboardNavbarProps {
  * @param {DashboardNavbarProps} props - Configuración y callbacks de estado.
  */
 export const DashboardNavbar: React.FC<DashboardNavbarProps> = ({
-  filtros = { provincia: '', categoria: '', nivel_oportunidad: '' },
+  filtros = { provincia: '', categoria: '', nivel_oportunidad: '', tipo_lote: '' },
   onFiltrosChange,
   isFiltersOpen = false,
   onToggleFilters,
@@ -40,7 +40,7 @@ export const DashboardNavbar: React.FC<DashboardNavbarProps> = ({
 
   const currentUser = authService.getCurrentUser();
   const isAdmin = currentUser?.rol === 'admin';
-  const isAuthenticated = !!localStorage.getItem('token');
+  const isAuthenticated = authService.isAuthenticated();
 
   const isActive = (path: string) => location.pathname.startsWith(path);
 
