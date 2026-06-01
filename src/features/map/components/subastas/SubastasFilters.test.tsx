@@ -9,6 +9,7 @@ describe('SubastasFilters Component', () => {
     precio_min: undefined,
     precio_max: undefined,
     nivel_oportunidad: '',
+    tipo_lote: '',
   };
   const mockOnChange = vi.fn();
 
@@ -23,7 +24,7 @@ describe('SubastasFilters Component', () => {
     expect(screen.getByText('Categoría')).toBeInTheDocument();
     expect(screen.getByText('Mínimo (€)')).toBeInTheDocument();
     expect(screen.getByText('Máximo (€)')).toBeInTheDocument();
-    expect(screen.getByText('Nivel de Oportunidad')).toBeInTheDocument();
+    expect(screen.getByText('Viabilidad de la Inversión')).toBeInTheDocument();
   });
 
   it('llama a onChange con la provincia correcta al seleccionarla', () => {
