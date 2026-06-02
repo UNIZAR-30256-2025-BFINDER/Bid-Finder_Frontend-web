@@ -2,12 +2,23 @@
  * @fileoverview Servicio principal para la obtención y mapeo de datos de subastas.
  * Conecta con la API backend y transforma el modelo de datos crudo en el modelo
  * optimizado para el frontend (Frontend Subasta Model).
+ * Soporta el modelo multi-lote donde cada lote tiene un ID compuesto.
  */
 
 import type { Subasta } from '../../../models/Subasta';
 
 export interface BackendSubastaDetail {
   id: string;
+  anuncio_id?: string;
+  numero_lote?: number;
+  total_lotes?: number;
+  all_lotes?: Array<{
+    numero_lote: number;
+    titulo_resumido?: string | null;
+    precio_salida?: number | null;
+    categoria?: string | null;
+    direccion?: string | null;
+  }>;
   titulo: string;
   titulo_resumido?: string | null;
   resumen?: string | null;
@@ -43,6 +54,7 @@ export interface SubastaFilters {
   precio_min?: number;
   precio_max?: number;
   nivel_oportunidad?: string;
+  tipo_lote?: string;
   q?: string;
 }
 
@@ -101,7 +113,12 @@ const mapBackendToFrontend = (item: BackendSubastaDetail): Subasta => {
 
   let viabilidad = 'red';
 
-  if (item.nivel_oportunidad) {
+  if (item.viabilidad) {
+    const viab = item.viabilidad.toUpperCase();
+    if (viab === 'ALTA') viabilidad = 'green';
+    else if (viab === 'MEDIA') viabilidad = 'yellow';
+    else if (viab === 'BAJA') viabilidad = 'red';
+  } else if (item.nivel_oportunidad) {
     if (item.nivel_oportunidad === 'ALTO') viabilidad = 'green';
     else if (item.nivel_oportunidad === 'MEDIO') viabilidad = 'yellow';
     else if (item.nivel_oportunidad === 'BAJO') viabilidad = 'red';
@@ -114,6 +131,10 @@ const mapBackendToFrontend = (item: BackendSubastaDetail): Subasta => {
 
   return {
     id: item.id,
+    anuncio_id: item.anuncio_id,
+    numero_lote: item.numero_lote,
+    total_lotes: item.total_lotes,
+    all_lotes: item.all_lotes,
     titulo: item.titulo_resumido || item.titulo,
     titulo_resumido: item.titulo_resumido || null,
     precio: item.precio_salida ?? null,
@@ -125,7 +146,7 @@ const mapBackendToFrontend = (item: BackendSubastaDetail): Subasta => {
     hasLocation,
 
     type: item.type ?? inferredType,
-    viabilidad: item.viabilidad ?? viabilidad,
+    viabilidad,
     precioActual: item.precio_salida ?? 0,
     valorSubasta: item.valor_tasacion ?? 0,
     direccion: item.direccion,
@@ -159,6 +180,8 @@ export async function fetchSubastas(filtros?: SubastaFilters): Promise<Subasta[]
       url.searchParams.append('precio_max', String(filtros.precio_max));
     if (filtros?.nivel_oportunidad)
       url.searchParams.append('nivel_oportunidad', filtros.nivel_oportunidad);
+    if (filtros?.tipo_lote)
+      url.searchParams.append('tipo_lote', filtros.tipo_lote);
     if (filtros?.q) url.searchParams.append('q', filtros.q);
 
     const response = await fetch(url.toString());
@@ -173,8 +196,9 @@ export async function fetchSubastas(filtros?: SubastaFilters): Promise<Subasta[]
 }
 
 /**
- * Obtiene los detalles completos de una subasta específica mediante su identificador BOE o de Mongo.
- * @param {string} id - Identificador único de la subasta.
+ * Obtiene los detalles completos de una subasta específica mediante su identificador.
+ * Soporta IDs compuestos de lote (ej. "BOE-B-xxx__L2").
+ * @param {string} id - Identificador único de la subasta/lote.
  * @returns {Promise<Subasta | null>} Objeto con todo el detalle o null si no existe (404).
  */
 export async function fetchSubastaById(id: string): Promise<Subasta | null> {

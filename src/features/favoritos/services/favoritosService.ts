@@ -7,10 +7,6 @@ import { authService } from '../../auth/services/authService';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api/v1';
 
-interface SubastaFavoritaId {
-  id: string;
-}
-
 /**
  * Genera los headers de autenticación necesarios para las peticiones privadas.
  * @returns {Record<string, string>} Objeto con Content-Type y Authorization.
@@ -43,7 +39,8 @@ export async function fetchFavoritos(): Promise<string[]> {
 
     const result = await response.json();
     const favoritos = result.data?.favoritos || [];
-    return favoritos.map((fav: SubastaFavoritaId) => fav.id);
+    // Favoritos are now plain strings (composite lote IDs), not objects
+    return favoritos as string[];
   } catch (error) {
     console.error('Error en fetchFavoritos:', error);
     return [];

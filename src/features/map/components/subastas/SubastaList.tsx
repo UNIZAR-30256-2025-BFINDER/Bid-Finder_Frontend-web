@@ -8,6 +8,7 @@ import { SubastaCard } from './SubastaCard';
 import type { Subasta } from '../../../../models/Subasta';
 import { Paginador } from '../../../../components/ui/Paginador';
 import { useNavigate } from 'react-router-dom';
+import { buildCatastralFacadeUrl, CatastralRef } from '../../../../utils/catastralUrl';
 
 interface SubastaListProps {
   /** Array de subastas filtradas según la zona del mapa o criterios del usuario */
@@ -40,26 +41,32 @@ export const SubastaList: React.FC<SubastaListProps> = ({ subastas }) => {
     <div className="flex-1 flex flex-col min-h-0">
       <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar pb-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 2xl:grid-cols-2 gap-4 max-w-2xl mx-auto w-full">
-          {paged.map((subasta) => (
-            <SubastaCard
-              key={subasta.id}
-              id={subasta.id}
-              title={subasta.titulo_resumido ?? subasta.titulo}
-              subtitle={subasta.titulo}
-              price={subasta.precioActual}
-              image={subasta.imagen}
-              location={
-                subasta.type === 'house'
-                  ? 'Vivienda'
-                  : subasta.type === 'car'
-                    ? 'Vehículo'
-                    : subasta.type === 'other'
-                      ? 'Otros'
-                      : subasta.type
-              }
-              onClick={() => navigate(`/subastas/${subasta.id}`)}
-            />
-          ))}
+          {paged.map((subasta) => {
+            const ref = CatastralRef.fromSubasta(subasta);
+            const facadeUrl = ref ? buildCatastralFacadeUrl(ref.getFull()) : undefined;
+
+            return (
+              <SubastaCard
+                key={subasta.id}
+                id={subasta.id}
+                title={subasta.titulo_resumido ?? subasta.titulo}
+                subtitle={subasta.titulo}
+                price={subasta.precioActual}
+                image={facadeUrl || subasta.imagen}
+                viabilidad={subasta.viabilidad}
+                location={
+                  subasta.type === 'house'
+                    ? 'Vivienda'
+                    : subasta.type === 'car'
+                      ? 'Vehículo'
+                      : subasta.type === 'other'
+                        ? 'Otros'
+                        : subasta.type
+                }
+                onClick={() => navigate(`/subastas/${subasta.id}`)}
+              />
+            );
+          })}
         </div>
       </div>
 

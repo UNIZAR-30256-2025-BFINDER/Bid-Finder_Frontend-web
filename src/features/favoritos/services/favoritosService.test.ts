@@ -38,7 +38,7 @@ describe('favoritosService', () => {
   describe('fetchFavoritos', () => {
     it('transforma la respuesta en array de IDs', async () => {
       const mockResponse = {
-        data: { favoritos: [{ id: 'sub-1' }, { id: 'sub-2' }] },
+        data: { favoritos: ['sub-1', 'sub-2'] },
       };
       const mockFetch = vi.fn().mockResolvedValue({
         ok: true,

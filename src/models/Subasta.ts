@@ -1,11 +1,23 @@
 /**
  * @fileoverview Interfaz principal del modelo de dominio para las Subastas.
  * Define la estructura de datos que utiliza todo el Frontend tras haber mapeado
- * la respuesta en bruto del Backend.
+ * la respuesta en bruto del Backend. Soporta el modelo multi-lote.
  */
+
+export interface LoteResumen {
+  numero_lote: number;
+  titulo_resumido?: string | null;
+  precio_salida?: number | null;
+  categoria?: string | null;
+  direccion?: string | null;
+}
 
 export interface Subasta {
   id: string;
+  anuncio_id?: string;
+  numero_lote?: number;
+  total_lotes?: number;
+  all_lotes?: LoteResumen[];
   titulo: string;
   titulo_resumido?: string | null;
   precio: number | null;

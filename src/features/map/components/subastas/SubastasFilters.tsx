@@ -12,6 +12,7 @@ export interface FiltrosState {
   precio_min?: number;
   precio_max?: number;
   nivel_oportunidad: string;
+  tipo_lote: string;
 }
 
 interface SubastasFiltersProps {
@@ -114,17 +115,33 @@ export const SubastasFilters: React.FC<SubastasFiltersProps> = ({ filtros, onCha
       {/* Selector de Viabilidad */}
       <div>
         <label className="block text-sm font-medium text-gray-400 mb-1.5">
-          Nivel de Oportunidad
+          Viabilidad de la Inversión
         </label>
         <select
           className="w-full bg-[#0b0f19] border border-white/20 text-white text-sm rounded-lg focus:ring-yellow-400 focus:border-yellow-400 p-2.5 outline-none appearance-none cursor-pointer transition-colors hover:border-white/40"
           value={filtros.nivel_oportunidad}
           onChange={(e) => onChange({ ...filtros, nivel_oportunidad: e.target.value })}
         >
-          <option value="">Todos</option>
-          <option value="ALTO">🟢 Alto</option>
-          <option value="MEDIO">🟡 Medio</option>
-          <option value="BAJO">🔴 Bajo</option>
+          <option value="">Todas</option>
+          <option value="ALTO">🟢 Alta</option>
+          <option value="MEDIO">🟡 Media</option>
+          <option value="BAJO">🔴 Baja</option>
+        </select>
+      </div>
+
+      {/* Selector de Tipo de Lote */}
+      <div>
+        <label className="block text-sm font-medium text-gray-400 mb-1.5">
+          Agrupación / Tipo de Lote
+        </label>
+        <select
+          className="w-full bg-[#0b0f19] border border-white/20 text-white text-sm rounded-lg focus:ring-yellow-400 focus:border-yellow-400 p-2.5 outline-none appearance-none cursor-pointer transition-colors hover:border-white/40"
+          value={filtros.tipo_lote}
+          onChange={(e) => onChange({ ...filtros, tipo_lote: e.target.value })}
+        >
+          <option value="">Todas las subastas</option>
+          <option value="simple">Solo subastas individuales</option>
+          <option value="multi">Solo lotes con múltiples subastas</option>
         </select>
       </div>
     </div>

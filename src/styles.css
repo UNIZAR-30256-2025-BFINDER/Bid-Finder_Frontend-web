@@ -1,8 +1,7 @@
 /* Ensure Leaflet map always has height and width */
 .leaflet-container {
-  height: 100vh;
+  height: 100%;
   width: 100%;
-  min-height: 600px;
 }
 @import 'tailwindcss';
 

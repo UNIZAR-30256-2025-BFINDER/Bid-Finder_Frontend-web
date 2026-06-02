@@ -11,6 +11,7 @@ import MarkerClusterGroup from 'react-leaflet-cluster';
 import { createYellowClusterIcon } from '../mapConstants';
 import { AuctionCard } from '../popup/subastaPopupCard';
 import { useNavigate } from 'react-router-dom';
+import { buildCatastralFacadeUrl, CatastralRef } from '../../../../utils/catastralUrl';
 
 interface SubastasMarkersProps {
   /** Colección de subastas que contienen datos de geolocalización */
@@ -36,6 +37,9 @@ export const SubastasMarkers: React.FC<SubastasMarkersProps> = ({ subastas = [] 
         if (!subasta.hasLocation || subasta.lat === undefined || subasta.lng === undefined)
           return null;
 
+        const ref = CatastralRef.fromSubasta(subasta);
+        const facadeUrl = ref ? buildCatastralFacadeUrl(ref.getFull()) : undefined;
+
         return (
           <Marker
             key={subasta.id}
@@ -53,6 +57,7 @@ export const SubastasMarkers: React.FC<SubastasMarkersProps> = ({ subastas = [] 
                   title={subasta.titulo}
                   currentPrice={subasta.precioActual || 0}
                   originalPrice={subasta.valorSubasta || 0}
+                  image={facadeUrl}
                   onViewClick={() => navigate(`/subastas/${subasta.id}`)}
                 />
               </div>

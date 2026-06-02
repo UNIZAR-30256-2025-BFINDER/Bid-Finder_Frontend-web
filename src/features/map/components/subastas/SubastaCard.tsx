@@ -13,6 +13,7 @@ interface SubastaCardProps {
   price: number;
   location?: string;
   image?: string;
+  viabilidad?: string;
   onClick?: () => void;
   /** Indica si la tarjeta debe resaltar como seleccionada (ej. al clicar en el mapa) */
   selected?: boolean;
@@ -32,6 +33,7 @@ export const SubastaCard: React.FC<SubastaCardProps> = ({
   price,
   location,
   image,
+  viabilidad,
   onClick,
   selected = false,
 }) => (
@@ -47,6 +49,19 @@ export const SubastaCard: React.FC<SubastaCardProps> = ({
       <div className="absolute top-2 right-2 z-10">
         <FavoriteButton subastaId={id} />
       </div>
+
+      {viabilidad && (
+        <span className={`absolute top-2 left-2 z-10 backdrop-blur-md text-[10px] md:text-xs px-2 py-0.5 md:py-1 rounded-md font-bold uppercase shadow-sm ${
+          viabilidad === 'green'
+            ? 'bg-green-500/80 text-white'
+            : viabilidad === 'yellow'
+            ? 'bg-yellow-500/80 text-black'
+            : 'bg-red-500/80 text-white'
+        }`}>
+          {viabilidad === 'green' ? '🟢 Alta' : viabilidad === 'yellow' ? '🟡 Media' : '🔴 Baja'}
+        </span>
+      )}
+
       <img
         src={image || fallbackImg}
         alt={subtitle}
