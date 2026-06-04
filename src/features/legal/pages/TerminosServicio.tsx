@@ -5,10 +5,21 @@
  */
 
 import React from 'react';
+import { Link } from 'react-router-dom';
+import { ArrowLeft } from 'lucide-react';
 
 export const TerminosServicio: React.FC = () => {
   return (
-    <div className="min-h-screen bg-[#0b0f19] text-white py-12 px-6 md:px-16 flex justify-center">
+    <div className="min-h-screen bg-[#0b0f19] text-white py-12 px-6 md:px-16 flex flex-col items-center">
+      <div className="w-full max-w-4xl mb-6 flex justify-start">
+        <Link
+          to="/"
+          className="flex items-center gap-2 text-gray-400 hover:text-yellow-400 transition-colors font-medium group"
+        >
+          <ArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
+          <span>Volver al inicio</span>
+        </Link>
+      </div>
       <div className="w-full max-w-4xl rounded-2xl border border-yellow-400/20 bg-[#050816]/95 p-8 md:p-12 shadow-2xl">
         <h1 className="mb-2 text-3xl font-bold text-yellow-400">
           Aviso Legal y Términos de Servicio
