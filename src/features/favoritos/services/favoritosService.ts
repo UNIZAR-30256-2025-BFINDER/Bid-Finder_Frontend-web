@@ -4,6 +4,8 @@
  */
 
 import { authService } from '../../auth/services/authService';
+import type { Subasta } from '../../../models/Subasta';
+import { mapBackendToFrontend } from '../../subastas/services/subastasService';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api/v1';
 
@@ -39,8 +41,8 @@ export async function fetchFavoritos(): Promise<string[]> {
 
     const result = await response.json();
     const favoritos = result.data?.favoritos || [];
-    // Favoritos are now plain strings (composite lote IDs), not objects
-    return favoritos as string[];
+    // Soporta tanto si el backend devuelve strings (IDs) como objetos poblados
+    return favoritos.map((f: any) => (f && typeof f === 'object' ? f.id : f)) as string[];
   } catch (error) {
     console.error('Error en fetchFavoritos:', error);
     return [];
@@ -86,3 +88,26 @@ export async function removeFavorito(subastaId: string): Promise<void> {
     throw new Error('No se pudo eliminar de favoritos');
   }
 }
+
+/**
+ * Recupera la lista de subastas favoritas del usuario actual de manera poblada.
+ * @returns {Promise<Subasta[]>} Array de subastas favoritas.
+ */
+export async function fetchFavoritosPopulated(): Promise<Subasta[]> {
+  const response = await fetch(`${API_BASE_URL}/favoritos`, {
+    headers: getAuthHeaders(),
+  });
+
+  if (!response.ok) {
+    if (response.status === 401) {
+      authService.logout();
+      throw new Error('Tu sesión ha expirado. Inicia sesión nuevamente.');
+    }
+    throw new Error('Error al obtener favoritos');
+  }
+
+  const result = await response.json();
+  const favoritos = result.data?.favoritos || [];
+  return favoritos.map(mapBackendToFrontend);
+}
+

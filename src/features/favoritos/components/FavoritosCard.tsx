@@ -1,8 +1,3 @@
-/**
- * @fileoverview Tarjeta individual para mostrar una subasta guardada en favoritos.
- * Permite la visualización rápida y la eliminación directa de la lista.
- */
-
 import React from 'react';
 import { XCircle } from 'lucide-react';
 
@@ -12,6 +7,7 @@ interface FavoritosCardProps {
   price: number;
   location?: string;
   image?: string;
+  fechaFinalizacion?: string | null;
   onClick?: () => void;
   onRemove?: () => void;
   isRemoving?: boolean;

@@ -11,19 +11,17 @@ import { SplitView } from '../../../components/layout/SplitView';
 import { SubastaMap } from '../../map/components/SubastaMap';
 import { MobileViewToggle } from '../../map/components/MobileViewToggle';
 import { useIsMobile } from '../../../hooks/useIsMobile';
-import { removeFavorito } from '../services/favoritosService';
+import { removeFavorito, fetchFavoritosPopulated } from '../services/favoritosService';
 import type { Subasta } from '../../../models/Subasta';
 import { FavoritosList } from '../components/FavoritosList';
 import toast from 'react-hot-toast';
-
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api/v1';
 
 export const FavoritosPage: React.FC = () => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
   const [mobileView, setMobileView] = useState<'map' | 'list'>('map');
   const [favoritos, setFavoritos] = useState<Subasta[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [removingIds, setRemovingIds] = useState<Set<string>>(new Set());
 
@@ -36,48 +34,18 @@ export const FavoritosPage: React.FC = () => {
    */
   const cargarFavoritos = useCallback(async () => {
     if (!token) {
-      setLoading(false);
       return;
     }
-    setLoading(true);
     setError(null);
     try {
-      const response = await fetch(`${API_BASE}/favoritos`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (!response.ok) {
-        if (response.status === 401) {
-          authService.logout();
+      const data = await fetchFavoritosPopulated();
+      setFavoritos(data);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        if (err.message.includes('sesión') || err.message.includes('expirado') || err.message.includes('expired')) {
           navigate('/login');
           return;
         }
-        throw new Error('Error al cargar favoritos');
-      }
-      const result = await response.json();
-
-      type RawFavorito = Subasta & {
-        location?: {
-          coordinates?: number[];
-        };
-        precio_salida?: number;
-      };
-
-      const lista: RawFavorito[] = result.data?.favoritos || [];
-      const transformed = lista.map((item) => ({
-        ...item,
-        price: item.precioSalida ?? item.precioActual ?? 0,
-        precioActual: item.precioSalida ?? 0,
-        precioSalida: item.precioSalida ?? 0,
-        lat: item.location?.coordinates?.[1] ?? item.lat ?? null,
-        lng: item.location?.coordinates?.[0] ?? item.lng ?? null,
-        hasLocation: !!(item.location?.coordinates || item.lat),
-        imagen: item.imagen || '/Bfinder_logo.png',
-        direccion: item.direccion || '',
-      }));
-
-      setFavoritos(transformed as Subasta[]);
-    } catch (err: unknown) {
-      if (err instanceof Error) {
         setError(err.message || 'No se pudieron cargar tus favoritos');
       } else {
         setError('Error desconocido al cargar favoritos');
@@ -125,28 +93,6 @@ export const FavoritosPage: React.FC = () => {
     cargarFavoritos();
   }, [isAuthenticated, navigate, cargarFavoritos]);
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-[#050816] text-white flex items-center justify-center">
-        <p>Cargando tus favoritos...</p>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen bg-[#050816] text-white flex flex-col items-center justify-center">
-        <p className="text-red-400">{error}</p>
-        <button
-          onClick={cargarFavoritos}
-          className="mt-4 px-4 py-2 bg-blue-600 rounded hover:bg-blue-700"
-        >
-          Reintentar
-        </button>
-      </div>
-    );
-  }
-
   const sidebarContent = (
     <div className="h-full flex flex-col p-4 md:p-6 bg-[#0b0f19] overflow-y-auto">
       <div className="flex justify-between items-end mb-4">
@@ -159,7 +105,21 @@ export const FavoritosPage: React.FC = () => {
         </span>
       </div>
 
-      {favoritos.length === 0 ? (
+      {loading ? (
+        <div className="flex-1 flex items-center justify-center py-12">
+          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-yellow-400"></div>
+        </div>
+      ) : error ? (
+        <div className="bg-white/5 rounded-xl p-8 text-center mt-8 border border-red-500/20">
+          <p className="text-red-400">{error}</p>
+          <button
+            onClick={cargarFavoritos}
+            className="mt-4 px-4 py-2 bg-blue-600 rounded hover:bg-blue-700 text-sm font-semibold transition"
+          >
+            Reintentar
+          </button>
+        </div>
+      ) : favoritos.length === 0 ? (
         <div className="bg-white/5 rounded-xl p-8 text-center mt-8">
           <p className="text-gray-300">No tienes subastas favoritas aún.</p>
           <button
@@ -176,7 +136,7 @@ export const FavoritosPage: React.FC = () => {
   );
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#0b0f19] text-white font-sans overflow-hidden">
+    <div className="h-[100dvh] flex flex-col bg-[#0b0f19] text-white font-sans overflow-hidden">
       <DashboardNavbar showSearchAndFilters={false} />
 
       <main className="flex-1 w-full overflow-hidden relative">

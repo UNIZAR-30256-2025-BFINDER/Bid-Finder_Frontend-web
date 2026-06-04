@@ -53,6 +53,7 @@ export const FavoritosList: React.FC<FavoritosListProps> = ({
               subtitle={subasta.titulo}
               price={subasta.precioActual}
               image={subasta.imagen}
+              fechaFinalizacion={subasta.fechaFinalizacion}
               location={
                 subasta.type === 'house'
                   ? 'Vivienda'
