@@ -15,6 +15,7 @@ describe('subastasService', () => {
           texto: 'Texto crudo',
           urlPdf: '/pdf123',
           categoria: 'Vehiculo',
+          fechaFinalizacion: '2026-06-25T00:00:00.000Z',
         },
       ],
     };
@@ -28,6 +29,7 @@ describe('subastasService', () => {
     expect(result).toHaveLength(1);
     expect(result[0].id).toBe('123');
     expect(result[0].type).toBe('car');
+    expect(result[0].fechaFinalizacion).toBe('2026-06-25T00:00:00.000Z');
   });
 
   it('fetchSubastaById devuelve null si el servidor responde con 404', async () => {

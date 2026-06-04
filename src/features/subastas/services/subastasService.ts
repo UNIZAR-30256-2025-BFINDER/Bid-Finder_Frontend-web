@@ -46,6 +46,7 @@ export interface BackendSubastaDetail {
   riesgo_legal?: string | null;
   ocupantes?: string | null;
   cargas_previas?: string | null;
+  fechaFinalizacion?: string | null;
 }
 
 export interface SubastaFilters {
@@ -66,7 +67,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000
  * @param {BackendSubastaDetail} item - Documento crudo proveniente de la base de datos.
  * @returns {Subasta} Objeto Subasta tipado y listo para ser renderizado.
  */
-const mapBackendToFrontend = (item: BackendSubastaDetail): Subasta => {
+export const mapBackendToFrontend = (item: BackendSubastaDetail): Subasta => {
   const hasLocation = !!(
     item.location &&
     item.location.coordinates &&
@@ -161,6 +162,7 @@ const mapBackendToFrontend = (item: BackendSubastaDetail): Subasta => {
     riesgo_legal: item.riesgo_legal ?? null,
     ocupantes: item.ocupantes ?? null,
     cargas_previas: item.cargas_previas ?? null,
+    fechaFinalizacion: item.fechaFinalizacion ?? null,
   };
 };
 
