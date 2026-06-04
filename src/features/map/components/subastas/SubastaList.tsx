@@ -54,6 +54,7 @@ export const SubastaList: React.FC<SubastaListProps> = ({ subastas }) => {
                 price={subasta.precioActual}
                 image={facadeUrl || subasta.imagen}
                 viabilidad={subasta.viabilidad}
+                fechaFinalizacion={subasta.fechaFinalizacion}
                 location={
                   subasta.type === 'house'
                     ? 'Vivienda'
