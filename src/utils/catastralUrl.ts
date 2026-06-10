@@ -142,14 +142,13 @@ export class CatastralUrlBuilder {
   }
 
   /**
-   * Genera la URL de la imagen de fachada usando nuestro endpoint backend.
+   * Genera la URL de la foto de la fachada del inmueble usando nuestro endpoint backend.
    */
-  public buildFacadeImageUrl(ref: CatastralRef): string {
+  public buildFacadeUrl(ref: CatastralRef): string {
     return `${this.apiBase}/catastro/fachada/${ref.getFull()}`;
   }
 }
 
-// Singleton Builder preconfigurado
 const defaultBuilder = new CatastralUrlBuilder();
 
 /**
@@ -185,11 +184,10 @@ export function buildCatastralSatelliteUrl(refCatastral: string): string {
 }
 
 /**
- * Wrapper de compatibilidad para construir la URL de la foto de fachada.
+ * Wrapper de compatibilidad para construir la URL de la fachada.
  */
 export function buildCatastralFacadeUrl(refCatastral: string): string {
   const ref = new CatastralRef(refCatastral);
-  return defaultBuilder.buildFacadeImageUrl(ref);
+  return defaultBuilder.buildFacadeUrl(ref);
 }
-
 

@@ -1,8 +1,3 @@
-/**
- * @fileoverview Tarjeta de previsualización de subasta para el listado lateral.
- * Proporciona un resumen visual del activo y su estado de selección.
- */
-
 import React from 'react';
 import { FavoriteButton } from './FavoriteButton';
 
@@ -14,6 +9,7 @@ interface SubastaCardProps {
   location?: string;
   image?: string;
   viabilidad?: string;
+  fechaFinalizacion?: string | null;
   onClick?: () => void;
   /** Indica si la tarjeta debe resaltar como seleccionada (ej. al clicar en el mapa) */
   selected?: boolean;
@@ -36,56 +32,56 @@ export const SubastaCard: React.FC<SubastaCardProps> = ({
   viabilidad,
   onClick,
   selected = false,
-}) => (
-  <div
-    className={`group min-w-0 rounded-xl shadow-md bg-[#111827] text-white cursor-pointer border-2 transition-all duration-300 overflow-hidden ${
-      selected
+}) => {
+  return (
+    <div
+      className={`group min-w-0 rounded-xl shadow-md bg-[#111827] text-white cursor-pointer border-2 transition-all duration-300 overflow-hidden ${selected
         ? 'border-yellow-400 bg-white/10'
         : 'border-transparent hover:border-yellow-400 hover:bg-white/10'
-    }`}
-    onClick={onClick}
-  >
-    <div className="aspect-video w-full relative overflow-hidden bg-black/50">
-      <div className="absolute top-2 right-2 z-10">
-        <FavoriteButton subastaId={id} />
-      </div>
+        }`}
+      onClick={onClick}
+    >
+      <div className="aspect-video w-full relative overflow-hidden bg-black/50">
+        <div className="absolute top-2 right-2 z-10">
+          <FavoriteButton subastaId={id} />
+        </div>
 
-      {viabilidad && (
-        <span className={`absolute top-2 left-2 z-10 backdrop-blur-md text-[10px] md:text-xs px-2 py-0.5 md:py-1 rounded-md font-bold uppercase shadow-sm ${
-          viabilidad === 'green'
+        {viabilidad && (
+          <span className={`absolute top-2 left-2 z-10 backdrop-blur-md text-[10px] md:text-xs px-2 py-0.5 md:py-1 rounded-md font-bold uppercase shadow-sm ${viabilidad === 'green'
             ? 'bg-green-500/80 text-white'
             : viabilidad === 'yellow'
-            ? 'bg-yellow-500/80 text-black'
-            : 'bg-red-500/80 text-white'
-        }`}>
-          {viabilidad === 'green' ? '🟢 Alta' : viabilidad === 'yellow' ? '🟡 Media' : '🔴 Baja'}
+              ? 'bg-yellow-500/80 text-black'
+              : 'bg-red-500/80 text-white'
+            }`}>
+            {viabilidad === 'green' ? '🟢 Alta' : viabilidad === 'yellow' ? '🟡 Media' : '🔴 Baja'}
+          </span>
+        )}
+
+        <img
+          src={image || fallbackImg}
+          alt={subtitle}
+          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+          loading="lazy"
+          onError={(e) => {
+            (e.target as HTMLImageElement).src = fallbackImg;
+          }}
+        />
+
+        {location && (
+          <span className="absolute bottom-2 left-2 bg-black/60 backdrop-blur-sm text-white text-xs px-2 py-1 rounded-md font-medium">
+            {location}
+          </span>
+        )}
+      </div>
+
+      <div className="flex flex-col gap-1 p-4">
+        <span className="font-bold text-base truncate" title={title}>
+          {title}
         </span>
-      )}
-
-      <img
-        src={image || fallbackImg}
-        alt={subtitle}
-        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-        loading="lazy"
-        onError={(e) => {
-          (e.target as HTMLImageElement).src = fallbackImg;
-        }}
-      />
-
-      {location && (
-        <span className="absolute bottom-2 left-2 bg-black/60 backdrop-blur-sm text-white text-xs px-2 py-1 rounded-md font-medium">
-          {location}
+        <span className="text-yellow-400 font-bold text-xl tracking-tight">
+          {price.toLocaleString('es-ES')} €
         </span>
-      )}
+      </div>
     </div>
-
-    <div className="flex flex-col gap-1 p-4">
-      <span className="font-bold text-base truncate" title={title}>
-        {title}
-      </span>
-      <span className="text-yellow-400 font-bold text-xl tracking-tight">
-        {price.toLocaleString('es-ES')} €
-      </span>
-    </div>
-  </div>
-);
+  );
+};

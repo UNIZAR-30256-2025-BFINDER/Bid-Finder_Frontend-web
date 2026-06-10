@@ -42,4 +42,5 @@ export interface Subasta {
   ocupantes?: string | null;
   cargas_previas?: string | null;
   hasLocation?: boolean;
+  fechaFinalizacion?: string | null;
 }

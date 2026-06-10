@@ -233,6 +233,7 @@ export const SubastaDetail: React.FC = () => {
                       ? `Subasta ${subasta.numero_lote} de ${subasta.total_lotes} — Lote ${subasta.anuncio_id}`
                       : `Subasta ID ${subasta.id}`
                   }
+                  fechaFinalizacion={subasta.fechaFinalizacion}
                 />
 
                 {/* Panel de Precios e Inversión */}
