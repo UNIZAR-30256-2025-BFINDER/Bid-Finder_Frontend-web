@@ -82,9 +82,7 @@ export const authService = {
     const result: AuthResponse = await response.json();
     saveSession(result.data);
 
-    const { accessToken, refreshToken, ...user } = result.data;
-    void accessToken;
-    void refreshToken;
+    const { accessToken: _at, refreshToken: _rt, ...user } = result.data;
 
     return user;
   },
@@ -109,9 +107,7 @@ export const authService = {
     const result: AuthResponse = await response.json();
     saveSession(result.data);
 
-    const { accessToken, refreshToken, ...user } = result.data;
-    void accessToken;
-    void refreshToken;
+    const { accessToken: _at, refreshToken: _rt, ...user } = result.data;
 
     return user;
   },
@@ -159,6 +155,8 @@ export const authService = {
    * @returns {boolean} True si hay un token almacenado.
    */
   isAuthenticated(): boolean {
-    return Boolean(this.getAccessToken() || this.getRefreshToken());
+    // Verificamos solo el access token. Si ha expirado (tras 1h) el usuario
+    // debe volver a autenticarse o el interceptor debe renovarlo con el refresh token.
+    return Boolean(this.getAccessToken());
   },
 };
