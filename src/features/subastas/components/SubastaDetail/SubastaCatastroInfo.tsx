@@ -21,13 +21,15 @@ export interface CatastroData {
 interface Props {
   data: CatastroData | null;
   loading: boolean;
+  error?: string | null;
   imageUrl: string | null;
   satelliteUrl: string | null;
   facadeUrl: string | null;
 }
 
-export const SubastaCatastroInfo: React.FC<Props> = ({ data, loading, imageUrl, satelliteUrl, facadeUrl }) => {
+export const SubastaCatastroInfo: React.FC<Props> = ({ data, loading, error, imageUrl, satelliteUrl, facadeUrl }) => {
   const [activeTab, setActiveTab] = React.useState<'facade' | 'mapa' | 'satelite'>('facade');
+  const [imageErrors, setImageErrors] = React.useState<{ [key: string]: boolean }>({});
 
   // Si no hay fachada pero hay mapa, cambiar al mapa
   React.useEffect(() => {
@@ -45,6 +47,16 @@ export const SubastaCatastroInfo: React.FC<Props> = ({ data, loading, imageUrl, 
       <div className="bg-slate-50 border border-slate-200/60 rounded-2xl p-6 text-black flex flex-col items-center justify-center min-h-[200px]">
         <Loader2 className="w-8 h-8 text-yellow-500 animate-spin mb-2" />
         <p className="text-sm font-medium text-slate-600">Consultando datos oficiales en la Sede del Catastro...</p>
+      </div>
+    );
+  }
+
+  if (error && !data) {
+    return (
+      <div className="bg-slate-50 border border-red-200/60 rounded-2xl p-6 text-black flex flex-col items-center text-center justify-center min-h-[200px] space-y-2">
+        <span className="text-2xl">⚠️</span>
+        <h4 className="text-sm font-bold text-slate-800">Catastro Oficial No Disponible</h4>
+        <p className="text-xs text-slate-500 max-w-xs">{error}</p>
       </div>
     );
   }
@@ -178,51 +190,69 @@ export const SubastaCatastroInfo: React.FC<Props> = ({ data, loading, imageUrl, 
           </div>
 
           <div className="relative rounded-xl overflow-hidden border border-slate-200 bg-white group flex justify-center items-center shadow-md min-h-[300px]">
-            {activeTab === 'facade' && facadeUrl && (
+            {imageErrors[activeTab] ? (
+              <div className="flex flex-col items-center justify-center p-8 text-center space-y-3 min-h-[300px]">
+                <span className="text-3xl">🖼️</span>
+                <p className="text-sm font-bold text-slate-800">
+                  {activeTab === 'facade' ? 'Fotografía de fachada no disponible' :
+                   activeTab === 'mapa' ? 'Plano cartográfico no disponible' :
+                   'Vista satelital no disponible'}
+                </p>
+                <p className="text-xs text-slate-500 max-w-xs">
+                  La Sede Electrónica del Catastro no dispone de esta visualización para la parcela {data.referenciaCatastral}.
+                </p>
+              </div>
+            ) : (
               <>
-                <img
-                  src={facadeUrl}
-                  alt={`Fachada del inmueble ${data.referenciaCatastral}`}
-                  className="max-h-[480px] w-full object-cover transition-transform duration-500 group-hover:scale-102"
-                  loading="lazy"
-                  onError={() => {
-                    // Si falla la fachada (ej: no disponible), intentar alternar a plano
-                    if (imageUrl) {
-                      setActiveTab('mapa');
-                    } else if (satelliteUrl) {
-                      setActiveTab('satelite');
-                    }
-                  }}
-                />
-                <div className="absolute bottom-4 right-4 bg-slate-900/85 backdrop-blur-md text-white text-[9px] font-bold px-2.5 py-1 rounded-md border border-white/10 shadow-sm pointer-events-none tracking-wide">
-                  Fachada D.G. del Catastro
-                </div>
-              </>
-            )}
-            {activeTab === 'mapa' && imageUrl && (
-              <>
-                <img
-                  src={imageUrl}
-                  alt={`Plano de la parcela ${data.referenciaCatastral}`}
-                  className="max-h-[480px] w-full object-contain transition-transform duration-500 group-hover:scale-102"
-                  loading="lazy"
-                />
-                <div className="absolute bottom-4 right-4 bg-slate-900/85 backdrop-blur-md text-white text-[9px] font-bold px-2.5 py-1 rounded-md border border-white/10 shadow-sm pointer-events-none tracking-wide">
-                  WMS INSPIRE de la D.G. del Catastro
-                </div>
-              </>
-            )}
-            {activeTab === 'satelite' && satelliteUrl && (
-              <>
-                <img
-                  src={satelliteUrl}
-                  alt={`Vista satélite de la parcela ${data.referenciaCatastral}`}
-                  className="max-h-[480px] w-full object-cover transition-transform duration-500 group-hover:scale-102"
-                  loading="lazy"
-                />
-                <div className="absolute bottom-4 right-4 bg-slate-900/85 backdrop-blur-md text-white text-[9px] font-bold px-2.5 py-1 rounded-md border border-white/10 shadow-sm pointer-events-none tracking-wide">
-                  Ortofotonavegador PNOA © IGN
-                </div>
+                {activeTab === 'facade' && facadeUrl && (
+                  <>
+                    <img
+                      src={facadeUrl}
+                      alt={`Fachada del inmueble ${data.referenciaCatastral}`}
+                      className="max-h-[480px] w-full object-cover transition-transform duration-500 group-hover:scale-102"
+                      loading="lazy"
+                      onError={() => {
+                        // Si falla la fachada principal, marcamos el error para no dejar la imagen rota
+                        setImageErrors(prev => ({ ...prev, facade: true }));
+                      }}
+                    />
+                    <div className="absolute bottom-4 right-4 bg-slate-900/85 backdrop-blur-md text-white text-[9px] font-bold px-2.5 py-1 rounded-md border border-white/10 shadow-sm pointer-events-none tracking-wide">
+                      Fachada D.G. del Catastro
+                    </div>
+                  </>
+                )}
+                {activeTab === 'mapa' && imageUrl && (
+                  <>
+                    <img
+                      src={imageUrl}
+                      alt={`Plano de la parcela ${data.referenciaCatastral}`}
+                      className="max-h-[480px] w-full object-contain transition-transform duration-500 group-hover:scale-102"
+                      loading="lazy"
+                      onError={() => {
+                        setImageErrors(prev => ({ ...prev, mapa: true }));
+                      }}
+                    />
+                    <div className="absolute bottom-4 right-4 bg-slate-900/85 backdrop-blur-md text-white text-[9px] font-bold px-2.5 py-1 rounded-md border border-white/10 shadow-sm pointer-events-none tracking-wide">
+                      WMS INSPIRE de la D.G. del Catastro
+                    </div>
+                  </>
+                )}
+                {activeTab === 'satelite' && satelliteUrl && (
+                  <>
+                    <img
+                      src={satelliteUrl}
+                      alt={`Vista satélite de la parcela ${data.referenciaCatastral}`}
+                      className="max-h-[480px] w-full object-cover transition-transform duration-500 group-hover:scale-102"
+                      loading="lazy"
+                      onError={() => {
+                        setImageErrors(prev => ({ ...prev, satelite: true }));
+                      }}
+                    />
+                    <div className="absolute bottom-4 right-4 bg-slate-900/85 backdrop-blur-md text-white text-[9px] font-bold px-2.5 py-1 rounded-md border border-white/10 shadow-sm pointer-events-none tracking-wide">
+                      Ortofotonavegador PNOA © IGN
+                    </div>
+                  </>
+                )}
               </>
             )}
           </div>
