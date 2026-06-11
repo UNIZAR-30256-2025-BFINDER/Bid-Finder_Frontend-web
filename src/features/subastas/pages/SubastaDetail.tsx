@@ -7,7 +7,8 @@
 
 import React from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { fetchSubastaById } from '../services/subastasService';
+import { useSubasta } from '../hooks/useSubasta';
+import { useCatastroInfo } from '../hooks/useCatastroInfo';
 
 import SubastaLoading from '../components/SubastaDetail/SubastaLoading';
 import SubastaError from '../components/SubastaDetail/SubastaError';
@@ -18,7 +19,7 @@ import SubastaDescription from '../components/SubastaDetail/SubastaDescription';
 import SubastaStructuredFields from '../components/SubastaDetail/SubastaStructuredFields';
 import SubastaIAInfo from '../components/SubastaDetail/SubastaIAInfo';
 import * as catastralUrl from '../../../utils/catastralUrl';
-import { SubastaCatastroInfo, CatastroData } from '../components/SubastaDetail/SubastaCatastroInfo';
+import { SubastaCatastroInfo } from '../components/SubastaDetail/SubastaCatastroInfo';
 import SubastaImage from '../components/SubastaDetail/SubastaImage';
 import SubastaLocationMap from '../components/SubastaDetail/SubastaLocationMap';
 import SubastaOriginalText from '../components/SubastaDetail/SubastaRawText';
@@ -27,7 +28,6 @@ import { FavoriteButton } from '../components/SubastaDetail/FavoriteButton';
 import { ComentariosSection } from '../components/SubastaDetail/ComentariosSection';
 import { authService } from '../../auth/services/authService';
 import { ArrowLeft, ChevronDown, ChevronUp, Layers } from 'lucide-react';
-import type { Subasta } from '../../../models/Subasta';
 
 /**
  * Componente principal de la vista de detalle de la subasta.
@@ -35,60 +35,12 @@ import type { Subasta } from '../../../models/Subasta';
 export const SubastaDetail: React.FC = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
-  const [subasta, setSubasta] = React.useState<Subasta | null>(null);
-  const [loading, setLoading] = React.useState(true);
-  const [error, setError] = React.useState<string | null>(null);
   const [showLoteSelector, setShowLoteSelector] = React.useState(false);
 
   const isAuthenticated = authService.isAuthenticated();
 
-  React.useEffect(() => {
-    /** Llama al servicio asíncrono para cargar los datos de la subasta. */
-    const loadSubasta = async () => {
-      try {
-        if (!id) {
-          setLoading(false);
-          return;
-        }
-
-        const data = await fetchSubastaById(id);
-        setSubasta(data);
-      } catch (err) {
-        console.error(err);
-        setError('No se pudo recuperar la subasta desde el backend.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadSubasta();
-  }, [id]);
-
-  const [catastroInfo, setCatastroInfo] = React.useState<CatastroData | null>(null);
-  const [loadingCatastro, setLoadingCatastro] = React.useState(false);
-
-  React.useEffect(() => {
-    if (!subasta) return;
-    const ref = catastralUrl.CatastralRef.fromSubasta(subasta);
-    if (!ref) return;
-
-    const loadCatastroInfo = async () => {
-      setLoadingCatastro(true);
-      try {
-        const response = await fetch(`${catastralUrl.API_BASE_URL}/catastro/info/${ref.getFull()}`);
-        if (response.ok) {
-          const data = await response.json();
-          setCatastroInfo(data);
-        }
-      } catch (err) {
-        console.warn('Error loading extended catastral info:', err);
-      } finally {
-        setLoadingCatastro(false);
-      }
-    };
-
-    loadCatastroInfo();
-  }, [subasta]);
+  const { subasta, loading, error } = useSubasta(id);
+  const { catastroInfo, loadingCatastro, catastroError } = useCatastroInfo(subasta);
 
   /** Funciones de utilidades para la interfaz de detalle */
   const formatPrice = (value?: number | null) => {
@@ -330,6 +282,7 @@ export const SubastaDetail: React.FC = () => {
                 <SubastaCatastroInfo
                   data={catastroInfo}
                   loading={loadingCatastro}
+                  error={catastroError}
                   imageUrl={catastralRef ? catastralUrl.buildCatastralImageUrl(catastralRef.getFull()) : null}
                   satelliteUrl={catastralRef ? catastralUrl.buildCatastralSatelliteUrl(catastralRef.getFull()) : null}
                   facadeUrl={catastralRef ? catastralUrl.buildCatastralFacadeUrl(catastralRef.getFull()) : null}

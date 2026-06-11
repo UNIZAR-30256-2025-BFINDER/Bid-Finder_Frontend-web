@@ -112,23 +112,10 @@ export const mapBackendToFrontend = (item: BackendSubastaDetail): Subasta => {
     inferredType = 'house';
   }
 
-  let viabilidad = 'red';
-
-  if (item.viabilidad) {
-    const viab = item.viabilidad.toUpperCase();
-    if (viab === 'ALTA') viabilidad = 'green';
-    else if (viab === 'MEDIA') viabilidad = 'yellow';
-    else if (viab === 'BAJA') viabilidad = 'red';
-  } else if (item.nivel_oportunidad) {
-    if (item.nivel_oportunidad === 'ALTO') viabilidad = 'green';
-    else if (item.nivel_oportunidad === 'MEDIO') viabilidad = 'yellow';
-    else if (item.nivel_oportunidad === 'BAJO') viabilidad = 'red';
-  } else if (item.riesgo_legal) {
-    const riesgo = item.riesgo_legal.toLowerCase();
-    if (riesgo === 'bajo') viabilidad = 'green';
-    else if (riesgo === 'medio') viabilidad = 'yellow';
-    else if (riesgo === 'alto') viabilidad = 'red';
-  }
+  // El backend es la fuente de verdad: solo mapeamos el valor a un color de UI.
+  // La lógica de cálculo de viabilidad vive en oportunidadCalculator.js (backend).
+  const viabilidadMap: Record<string, string> = { ALTA: 'green', MEDIA: 'yellow', BAJA: 'red' };
+  const viabilidad = viabilidadMap[item.viabilidad?.toUpperCase() ?? ''] ?? 'red';
 
   return {
     id: item.id,
