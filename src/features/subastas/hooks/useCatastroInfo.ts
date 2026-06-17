@@ -18,11 +18,13 @@ export function useCatastroInfo(subasta: Subasta | null) {
       setCatastroError(null);
       return;
     }
-    
+
     const ref = catastralUrl.CatastralRef.fromSubasta(subasta);
     if (!ref) {
       setCatastroInfo(null);
-      setCatastroError('Esta subasta no dispone de una referencia catastral válida de 20 caracteres.');
+      setCatastroError(
+        'Esta subasta no dispone de una referencia catastral válida de 20 caracteres.',
+      );
       return;
     }
 

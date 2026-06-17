@@ -169,8 +169,7 @@ export async function fetchSubastas(filtros?: SubastaFilters): Promise<Subasta[]
       url.searchParams.append('precio_max', String(filtros.precio_max));
     if (filtros?.nivel_oportunidad)
       url.searchParams.append('nivel_oportunidad', filtros.nivel_oportunidad);
-    if (filtros?.tipo_lote)
-      url.searchParams.append('tipo_lote', filtros.tipo_lote);
+    if (filtros?.tipo_lote) url.searchParams.append('tipo_lote', filtros.tipo_lote);
     if (filtros?.q) url.searchParams.append('q', filtros.q);
 
     const response = await fetch(url.toString());

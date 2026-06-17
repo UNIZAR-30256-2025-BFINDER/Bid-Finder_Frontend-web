@@ -1,8 +1,7 @@
 /**
  * @fileoverview Página de detalle de una subasta específica.
  * Orquesta la recuperación de datos desde el backend y ensambla los diferentes
- * bloques de información: mapa local, análisis de IA, datos estructurados y comentarios.
- * Soporta multi-lote: muestra un selector de lotes cuando el anuncio contiene más de uno.
+ * bloques de información de forma limpia y sin duplicidades.
  */
 
 import React from 'react';
@@ -17,56 +16,46 @@ import SubastaMainInfo from '../components/SubastaDetail/SubastaMainInfo';
 import SubastaOriginalLink from '../components/SubastaDetail/SubastaOriginalLink';
 import SubastaDescription from '../components/SubastaDetail/SubastaDescription';
 import SubastaStructuredFields from '../components/SubastaDetail/SubastaStructuredFields';
-import SubastaIAInfo from '../components/SubastaDetail/SubastaIAInfo';
 import * as catastralUrl from '../../../utils/catastralUrl';
 import { SubastaCatastroInfo } from '../components/SubastaDetail/SubastaCatastroInfo';
 import SubastaImage from '../components/SubastaDetail/SubastaImage';
 import SubastaLocationMap from '../components/SubastaDetail/SubastaLocationMap';
-import SubastaOriginalText from '../components/SubastaDetail/SubastaRawText';
 import { DashboardNavbar } from '../../map/layout/DashboardNavbar';
 import { FavoriteButton } from '../components/SubastaDetail/FavoriteButton';
 import { ComentariosSection } from '../components/SubastaDetail/ComentariosSection';
 import { authService } from '../../auth/services/authService';
 import { ArrowLeft, ChevronDown, ChevronUp, Layers } from 'lucide-react';
 
-/**
- * Componente principal de la vista de detalle de la subasta.
- */
 export const SubastaDetail: React.FC = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const [showLoteSelector, setShowLoteSelector] = React.useState(false);
 
   const isAuthenticated = authService.isAuthenticated();
-
   const { subasta, loading, error } = useSubasta(id);
   const { catastroInfo, loadingCatastro, catastroError } = useCatastroInfo(subasta);
 
-  /** Funciones de utilidades para la interfaz de detalle */
   const formatPrice = (value?: number | null) => {
-    if (value === null || value === undefined) return 'No disponible';
+    if (value === null || value === undefined) return 'No especificado en edicto';
     return `${value.toLocaleString('es-ES')} €`;
-  };
-
-  const formatPercentage = (value?: number | null) => {
-    if (value === null || value === undefined) return 'No disponible';
-    return `${value.toLocaleString('es-ES')}%`;
   };
 
   if (loading) return <SubastaLoading />;
   if (error) return <SubastaError error={error} />;
   if (!subasta) return <SubastaNotFound id={id!} />;
+
   const catastralRef = catastralUrl.CatastralRef.fromSubasta(subasta);
-
-  const riesgoContent = subasta.riesgo_legal
-    ? `Nivel: ${subasta.riesgo_legal}\nOcupantes: ${subasta.ocupantes || 'Desconocido'}\nCargas Previas: ${subasta.cargas_previas || 'No constan cargas'}`
-    : 'No hay datos de riesgo extraídos para esta subasta.';
-
-  const oportunidadContent = `Nivel de oportunidad: ${subasta.nivel_oportunidad || 'No disponible'
-    }\nDiferencia vs tasación: ${formatPercentage(subasta.diferencia_porcentual_oportunidad)}`;
-
   const hasMultipleLotes = (subasta.total_lotes ?? 1) > 1;
   const allLotes = subasta.all_lotes || [];
+
+  const isInmueble = subasta.type === 'house' || subasta.type === 'inmueble';
+
+  const getFallbackImage = (type?: string) => {
+    if (type === 'car' || type === 'vehiculo' || type === 'vehículo') {
+      return 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&q=80&w=1200';
+    }
+    return 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80&w=1200';
+  };
 
   return (
     <div className="min-h-screen bg-[#050816] text-white flex flex-col">
@@ -82,7 +71,6 @@ export const SubastaDetail: React.FC = () => {
             <span>Volver al mapa</span>
           </button>
 
-          {/* Alerta/Botonera de lotes si hay más de uno */}
           {hasMultipleLotes && (
             <div className="mb-6 rounded-xl border border-yellow-500/20 bg-yellow-950/10 backdrop-blur-md p-5 transition-all duration-300 hover:border-yellow-500/30">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -91,9 +79,19 @@ export const SubastaDetail: React.FC = () => {
                     <Layers size={20} />
                   </div>
                   <div>
-                    <h4 className="text-base md:text-lg font-semibold text-white">Lote con Múltiples Subastas</h4>
+                    <h4 className="text-base md:text-lg font-semibold text-white">
+                      Lote con Múltiples Subastas
+                    </h4>
                     <p className="text-sm text-slate-300 mt-1">
-                      Este lote contiene <span className="font-semibold text-yellow-400">{subasta.total_lotes} subastas</span> individuales. Estás viendo la <span className="font-semibold text-yellow-400">Subasta {subasta.numero_lote}</span>.
+                      Este lote contiene{' '}
+                      <span className="font-semibold text-yellow-400">
+                        {subasta.total_lotes} subastas
+                      </span>{' '}
+                      individuales. Estás viendo la{' '}
+                      <span className="font-semibold text-yellow-400">
+                        Subasta {subasta.numero_lote}
+                      </span>
+                      .
                     </p>
                   </div>
                 </div>
@@ -101,16 +99,15 @@ export const SubastaDetail: React.FC = () => {
                   onClick={() => setShowLoteSelector(!showLoteSelector)}
                   className="flex items-center gap-2 self-start sm:self-center px-4 py-2 rounded-lg text-sm font-semibold bg-white/10 hover:bg-white/15 text-white hover:text-yellow-400 border border-white/5 transition-all cursor-pointer whitespace-nowrap"
                 >
-                  <span>{showLoteSelector ? 'Ocultar otras subastas' : 'Ver todas las subastas'}</span>
+                  <span>
+                    {showLoteSelector ? 'Ocultar otras subastas' : 'Ver todas las subastas'}
+                  </span>
                   {showLoteSelector ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
                 </button>
               </div>
 
               {showLoteSelector && (
                 <div className="mt-5 pt-4 border-t border-slate-800/60 animate-fadeIn">
-                  <p className="text-sm text-slate-300 mb-4 font-medium">
-                    Haz clic en cualquiera de las siguientes subastas para ver sus detalles individuales:
-                  </p>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                     {allLotes.map((lote) => {
                       const loteId = `${subasta.anuncio_id}__L${lote.numero_lote}`;
@@ -120,13 +117,16 @@ export const SubastaDetail: React.FC = () => {
                           key={lote.numero_lote}
                           onClick={() => !isActive && navigate(`/subastas/${loteId}`)}
                           disabled={isActive}
-                          className={`w-full text-left p-4 rounded-xl text-sm transition-all border ${isActive
-                            ? 'bg-yellow-500/10 border-yellow-500/30 text-white font-medium cursor-default ring-1 ring-yellow-500/20'
-                            : 'bg-slate-900/50 border-slate-800 text-slate-300 hover:bg-slate-900 hover:border-slate-700 hover:text-yellow-400 cursor-pointer'
-                            }`}
+                          className={`w-full text-left p-4 rounded-xl text-sm transition-all border ${
+                            isActive
+                              ? 'bg-yellow-500/10 border-yellow-500/30 text-white font-medium cursor-default ring-1 ring-yellow-500/20'
+                              : 'bg-slate-900/50 border-slate-800 text-slate-300 hover:bg-slate-900 hover:border-slate-700 hover:text-yellow-400 cursor-pointer'
+                          }`}
                         >
                           <div className="flex justify-between items-center mb-1.5">
-                            <span className={`font-semibold ${isActive ? 'text-yellow-400' : 'text-slate-200'}`}>
+                            <span
+                              className={`font-semibold ${isActive ? 'text-yellow-400' : 'text-slate-200'}`}
+                            >
                               Subasta {lote.numero_lote}
                             </span>
                             {lote.precio_salida != null && (
@@ -151,7 +151,11 @@ export const SubastaDetail: React.FC = () => {
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
               <div className="xl:col-span-2 space-y-8">
                 <SubastaImage
-                  src={catastralRef ? catastralUrl.buildCatastralFacadeUrl(catastralRef.getFull()) : "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80&w=1200"}
+                  src={
+                    isInmueble && catastralRef
+                      ? catastralUrl.buildCatastralFacadeUrl(catastralRef.getFull())
+                      : getFallbackImage(subasta.type)
+                  }
                   alt={subasta.titulo}
                 />
 
@@ -164,15 +168,28 @@ export const SubastaDetail: React.FC = () => {
                   viabilidad={subasta.viabilidad}
                 />
 
-                <SubastaIAInfo
-                  blocks={[
-                    { title: 'Oportunidad calculada', content: oportunidadContent },
-                    { title: 'Advertencias Jurídicas (IA)', content: riesgoContent },
-                    { title: 'Resumen IA', content: subasta.descripcion },
-                  ]}
-                />
-
-                <SubastaOriginalText descripcion={subasta.textoBruto || ''} />
+                {isInmueble && (
+                  <SubastaCatastroInfo
+                    data={catastroInfo}
+                    loading={loadingCatastro}
+                    error={catastroError}
+                    imageUrl={
+                      catastralRef
+                        ? catastralUrl.buildCatastralImageUrl(catastralRef.getFull())
+                        : null
+                    }
+                    satelliteUrl={
+                      catastralRef
+                        ? catastralUrl.buildCatastralSatelliteUrl(catastralRef.getFull())
+                        : null
+                    }
+                    facadeUrl={
+                      catastralRef
+                        ? catastralUrl.buildCatastralFacadeUrl(catastralRef.getFull())
+                        : null
+                    }
+                  />
+                )}
               </div>
 
               <aside className="xl:col-span-1 space-y-6">
@@ -182,78 +199,23 @@ export const SubastaDetail: React.FC = () => {
                   id={subasta.id}
                   descripcion={
                     hasMultipleLotes
-                      ? `Subasta ${subasta.numero_lote} de ${subasta.total_lotes} — Lote ${subasta.anuncio_id}`
-                      : `Subasta ID ${subasta.id}`
+                      ? `Subasta ${subasta.numero_lote} de ${subasta.total_lotes} — BOE ${subasta.anuncio_id}`
+                      : `Referencia BOE: ${subasta.anuncio_id || subasta.id}`
                   }
                   fechaFinalizacion={subasta.fechaFinalizacion}
                 />
 
-                {/* Panel de Precios e Inversión */}
-                <div className="bg-slate-50 border border-slate-200/60 rounded-xl p-5 space-y-4 text-black">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Precio de salida</p>
-                      <p className="text-xl md:text-2xl font-bold text-gray-900 mt-1">{formatPrice(subasta.precioSalida)}</p>
-                    </div>
-                    <div>
-                      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Valor de Tasación</p>
-                      <p className="text-xl md:text-2xl font-bold text-gray-900 mt-1">{formatPrice(subasta.valorTasacion)}</p>
-                    </div>
-                  </div>
-
-                  {subasta.diferencia_porcentual_oportunidad !== null && (
-                    <div className="pt-3 border-t border-slate-200/60 flex items-center justify-between">
-                      <span className="text-sm font-medium text-gray-600">Descuento Estimado</span>
-                      <span className="text-sm font-bold text-green-600 bg-green-50 px-2.5 py-1 rounded-full border border-green-200/50">
-                        {subasta.diferencia_porcentual_oportunidad}%
-                      </span>
-                    </div>
-                  )}
-                </div>
-
-                {/* Niveles de Viabilidad y Riesgo */}
-                <div className="flex flex-col gap-3 text-black">
-                  <div className="flex items-center justify-between p-3.5 bg-slate-50 border border-slate-200/60 rounded-xl">
-                    <span className="text-sm font-medium text-gray-600">Viabilidad de la Inversión</span>
-                    <span className={`text-xs font-bold px-3 py-1 rounded-full uppercase ${subasta.viabilidad === 'green'
-                      ? 'bg-green-100 text-green-800 border border-green-200'
-                      : subasta.viabilidad === 'yellow'
-                        ? 'bg-yellow-100 text-yellow-800 border border-yellow-200'
-                        : 'bg-red-100 text-red-800 border border-red-200'
-                      }`}>
-                      {subasta.viabilidad === 'green' ? '🟢 Alta' : subasta.viabilidad === 'yellow' ? '🟡 Media' : '🔴 Baja'}
-                    </span>
-                  </div>
-
-                  <div className="flex items-center justify-between p-3.5 bg-slate-50 border border-slate-200/60 rounded-xl">
-                    <span className="text-sm font-medium text-gray-600">Riesgo Legal (IA)</span>
-                    <span className={`text-xs font-bold px-3 py-1 rounded-full uppercase ${subasta.riesgo_legal === 'BAJO'
-                      ? 'bg-green-100 text-green-800 border border-green-200'
-                      : subasta.riesgo_legal === 'MEDIO'
-                        ? 'bg-yellow-100 text-yellow-800 border border-yellow-200'
-                        : subasta.riesgo_legal === 'ALTO'
-                          ? 'bg-red-100 text-red-800 border border-red-200'
-                          : 'bg-gray-100 text-gray-800 border border-gray-200'
-                      }`}>
-                      {subasta.riesgo_legal ? `${subasta.riesgo_legal === 'BAJO' ? '🟢' : subasta.riesgo_legal === 'MEDIO' ? '🟡' : '🔴'} ${subasta.riesgo_legal}` : 'Desconocido'}
-                    </span>
-                  </div>
+                <div className="bg-slate-50 border border-slate-200/60 rounded-xl p-5 text-black flex flex-col items-center justify-center text-center">
+                  <p className="text-sm font-semibold text-gray-500 uppercase tracking-wider">
+                    Tipo de licitación
+                  </p>
+                  <p className="text-3xl font-bold text-gray-900 mt-2">
+                    {formatPrice(subasta.precioSalida)}
+                  </p>
                 </div>
 
                 <div className="flex gap-3 items-center flex-wrap">
-                  <SubastaOriginalLink url={subasta.urlPdf || ''} text="Ver anuncio original" />
-                  {catastralRef && (
-                    <>
-                      <SubastaOriginalLink
-                        url={catastralUrl.buildCatastralUrl(catastralRef.getFull())}
-                        text="Ver Ficha Catastral"
-                      />
-                      <SubastaOriginalLink
-                        url={catastralUrl.buildCatastralMapUrl(catastralRef.getFull())}
-                        text="Mapa Catastral"
-                      />
-                    </>
-                  )}
+                  <SubastaOriginalLink url={subasta.urlPdf || ''} text="Ver anuncio BOE" />
                   {isAuthenticated && <FavoriteButton subastaId={subasta.id} />}
                 </div>
 
@@ -263,29 +225,16 @@ export const SubastaDetail: React.FC = () => {
                 />
 
                 <SubastaStructuredFields
-                  title="Datos extraídos por IA"
+                  title="Detalles y Advertencias"
                   type={subasta.type}
                   cargas_previas={subasta.cargas_previas}
                   ocupantes={subasta.ocupantes}
                   riesgo_legal={subasta.riesgo_legal}
                   fields={[
-                    `• Dirección: ${subasta.direccion || 'No especificada'}`,
+                    `• Dirección extraída: ${subasta.direccion || 'No especificada'}`,
                     `• Ref. Catastral: ${subasta.referenciaCatastral || 'No especificada'}`,
-                    `• Valor Tasación: ${formatPrice(subasta.valorTasacion)}`,
-                    `• Nivel de oportunidad: ${subasta.nivel_oportunidad || 'No disponible'}`,
-                    `• Diferencia vs tasación: ${formatPercentage(
-                      subasta.diferencia_porcentual_oportunidad,
-                    )}`,
-                  ]}
-                />
-
-                <SubastaCatastroInfo
-                  data={catastroInfo}
-                  loading={loadingCatastro}
-                  error={catastroError}
-                  imageUrl={catastralRef ? catastralUrl.buildCatastralImageUrl(catastralRef.getFull()) : null}
-                  satelliteUrl={catastralRef ? catastralUrl.buildCatastralSatelliteUrl(catastralRef.getFull()) : null}
-                  facadeUrl={catastralRef ? catastralUrl.buildCatastralFacadeUrl(catastralRef.getFull()) : null}
+                    subasta.estado_subasta ? `• Estado: ${subasta.estado_subasta}` : '',
+                  ].filter(Boolean)}
                 />
               </aside>
             </div>

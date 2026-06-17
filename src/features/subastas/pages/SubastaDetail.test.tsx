@@ -56,7 +56,7 @@ describe('SubastaDetail', () => {
       precio: 1000,
       descripcion: 'Descripción test',
       urlOriginal: 'https://subastas.boe.es/test',
-      textoBruto: 'Texto bruto recuperado',
+      urlPdf: 'https://subastas.boe.es/test.pdf',
       lat: 40.4168,
       lng: -3.7038,
       hasLocation: true,
@@ -78,11 +78,10 @@ describe('SubastaDetail', () => {
     await waitFor(() => {
       expect(screen.getByText('Subasta test resumida')).toBeInTheDocument();
       expect(screen.getByText('Subasta test original')).toBeInTheDocument();
-      expect(screen.getByText('Texto bruto recuperado')).toBeInTheDocument();
-      expect(screen.getByText('Ver anuncio original')).toBeInTheDocument();
+      expect(screen.getByText('Ver anuncio BOE')).toBeInTheDocument();
     });
 
-    expect(screen.getAllByText('Descripción test')).toHaveLength(2);
+    expect(screen.getByText('Descripción test')).toBeInTheDocument();
   });
 
   it('muestra mensaje de error si falla la petición', async () => {

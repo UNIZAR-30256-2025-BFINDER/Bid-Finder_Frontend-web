@@ -22,7 +22,6 @@ describe('LandingPage', () => {
     );
 
     expect(screen.getByText(/Oportunidades del/i)).toBeDefined();
-    // Actualizado al nuevo texto del componente FeaturesSection
     expect(screen.getByText(/Herramientas para analizar mejor/i)).toBeDefined();
     expect(screen.getByTestId('mock-map')).toBeDefined();
   });

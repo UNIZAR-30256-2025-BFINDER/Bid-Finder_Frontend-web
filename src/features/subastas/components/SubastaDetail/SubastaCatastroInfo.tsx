@@ -27,7 +27,14 @@ interface Props {
   facadeUrl: string | null;
 }
 
-export const SubastaCatastroInfo: React.FC<Props> = ({ data, loading, error, imageUrl, satelliteUrl, facadeUrl }) => {
+export const SubastaCatastroInfo: React.FC<Props> = ({
+  data,
+  loading,
+  error,
+  imageUrl,
+  satelliteUrl,
+  facadeUrl,
+}) => {
   const [activeTab, setActiveTab] = React.useState<'facade' | 'mapa' | 'satelite'>('facade');
   const [imageErrors, setImageErrors] = React.useState<{ [key: string]: boolean }>({});
 
@@ -46,7 +53,9 @@ export const SubastaCatastroInfo: React.FC<Props> = ({ data, loading, error, ima
     return (
       <div className="bg-slate-50 border border-slate-200/60 rounded-2xl p-6 text-black flex flex-col items-center justify-center min-h-[200px]">
         <Loader2 className="w-8 h-8 text-yellow-500 animate-spin mb-2" />
-        <p className="text-sm font-medium text-slate-600">Consultando datos oficiales en la Sede del Catastro...</p>
+        <p className="text-sm font-medium text-slate-600">
+          Consultando datos oficiales en la Sede del Catastro...
+        </p>
       </div>
     );
   }
@@ -85,7 +94,9 @@ export const SubastaCatastroInfo: React.FC<Props> = ({ data, loading, error, ima
             <div className="text-slate-500 text-[10px] font-bold uppercase tracking-wider mb-1">
               Construido
             </div>
-            <p className="text-lg font-bold text-slate-800">{data.superficieConstruida.toLocaleString('es-ES')} m²</p>
+            <p className="text-lg font-bold text-slate-800">
+              {data.superficieConstruida.toLocaleString('es-ES')} m²
+            </p>
           </div>
         )}
 
@@ -94,7 +105,9 @@ export const SubastaCatastroInfo: React.FC<Props> = ({ data, loading, error, ima
             <div className="text-slate-500 text-[10px] font-bold uppercase tracking-wider mb-1">
               Suelo
             </div>
-            <p className="text-lg font-bold text-slate-800">{data.superficieGrafica.toLocaleString('es-ES')} m²</p>
+            <p className="text-lg font-bold text-slate-800">
+              {data.superficieGrafica.toLocaleString('es-ES')} m²
+            </p>
           </div>
         )}
 
@@ -136,7 +149,9 @@ export const SubastaCatastroInfo: React.FC<Props> = ({ data, loading, error, ima
       </div>
 
       <div className="bg-white border border-slate-100 rounded-xl p-4 shadow-sm">
-        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Dirección Catastral</span>
+        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+          Dirección Catastral
+        </span>
         <p className="text-sm font-semibold text-slate-800 mt-1">{data.direccion}</p>
       </div>
 
@@ -194,12 +209,15 @@ export const SubastaCatastroInfo: React.FC<Props> = ({ data, loading, error, ima
               <div className="flex flex-col items-center justify-center p-8 text-center space-y-3 min-h-[300px]">
                 <span className="text-3xl">🖼️</span>
                 <p className="text-sm font-bold text-slate-800">
-                  {activeTab === 'facade' ? 'Fotografía de fachada no disponible' :
-                   activeTab === 'mapa' ? 'Plano cartográfico no disponible' :
-                   'Vista satelital no disponible'}
+                  {activeTab === 'facade'
+                    ? 'Fotografía de fachada no disponible'
+                    : activeTab === 'mapa'
+                      ? 'Plano cartográfico no disponible'
+                      : 'Vista satelital no disponible'}
                 </p>
                 <p className="text-xs text-slate-500 max-w-xs">
-                  La Sede Electrónica del Catastro no dispone de esta visualización para la parcela {data.referenciaCatastral}.
+                  La Sede Electrónica del Catastro no dispone de esta visualización para la parcela{' '}
+                  {data.referenciaCatastral}.
                 </p>
               </div>
             ) : (
@@ -213,7 +231,7 @@ export const SubastaCatastroInfo: React.FC<Props> = ({ data, loading, error, ima
                       loading="lazy"
                       onError={() => {
                         // Si falla la fachada principal, marcamos el error para no dejar la imagen rota
-                        setImageErrors(prev => ({ ...prev, facade: true }));
+                        setImageErrors((prev) => ({ ...prev, facade: true }));
                       }}
                     />
                     <div className="absolute bottom-4 right-4 bg-slate-900/85 backdrop-blur-md text-white text-[9px] font-bold px-2.5 py-1 rounded-md border border-white/10 shadow-sm pointer-events-none tracking-wide">
@@ -229,7 +247,7 @@ export const SubastaCatastroInfo: React.FC<Props> = ({ data, loading, error, ima
                       className="max-h-[480px] w-full object-contain transition-transform duration-500 group-hover:scale-102"
                       loading="lazy"
                       onError={() => {
-                        setImageErrors(prev => ({ ...prev, mapa: true }));
+                        setImageErrors((prev) => ({ ...prev, mapa: true }));
                       }}
                     />
                     <div className="absolute bottom-4 right-4 bg-slate-900/85 backdrop-blur-md text-white text-[9px] font-bold px-2.5 py-1 rounded-md border border-white/10 shadow-sm pointer-events-none tracking-wide">
@@ -245,7 +263,7 @@ export const SubastaCatastroInfo: React.FC<Props> = ({ data, loading, error, ima
                       className="max-h-[480px] w-full object-cover transition-transform duration-500 group-hover:scale-102"
                       loading="lazy"
                       onError={() => {
-                        setImageErrors(prev => ({ ...prev, satelite: true }));
+                        setImageErrors((prev) => ({ ...prev, satelite: true }));
                       }}
                     />
                     <div className="absolute bottom-4 right-4 bg-slate-900/85 backdrop-blur-md text-white text-[9px] font-bold px-2.5 py-1 rounded-md border border-white/10 shadow-sm pointer-events-none tracking-wide">

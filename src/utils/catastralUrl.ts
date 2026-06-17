@@ -190,4 +190,3 @@ export function buildCatastralFacadeUrl(refCatastral: string): string {
   const ref = new CatastralRef(refCatastral);
   return defaultBuilder.buildFacadeUrl(ref);
 }
-

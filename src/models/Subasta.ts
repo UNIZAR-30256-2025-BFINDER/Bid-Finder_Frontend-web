@@ -34,13 +34,11 @@ export interface Subasta {
   direccion?: string | null;
   referenciaCatastral?: string | null;
   precioSalida?: number | null;
-  valorTasacion?: number | null;
-  nivel_oportunidad?: 'ALTO' | 'MEDIO' | 'BAJO' | null;
-  diferencia_porcentual_oportunidad?: number | null;
   textoBruto?: string;
   riesgo_legal?: string | null;
   ocupantes?: string | null;
   cargas_previas?: string | null;
   hasLocation?: boolean;
   fechaFinalizacion?: string | null;
+  estado_subasta?: string | null;
 }

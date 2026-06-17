@@ -42,7 +42,11 @@ export const FavoritosPage: React.FC = () => {
       setFavoritos(data);
     } catch (err: unknown) {
       if (err instanceof Error) {
-        if (err.message.includes('sesión') || err.message.includes('expirado') || err.message.includes('expired')) {
+        if (
+          err.message.includes('sesión') ||
+          err.message.includes('expirado') ||
+          err.message.includes('expired')
+        ) {
           navigate('/login');
           return;
         }

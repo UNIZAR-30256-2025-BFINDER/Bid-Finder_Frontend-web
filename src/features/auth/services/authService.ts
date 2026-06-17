@@ -82,9 +82,12 @@ export const authService = {
     const result: AuthResponse = await response.json();
     saveSession(result.data);
 
-    const { accessToken: _at, refreshToken: _rt, ...user } = result.data;
-
-    return user;
+    return {
+      _id: result.data._id,
+      nombre: result.data.nombre,
+      email: result.data.email,
+      rol: result.data.rol,
+    };
   },
 
   /**
@@ -107,9 +110,12 @@ export const authService = {
     const result: AuthResponse = await response.json();
     saveSession(result.data);
 
-    const { accessToken: _at, refreshToken: _rt, ...user } = result.data;
-
-    return user;
+    return {
+      _id: result.data._id,
+      nombre: result.data.nombre,
+      email: result.data.email,
+      rol: result.data.rol,
+    };
   },
 
   /**

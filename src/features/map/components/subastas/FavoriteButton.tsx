@@ -28,7 +28,8 @@ export const FavoriteButton: React.FC<FavoriteButtonProps> = ({ subastaId, class
 
   useEffect(() => {
     const checkStatus = async () => {
-      if (!subastaId) return;
+      if (!authService.isAuthenticated() || !subastaId) return;
+
       try {
         const favoritosIds = await fetchFavoritos();
         setIsFavorite(favoritosIds.includes(subastaId));

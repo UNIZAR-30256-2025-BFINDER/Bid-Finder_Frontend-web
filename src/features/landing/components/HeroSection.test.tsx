@@ -8,7 +8,7 @@ describe('HeroSection', () => {
     render(
       <MemoryRouter>
         <HeroSection title="Título de Prueba" />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
     expect(screen.getByText('Título de Prueba')).toBeDefined();
   });

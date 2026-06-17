@@ -22,6 +22,8 @@ export function useSubasta(id: string | undefined) {
         }
 
         const data = await fetchSubastaById(id);
+
+        console.log('Subasta recuperada:', data);
         setSubasta(data);
       } catch (err) {
         console.error(err);

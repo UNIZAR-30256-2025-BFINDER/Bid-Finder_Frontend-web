@@ -15,8 +15,12 @@ interface SubastaCardProps {
   selected?: boolean;
 }
 
-const fallbackImg =
-  'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80&w=300';
+const getFallbackImage = (type?: string) => {
+  if (type === 'car' || type === 'vehiculo') {
+    return '/assets/BFINDER_COCHE_YELLOW.png';
+  }
+  return 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80&w=300';
+};
 
 /**
  * Renderiza la información básica de una subasta en formato tarjeta.
@@ -35,10 +39,11 @@ export const SubastaCard: React.FC<SubastaCardProps> = ({
 }) => {
   return (
     <div
-      className={`group min-w-0 rounded-xl shadow-md bg-[#111827] text-white cursor-pointer border-2 transition-all duration-300 overflow-hidden ${selected
-        ? 'border-yellow-400 bg-white/10'
-        : 'border-transparent hover:border-yellow-400 hover:bg-white/10'
-        }`}
+      className={`group min-w-0 rounded-xl shadow-md bg-[#111827] text-white cursor-pointer border-2 transition-all duration-300 overflow-hidden ${
+        selected
+          ? 'border-yellow-400 bg-white/10'
+          : 'border-transparent hover:border-yellow-400 hover:bg-white/10'
+      }`}
       onClick={onClick}
     >
       <div className="aspect-video w-full relative overflow-hidden bg-black/50">
@@ -47,23 +52,26 @@ export const SubastaCard: React.FC<SubastaCardProps> = ({
         </div>
 
         {viabilidad && (
-          <span className={`absolute top-2 left-2 z-10 backdrop-blur-md text-[10px] md:text-xs px-2 py-0.5 md:py-1 rounded-md font-bold uppercase shadow-sm ${viabilidad === 'green'
-            ? 'bg-green-500/80 text-white'
-            : viabilidad === 'yellow'
-              ? 'bg-yellow-500/80 text-black'
-              : 'bg-red-500/80 text-white'
-            }`}>
+          <span
+            className={`absolute top-2 left-2 z-10 backdrop-blur-md text-[10px] md:text-xs px-2 py-0.5 md:py-1 rounded-md font-bold uppercase shadow-sm ${
+              viabilidad === 'green'
+                ? 'bg-green-500/80 text-white'
+                : viabilidad === 'yellow'
+                  ? 'bg-yellow-500/80 text-black'
+                  : 'bg-red-500/80 text-white'
+            }`}
+          >
             {viabilidad === 'green' ? '🟢 Alta' : viabilidad === 'yellow' ? '🟡 Media' : '🔴 Baja'}
           </span>
         )}
 
         <img
-          src={image || fallbackImg}
+          src={image || getFallbackImage(location)}
           alt={subtitle}
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
           loading="lazy"
           onError={(e) => {
-            (e.target as HTMLImageElement).src = fallbackImg;
+            (e.target as HTMLImageElement).src = getFallbackImage(location);
           }}
         />
 

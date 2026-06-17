@@ -42,7 +42,11 @@ export async function fetchFavoritos(): Promise<string[]> {
     const result = await response.json();
     const favoritos = result.data?.favoritos || [];
     // Soporta tanto si el backend devuelve strings (IDs) como objetos poblados
-    return favoritos.map((f: any) => (f && typeof f === 'object' ? f.id : f)) as string[];
+    return favoritos.map((f: unknown) =>
+      f && typeof f === 'object' && 'id' in (f as Record<string, unknown>)
+        ? (f as Record<string, string>).id
+        : f,
+    ) as string[];
   } catch (error) {
     console.error('Error en fetchFavoritos:', error);
     return [];
@@ -110,4 +114,3 @@ export async function fetchFavoritosPopulated(): Promise<Subasta[]> {
   const favoritos = result.data?.favoritos || [];
   return favoritos.map(mapBackendToFrontend);
 }
-

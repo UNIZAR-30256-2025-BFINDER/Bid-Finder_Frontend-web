@@ -4,8 +4,7 @@
  * y persistencia de la posición durante la sesión.
  */
 
-import React from 'react';
-import { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
   setDefaultMarkerIcon,
   MAP_DEFAULT_ZOOM,
@@ -69,6 +68,67 @@ function MarkersVisibilityController({ children }: { children: React.ReactNode }
   );
 }
 
+const MapAutoResize = () => {
+  useMapAutoResize();
+  return null;
+};
+
+const InitialViewHandler = ({
+  location,
+  hasSavedView,
+}: {
+  location: [number, number] | null;
+  hasSavedView: boolean;
+}) => {
+  const map = useMap();
+  const hasSetViewRef = useRef(false);
+
+  useEffect(() => {
+    if (!hasSavedView && location && !hasSetViewRef.current) {
+      map.setView(location, 14);
+      hasSetViewRef.current = true;
+    }
+  }, [map, location, hasSavedView]);
+
+  return null;
+};
+
+const MapInstanceExtractor = ({ onMapReady }: { onMapReady?: (map: L.Map) => void }) => {
+  const map = useMap();
+  const isReadyFired = useRef(false);
+
+  useEffect(() => {
+    if (onMapReady && !isReadyFired.current) {
+      onMapReady(map);
+      isReadyFired.current = true;
+    }
+  }, [map, onMapReady]);
+
+  return null;
+};
+
+function BoundsNotifier({ onBoundsChange }: { onBoundsChange?: (bounds: L.LatLngBounds) => void }) {
+  useMapEvent('moveend', (e) => {
+    const map = e.target as L.Map;
+    const center = map.getCenter();
+    const zoom = map.getZoom();
+
+    sessionStorage.setItem(
+      'bidfinder_map_view',
+      JSON.stringify({
+        lat: center.lat,
+        lng: center.lng,
+        zoom: zoom,
+      }),
+    );
+
+    if (onBoundsChange) {
+      onBoundsChange(map.getBounds());
+    }
+  });
+  return null;
+}
+
 export const SubastaMap: React.FC<SubastaMapProps> = ({ subastas, onBoundsChange, onMapReady }) => {
   const userLocation = useGeolocation();
 
@@ -97,54 +157,6 @@ export const SubastaMap: React.FC<SubastaMapProps> = ({ subastas, onBoundsChange
     setDefaultMarkerIcon();
   }, []);
 
-  const MapAutoResize = () => {
-    useMapAutoResize();
-    return null;
-  };
-
-  const InitialViewHandler = ({ location }: { location: [number, number] | null }) => {
-    const map = useMap();
-    useEffect(() => {
-      if (!initialView.hasSavedView && location) {
-        map.setView(location, 14);
-      }
-    }, [map, location]);
-    return null;
-  };
-
-  /** Componente para extraer la instancia del mapa y pasarla al padre */
-  const MapInstanceExtractor = () => {
-    const map = useMap();
-    useEffect(() => {
-      if (onMapReady) {
-        onMapReady(map);
-      }
-    }, [map]);
-    return null;
-  };
-
-  function BoundsNotifier() {
-    useMapEvent('moveend', (e) => {
-      const map = e.target as L.Map;
-      const center = map.getCenter();
-      const zoom = map.getZoom();
-
-      sessionStorage.setItem(
-        'bidfinder_map_view',
-        JSON.stringify({
-          lat: center.lat,
-          lng: center.lng,
-          zoom: zoom,
-        }),
-      );
-
-      if (onBoundsChange) {
-        onBoundsChange(map.getBounds());
-      }
-    });
-    return null;
-  }
-
   return (
     <div className="w-full h-full min-h-0 flex-1 z-0 relative rounded-lg shadow-md">
       <MapContainer
@@ -160,10 +172,10 @@ export const SubastaMap: React.FC<SubastaMapProps> = ({ subastas, onBoundsChange
         className="w-full h-full bg-[#0b0f19] rounded-lg"
         preferCanvas={true}
       >
-        <MapInstanceExtractor />
+        <MapInstanceExtractor onMapReady={onMapReady} />
         <MapAutoResize />
-        <InitialViewHandler location={userLocation} />
-        <BoundsNotifier />
+        <InitialViewHandler location={userLocation} hasSavedView={initialView.hasSavedView} />
+        <BoundsNotifier onBoundsChange={onBoundsChange} />
 
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
